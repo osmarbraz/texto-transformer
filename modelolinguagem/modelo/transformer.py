@@ -6,19 +6,21 @@ from typing import List, Dict, Optional, Union, Tuple
 import os
 
 
-class Transformer(nn.Module):
-    """Huggingface AutoModel to generate token embeddings.
-    Loads the correct class, e.g. BERT / RoBERTa etc.
+from modelo.modeloarguments import ModeloArgumentos
 
-    :param model_name_or_path: Huggingface models name (https://huggingface.co/models)
-    :param max_seq_length: Truncate any inputs longer than max_seq_length
-    :param model_args: Arguments (key, value pairs) passed to the Huggingface Transformers model
-    :param cache_dir: Cache dir for Huggingface Transformers to store/load models
-    :param tokenizer_args: Arguments (key, value pairs) passed to the Huggingface Tokenizer model
-    :param do_lower_case: If true, lowercases the input (independent if the model is cased or not)
-    :param tokenizer_name_or_path: Name or path of the tokenizer. When None, then model_name_or_path is used
+class Transformer(nn.Module):
+    """Huggingface AutoModel para gerar embeddings de token, palabra, sentença ou documento.
+     Carrega a classe correta, por exemplo BERT / RoBERTa etc.
+
+     :param model_name_or_path: nome dos modelos Huggingface (https://huggingface.co/models)
+     :param max_seq_length: trunca quaisquer entradas maiores que max_seq_length
+     :param model_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Transformers
+     :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
+     :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
+     :param do_lower_case: Se verdadeiro, coloca a entrada em letras minúsculas (independente se o modelo é maiúscula ou não)
+     :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
     """
-    def __init__(self, model_name_or_path: str, 
+    def __init__(self, modelo_args : ModeloArgumentos,
                 max_seq_length: Optional[int] = None,
                 model_args: Dict = {}, 
                 cache_dir: Optional[str] = None,
@@ -28,21 +30,33 @@ class Transformer(nn.Module):
         
         super(Transformer, self).__init__()
         
+        # Recupera o nome do modelo
+        model_name_or_path = modelo_args.pretrained_model_name_or_path;
+        
         self.config_keys = ['max_seq_length', 'do_lower_case']
         self.do_lower_case = do_lower_case
 
-        config = AutoConfig.from_pretrained(model_name_or_path, **model_args, cache_dir=cache_dir)
-        self._load_model(model_name_or_path, config, cache_dir, **model_args)
+        config = AutoConfig.from_pretrained(model_name_or_path, 
+                                            **model_args, 
+                                            cache_dir=cache_dir)
+                                            
+        self._load_model(model_name_or_path, 
+                         config, 
+                         cache_dir, 
+                         **model_args)
 
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
+        # Carrega o tokenizador
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
 
-        #No max_seq_length set. Try to infer from model
+        #Sem max_seq_length. Tenta inferir do modelo
         if max_seq_length is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
                 max_seq_length = min(self.auto_model.config.max_position_embeddings, self.tokenizer.model_max_length)
 
+        # Define o máximo de tokens
         self.max_seq_length = max_seq_length
 
+        # Define a classe do tokenizador
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
 
@@ -54,7 +68,11 @@ class Transformer(nn.Module):
         elif isinstance(config, MT5Config):
             self._load_mt5_model(model_name_or_path, config, cache_dir, **model_args)
         else:
-            self.auto_model = AutoModel.from_pretrained(model_name_or_path, config=config, cache_dir=cache_dir, **model_args)
+            # Carrega modelos genéricos
+            self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
+                                                        config=config, 
+                                                        cache_dir=cache_dir, 
+                                                        **model_args)
 
     def _load_t5_model(self, model_name_or_path, config, cache_dir, **model_args):
         """Carrega codificador do modelo¨T5"""
@@ -72,7 +90,7 @@ class Transformer(nn.Module):
         return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), self.auto_model.__class__.__name__)
 
     def forward(self, features):
-        """Returna token_embeddings, cls_token"""
+        """Retorna token_embeddings, cls_token"""
         trans_features = {'input_ids': features['input_ids'], 'attention_mask': features['attention_mask']}
         if 'token_type_ids' in features:
             trans_features['token_type_ids'] = features['token_type_ids']
