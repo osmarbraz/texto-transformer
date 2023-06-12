@@ -87,9 +87,9 @@ def carregaModeloLinguagem(model_args):
     #model = carregaModelo(DIRETORIO_MODELO, model_args)
     
     # Carrega o modelo de linguagem    
-    argumentos_modelo = {"output_attention": model_args.output_attentions, 
-                         "output_hidden_states": model_args.output_hidden_states}
-    transformer_model = Transformer(model_args, model_args = argumentos_modelo)
+    # argumentos_modelo = {"output_attention": model_args.output_attentions, 
+    #                     "output_hidden_states": model_args.output_hidden_states}
+    transformer_model = Transformer(model_args)
        
     # Carrega o tokenizador. 
     # O tokenizador é o mesmo para o classificador e medidor.

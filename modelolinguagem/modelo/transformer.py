@@ -17,7 +17,6 @@ class Transformer(nn.Module):
      :param model_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Transformers
      :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
      :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
-     :param do_lower_case: Se verdadeiro, coloca a entrada em letras minúsculas (independente se o modelo é maiúscula ou não)
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
     """
     def __init__(self, 
@@ -26,7 +25,6 @@ class Transformer(nn.Module):
                 model_args: Dict = {}, 
                 cache_dir: Optional[str] = None,
                 tokenizer_args: Dict = {}, 
-                do_lower_case: bool = False,
                 tokenizer_name_or_path : str = None):
         
         super(Transformer, self).__init__()
@@ -35,11 +33,13 @@ class Transformer(nn.Module):
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
         
         self.config_keys = ['max_seq_length', 'do_lower_case']
-        self.do_lower_case = do_lower_case
+        self.do_lower_case = modelo_args.do_lower_case
 
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
-                                            cache_dir=cache_dir)
+                                            cache_dir=cache_dir,
+                                            output_attentions=model_args.output_attentions,
+                                            output_hidden_states = model_args.output_hidden_states)
                                             
         self._load_model(model_name_or_path, 
                          config, 
