@@ -17,8 +17,8 @@ from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 
-from bert.bertarguments import ModeloArgumentosClassificacao
-from bert.bertarguments import ModeloArgumentos
+from modelo.bmodeloarguments import ModeloArgumentosClassificacao
+from modelo.modeloarguments import ModeloArgumentos
 
 # ============================
 def carregaOtimizador(training_args, model):
