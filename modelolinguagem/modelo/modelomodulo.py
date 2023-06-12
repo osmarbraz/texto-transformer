@@ -14,7 +14,6 @@ from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 
-from modelo.modeloarguments import ModeloArgumentosClassificacao
 from modelo.modeloarguments import ModeloArgumentos
 
 # ============================
