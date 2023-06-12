@@ -118,7 +118,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=listaTipoCamadas[4], 
+                                                                       camada=listaTipoCamadas[2], 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -145,7 +145,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=listaTipoCamadas[4], 
+                                                                       camada=listaTipoCamadas[2], 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -172,7 +172,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=listaTipoCamadas[4], 
+                                                                       camada=listaTipoCamadas[2], 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -199,7 +199,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=listaTipoCamadas[4], 
+                                                                       camada=listaTipoCamadas[2], 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
