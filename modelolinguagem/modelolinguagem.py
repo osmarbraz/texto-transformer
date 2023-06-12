@@ -27,16 +27,16 @@ class ModeloLinguagem:
     Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e documentos.
      
     Parâmetros:
-    `pretrained_model_name_or_path' - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download de um modelo pré-treinado do Coherence BERT. Se isso falhar, tenta construir um modelo do repositório de modelos do Huggingface com esse nome.
+    `pretrained_model_name_or_path' - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download de um modelo pré-treinado do modelo de linguagem. Se isso falhar, tenta construir um modelo do repositório de modelos do Huggingface com esse nome.
     ''' 
     
     # Construtor da classe
     def __init__(self, pretrained_model_name_or_path):
-        # Parâmetro recebido para o modelo BERT
+        # Parâmetro recebido para o modelo de linguagem
         model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
         
-        # Carrega o modelo e tokenizador do BERT        
-        self.model, self.tokenizer = carregaBERT(model_args)
+        # Carrega o modelo e tokenizador do modelo de linguagem
+        self.model, self.tokenizer = carregaModeloLinguagem(model_args)
         
         self.verificaCarregamentoSpacy()
     
