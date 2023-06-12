@@ -205,3 +205,10 @@ class ModeloLinguagem:
                                                                        palavra_relevante=model_args.palavra_relevante)
           
         return self.Cman                
+
+
+    def get_model(self):
+        return self.model
+
+    def get_tokenizer(self):
+        return self.tokenizer
