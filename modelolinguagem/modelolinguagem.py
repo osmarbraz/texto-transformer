@@ -1,9 +1,9 @@
 # Import das bibliotecas.
 import logging  # Biblioteca de logging
 
-# Biblioteca Investigando Coerência
-from bert.bertarguments import ModeloArgumentos
-from bert.bertmodulo import *
+# Biblioteca dos modelos de linguagem
+from modelo.modeloarguments import ModeloArgumentos
+from modelo.modelomodulo import *
 from experimento.calculomedida import *
 from spacynlp.spacymodulo import *
 
