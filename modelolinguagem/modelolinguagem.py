@@ -7,6 +7,8 @@ from modelo.modelomodulo import *
 from spacynlp.spacymodulo import *
 
 from medidor.medidorenum import *
+from medidor.medidor import *
+
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
 model_args = ModeloArgumentos(
