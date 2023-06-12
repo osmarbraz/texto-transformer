@@ -92,7 +92,7 @@ def carregaModeloLinguagem(model_args):
     # O tokenizador é o mesmo para o classificador e medidor.
     #tokenizer = carregaTokenizadorModeloPretreinado(DIRETORIO_MODELO, model_args)
     
-    model = transformer_model.get_model()
+    model = transformer_model.get_auto_model()
     tokenizer = transformer_model.get_tokenizer()
     
     return model, tokenizer
