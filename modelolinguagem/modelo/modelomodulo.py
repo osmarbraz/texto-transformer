@@ -281,7 +281,7 @@ def carregaModeloLinguagem(model_args):
     ''' 
             
     # Verifica a origem do modelo
-    DIRETORIO_MODELO = verificaModelo(model_args)
+    # DIRETORIO_MODELO = verificaModelo(model_args)
     
     # Variável para conter o modelo
     model = None
