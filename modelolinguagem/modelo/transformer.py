@@ -20,7 +20,8 @@ class Transformer(nn.Module):
      :param do_lower_case: Se verdadeiro, coloca a entrada em letras minúsculas (independente se o modelo é maiúscula ou não)
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
     """
-    def __init__(self, modelo_args : ModeloArgumentos,
+    def __init__(self, 
+                modelo_args : ModeloArgumentos,
                 max_seq_length: Optional[int] = None,
                 model_args: Dict = {}, 
                 cache_dir: Optional[str] = None,
