@@ -183,11 +183,11 @@ def verificaModelo(model_args):
         # Diretório do modelo
         DIRETORIO_MODELO = copiaModeloAjustado()
         
-        logging.info("Usando modelo BERT ajustado.")
+        logging.info("Usando modelo de linguagem ajustado.")
         
     else:
         DIRETORIO_MODELO = downloadModeloPretreinado(model_args)
-        logging.info("Usando modelo BERT pré-treinado.")        
+        logging.info("Usando modelo modelo de linguagem pré-treinado.")        
         
     return DIRETORIO_MODELO
 
@@ -214,13 +214,13 @@ def carregaTokenizadorModeloPretreinado(DIRETORIO_MODELO, model_args):
     # Se a variável DIRETORIO_MODELO foi setada.
     if DIRETORIO_MODELO:
         # Carregando o Tokenizador.
-        logging.info("Carregando o tokenizador BERT do diretório {}.".format(DIRETORIO_MODELO))
+        logging.info("Carregando o tokenizador do modelo do diretório {}.".format(DIRETORIO_MODELO))
 
         tokenizer = BertTokenizer.from_pretrained(DIRETORIO_MODELO, do_lower_case=model_args.do_lower_case)
 
     else:
         # Carregando o Tokenizador da comunidade.
-        logging.info("Carregando o tokenizador BERT da comunidade.")
+        logging.info("Carregando o tokenizador do modelo da comunidade.")
 
         tokenizer = BertTokenizer.from_pretrained(model_args.pretrained_model_name_or_path, do_lower_case=model_args.do_lower_case)
 
@@ -287,7 +287,7 @@ def carregaModeloLinguagem(model_args):
     model = None
     
     # Carrega o model
-    model = carregaModelo(DIRETORIO_MODELO, model_args)
+    #model = carregaModelo(DIRETORIO_MODELO, model_args)
     
     transformer_model = Transformer(model_args.pretrained_model_name_or_path)
        
