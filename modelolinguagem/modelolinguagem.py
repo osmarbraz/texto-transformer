@@ -4,7 +4,6 @@ import logging  # Biblioteca de logging
 # Biblioteca dos modelos de linguagem
 from modelo.modeloarguments import ModeloArgumentos
 from modelo.modelomodulo import *
-from experimento.calculomedida import *
 from spacynlp.spacymodulo import *
 
 from medidor.medidorenum import *
