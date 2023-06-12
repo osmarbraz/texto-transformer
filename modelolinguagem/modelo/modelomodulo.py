@@ -7,17 +7,14 @@ import torch # Biblioteca para manipular os tensores
 
 # Bibliotecas Transformer
 from transformers import BertModel # Importando as bibliotecas do Modelo BERT.
-from transformers import BertForSequenceClassification # Importando as bibliotecas do Modelo BERT.
 from transformers import BertTokenizer # Importando as bibliotecas do tokenizador BERT.
-from transformers import AdamW # Biblioteca do otimizador
-from transformers import get_linear_schedule_with_warmup # Biblioteca do agendador
 
 # Import de bibliotecas próprias.
 from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 
-from modelo.bmodeloarguments import ModeloArgumentosClassificacao
+from modelo.modeloarguments import ModeloArgumentosClassificacao
 from modelo.modeloarguments import ModeloArgumentos
 
 # ============================
@@ -560,55 +557,16 @@ def carregaModeloMedida(DIRETORIO_MODELO, model_args):
 
     return model
 
-# ============================
-def carregaModeloClassifica(DIRETORIO_MODELO, model_args):
-    ''' 
-    Carrega o modelo e retorna o modelo.
-    
-    Parâmetros:
-    `DIRETORIO_MODELO` - Diretório a ser utilizado pelo modelo BERT.           
-    `model_args` - Objeto com os argumentos do modelo.
-    
-    Retorno:
-    `model` - Um objeto do modelo BERT carregado.
-    ''' 
 
-    # Variável para setar o arquivo.
-    URL_MODELO = None
-
-    if 'http' in model_args.pretrained_model_name_or_path:
-        URL_MODELO = model_args.pretrained_model_name_or_path
-
-    # Se a variável URL_MODELO foi setada
-    if URL_MODELO:
-        # Carregando o Modelo BERT
-        logging.info("Carregando o modelo BERT do diretório {} para classificação.".format(DIRETORIO_MODELO))
-
-        model = BertForSequenceClassification.from_pretrained(DIRETORIO_MODELO, 
-                                                              num_labels=model_args.num_labels,
-                                                              output_attentions=model_args.output_attentions,
-                                                              output_hidden_states=model_args.output_hidden_states)
-            
-    else:
-        # Carregando o Modelo BERT da comunidade
-        logging.info("Carregando o modelo BERT da comunidade {} para classificação.".format(model_args.pretrained_model_name_or_path))
-
-        model = BertForSequenceClassification.from_pretrained(model_args.pretrained_model_name_or_path,
-                                                              num_labels=model_args.num_labels,
-                                                              output_attentions=model_args.output_attentions,
-                                                              output_hidden_states=model_args.output_hidden_states)
-    return model
 
 # ============================
 def carregaBERT(model_args):
     ''' 
-    Carrega o BERT para cálculo de medida ou classificação e retorna o modelo e o tokenizador.
-    O tipo do model retornado pode ser BertModel ou BertForSequenceClassification, depende do tipo de model_args.
+    Carrega o BERT para cálculo de medida e retorna o modelo e o tokenizador.
+    O tipo do model retornado é BertModel.
     
     Parâmetros:
-    `model_args` - Objeto com os argumentos do modelo.       
-        - Se model_args = ModeloArgumentosClassificacao deve ser carregado o BERT para classificação(BertForSequenceClassification).
-        - Se model_args = ModeloArgumentos deve ser carregado o BERT para cálculo de medida(BertModel).
+    `model_args` - Objeto com os argumentos do modelo.               
 
     Retorno:    
     `model` - Um objeto do modelo BERT carregado.       
@@ -621,20 +579,8 @@ def carregaBERT(model_args):
     # Variável para conter o modelo
     model = None
     
-    # Verifica o tipo do modelo em model_args    
-    if type(model_args) == ModeloArgumentos:
-        # Carrega o modelo para cálculo da medida
-        model = carregaModeloMedida(DIRETORIO_MODELO, model_args)
-        
-    else:
-        # Carrega o modelo para classificação
-        model = carregaModeloClassifica(DIRETORIO_MODELO, model_args)
-        
-        # Recupera o dispotivo da GPU 
-        device = getDeviceGPU()
-    
-        # Conecta o modelo a GPU
-        model = conectaGPU(model, device)
+    # Carrega o modelo para cálculo da medida
+    model = carregaModeloMedida(DIRETORIO_MODELO, model_args)
        
     # Carrega o tokenizador. 
     # O tokenizador é o mesmo para o classificador e medidor.
