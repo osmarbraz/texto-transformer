@@ -1,6 +1,7 @@
 # Import das bibliotecas.
-from torch import nn
+from torch import nn # Biblioteca de aprendizado de máquina
 import torch # Biblioteca de aprendizado de máquina
+# Biblioteca do transformer
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 import json
 from typing import List, Dict, Optional, Union, Tuple

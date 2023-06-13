@@ -130,7 +130,7 @@ class Mensurador:
     # ============================
     # getEmbeddingsTodasCamadasBuffer
     # Cria um buffer com os embeddings de sentenças para economizar no processamento.
-    buffer_embeddings = {}
+    self.buffer_embeddings = {}
 
     # ============================
     def getEmbeddingsTodasCamadasBuffer(self, S):
@@ -139,12 +139,12 @@ class Mensurador:
         '''
         
         # Se está no dicionário retorna o embedding
-        if S in buffer_embeddings:
-            return buffer_embeddings.get(S)
+        if S in self.buffer_embeddings:
+            return self.buffer_embeddings.get(S)
         else:
             # Gera o embedding
             totalCamada = self.getEmbeddingsTodasCamadas(S)
-            buffer_embeddings.update({S: totalCamada})
+            self.buffer_embeddings.update({S: totalCamada})
             return totalCamada
 
     # ============================
@@ -153,7 +153,7 @@ class Mensurador:
         Esvazia o buffer de embeddings das sentenças.
         '''
         
-        buffer_embeddings.clear(self)
+        self.buffer_embeddings.clear(self)
 
     # ============================
     def getEmbeddingPrimeiraCamada(self, sentencaEmbedding):
