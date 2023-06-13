@@ -66,15 +66,15 @@ def getTamanhoModeloLinguagem(model_args):
 # ============================
 def carregaModeloLinguagem(modelo_argumentos):
     ''' 
-    Carrega o BERT para cálculo de medida e retorna o modelo e o tokenizador.
+    Carrega o omodelo de linguagem para cálculo de medida e retorna o modelo e o tokenizador.
     O tipo do model retornado é BertModel.
     
     Parâmetros:
     `modelo_argumentos` - Objeto com os argumentos do modelo.               
 
     Retorno:    
-    `model` - Um objeto do modelo BERT carregado.       
-    `tokenizer` - Um objeto tokenizador BERT carregado.       
+    `transformer_model` - Um objeto do modelo de linguagem carregado.       
+    `tokenizer` - Um objeto tokenizador carregado.       
     ''' 
             
     # Verifica a origem do modelo
@@ -83,19 +83,14 @@ def carregaModeloLinguagem(modelo_argumentos):
     # Variável para conter o modelo
     model = None
     
-    # Carrega o model
-    #model = carregaModelo(DIRETORIO_MODELO, modelo_argumentos)
+    # Carrega o modelo de linguagem        
+    transformer_model = Transformer(modelo_args=modelo_argumentos)
     
-    # Carrega o modelo de linguagem    
-    model_args = {"output_attentions": modelo_argumentos.output_attentions, 
-                         "output_hidden_states": modelo_argumentos.output_hidden_states}
-    transformer_model = Transformer(modelo_args=modelo_argumentos,model_args=model_args)
-       
-    # Carrega o tokenizador. 
-    # O tokenizador é o mesmo para o classificador e medidor.
-    #tokenizer = carregaTokenizadorModeloPretreinado(DIRETORIO_MODELO, model_args)
-    
+    # Recupera o modelo.
     model = transformer_model.get_auto_model()
+    
+    # Recupera o tokenizador.     
     tokenizer = transformer_model.get_tokenizer()
+    
     
     return model, tokenizer

@@ -21,26 +21,25 @@ class Transformer(nn.Module):
     """
     def __init__(self, 
                 modelo_args : ModeloArgumentos,
-                max_seq_length: Optional[int] = None,
-                model_args: Dict = {}, 
+                max_seq_length: Optional[int] = None,                
                 cache_dir: Optional[str] = None,
                 tokenizer_args: Dict = {}, 
                 tokenizer_name_or_path : str = None):
         
         super(Transformer, self).__init__()
         
-        # Recupera o nome do modelo
+        # Recupera o nome do modelo dos argumentos
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
         
         # Parâmetros do modelo
         self.config_keys = ['max_seq_length', 'do_lower_case']
         self.do_lower_case = modelo_args.do_lower_case
 
-        #model_args = {"output_attentions": modelo_argumentos.output_attentions, 
-        #                 "output_hidden_states": modelo_argumentos.output_hidden_states}
-
-        # Configuração do modelo
-        print("Configurando o modelo")
+        # Recupera parâmetros do transformador dos argumentos
+        model_args = {"output_attentions": modelo_args.output_attentions, 
+                      "output_hidden_states": modelo_args.output_hidden_states}
+    
+        # Configuração do modelo        
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
                                             cache_dir=cache_dir)
@@ -49,10 +48,6 @@ class Transformer(nn.Module):
         self._load_model(model_name_or_path, 
                          config, 
                          cache_dir)
-        #self._load_model(model_name_or_path, 
-        #                 config, 
-        #                 cache_dir, 
-        #                 **model_args)                         
 
         # Carrega o tokenizador
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
@@ -71,45 +66,41 @@ class Transformer(nn.Module):
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
 
 
-    def _load_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_model(self, model_name_or_path, config, cache_dir):
         """Carrega o modelo transformer"""
         # Carregamento T5
         if isinstance(config, T5Config):
             self._load_t5_model(model_name_or_path, 
                                 config, 
-                                cache_dir, 
-                                **model_args)
-        # Carregamento MT5
+                                cache_dir)
+        
         else:
+            # Carregamento MT5
             if isinstance(config, MT5Config):
                 self._load_mt5_model(model_name_or_path, 
                                     config, 
-                                    cache_dir, 
-                                    **model_args)
+                                    cache_dir)
             else:
                 # Carrega modelos genéricos
                 self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
                                                             config=config, 
-                                                            cache_dir=cache_dir, 
-                                                            **model_args)
+                                                            cache_dir=cache_dir)
 
-    def _load_t5_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_t5_model(self, model_name_or_path, config, cache_dir):
         """Carrega codificador do modelo¨T5"""
         from transformers import T5EncoderModel
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
                                                          config=config, 
-                                                         cache_dir=cache_dir, 
-                                                         **model_args)
+                                                         cache_dir=cache_dir)
 
-    def _load_mt5_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_mt5_model(self, model_name_or_path, config, cache_dir):
         """Carrega codificador do modelo MT5"""
         from transformers import MT5EncoderModel
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
                                                           config=config, 
-                                                          cache_dir=cache_dir, 
-                                                          **model_args)
+                                                          cache_dir=cache_dir)
 
     def __repr__(self):
         return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), 
