@@ -29,7 +29,7 @@ class Mensurador:
         self.nlp = nlp
    
     # ============================
-    def getTextoTokenizado(texto):
+    def getTextoTokenizado(self, texto):
 
         '''
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao BERT.
@@ -63,7 +63,7 @@ class Mensurador:
     OUTPUTS_HIDDEN_STATES = 2
      
     # ============================
-    def getEmbeddingsTodasCamadas(texto):    
+    def getEmbeddingsTodasCamadas(self, texto):    
         '''   
         Retorna os embeddings de todas as camadas de um texto.
         
@@ -133,7 +133,7 @@ class Mensurador:
     buffer_embeddings = {}
 
     # ============================
-    def getEmbeddingsTodasCamadasBuffer(S):
+    def getEmbeddingsTodasCamadasBuffer(self, S):
         '''
         Retorna os embeddings de uma sentença de um buffer ou do modelo..
         '''
@@ -148,15 +148,15 @@ class Mensurador:
             return totalCamada
 
     # ============================
-    def limpaBufferEmbedding():
+    def limpaBufferEmbedding(self):
         '''
         Esvazia o buffer de embeddings das sentenças.
         '''
         
-        buffer_embeddings.clear()
+        buffer_embeddings.clear(self)
 
     # ============================
-    def getEmbeddingPrimeiraCamada(sentencaEmbedding):
+    def getEmbeddingPrimeiraCamada(self, sentencaEmbedding):
         '''
         Retorna os embeddings da primeira camada.
         '''
@@ -176,7 +176,7 @@ class Mensurador:
         return resultado
 
     # ============================
-    def getEmbeddingPenultimaCamada(sentencaEmbedding):
+    def getEmbeddingPenultimaCamada(self, sentencaEmbedding):
         '''
         Retorna os embeddings da penúltima camada.
         '''
@@ -196,7 +196,7 @@ class Mensurador:
         return resultado
 
     # ============================
-    def getEmbeddingUltimaCamada(sentencaEmbedding):
+    def getEmbeddingUltimaCamada(self, sentencaEmbedding):
         '''
         Retorna os embeddings da última camada.
         '''
@@ -216,7 +216,7 @@ class Mensurador:
         return resultado    
 
     # ============================
-    def getEmbeddingSoma4UltimasCamadas(sentencaEmbedding):
+    def getEmbeddingSoma4UltimasCamadas(self, sentencaEmbedding):
         '''
         Retorna os embeddings da soma das 4 últimas camadas.
         '''
@@ -248,7 +248,7 @@ class Mensurador:
         return resultado
 
     # ============================
-    def getEmbeddingConcat4UltimasCamadas(sentencaEmbedding):
+    def getEmbeddingConcat4UltimasCamadas(self, sentencaEmbedding):
         '''
         Retorna os embeddings da concatenação das 4 últimas camadas.
         '''
@@ -279,7 +279,7 @@ class Mensurador:
         return resultado   
 
     # ============================
-    def getEmbeddingSomaTodasAsCamada(sentencaEmbedding):
+    def getEmbeddingSomaTodasAsCamada(self, sentencaEmbedding):
         '''
         Retorna os embeddings da soma de todas as camadas.
         '''
@@ -311,7 +311,7 @@ class Mensurador:
         return resultado
 
     # ============================
-    def getResultadoEmbeddings(sentencaEmbedding, camada):
+    def getResultadoEmbeddings(self, sentencaEmbedding, camada):
         '''
         Retorna o resultado da operação sobre os embeddings das camadas de acordo com tipo de camada especificada.
         
@@ -368,7 +368,7 @@ class Mensurador:
         return resultadoEmbeddingCamadas
 
     # ============================
-    def getMedidasSentencasEmbeddingMEAN(embeddingSi, embeddingSj):
+    def getMedidasSentencasEmbeddingMEAN(self, embeddingSi, embeddingSj):
         '''
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MEAN.
         
@@ -419,7 +419,7 @@ class Mensurador:
         return mediaEmbeddingSi, mediaEmbeddingSj, Scos, Seuc, Sman
 
     # ============================
-    def getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj):
+    def getMedidasSentencasEmbeddingMAX(self, embeddingSi, embeddingSj):
         '''
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MAX.
         
@@ -470,7 +470,7 @@ class Mensurador:
         return maiorEmbeddingSi, maiorEmbeddingSj, Scos, Seuc, Sman
 
     # ============================
-    def getMedidasSentencasEmbedding(embeddingSi, embeddingSj):
+    def getMedidasSentencasEmbedding(self, embeddingSi, embeddingSj):
         '''
         Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
         
@@ -486,7 +486,10 @@ class Mensurador:
             return getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca):
+    def getEmbeddingSentencaEmbeddingTextoALL(self, 
+                                              embeddingTexto, 
+                                              texto, 
+                                              sentenca):
         '''
         Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         
@@ -516,7 +519,11 @@ class Mensurador:
         return embeddingSentenca
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca, stopwords):
+    def getEmbeddingSentencaEmbeddingTextoCLEAN(self, 
+                                                embeddingTexto, 
+                                                texto, 
+                                                sentenca, 
+                                                stopwords):
         '''
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         '''
@@ -575,7 +582,10 @@ class Mensurador:
         return embeddingSentencaSemStopWord
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca):
+    def getEmbeddingSentencaEmbeddingTextoNOUN(self, 
+                                               embeddingTexto, 
+                                               texto, 
+                                               sentenca):
         '''
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         '''
@@ -633,7 +643,10 @@ class Mensurador:
         return embeddingSentencaComSubstantivo
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTexto(embeddingTexto, texto, sentenca):
+    def getEmbeddingSentencaEmbeddingTexto(self, 
+                                           embeddingTexto, 
+                                           texto, 
+                                           sentenca):
         '''
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         '''
@@ -649,7 +662,8 @@ class Mensurador:
                     return getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
 
     # ============================
-    def getMedidasComparacaoTexto(texto, 
+    def getMedidasComparacaoTexto(self, 
+                                  texto, 
                                   camada, 
                                   tipoTexto='p'):
         '''
@@ -804,7 +818,7 @@ class Mensurador:
     # 5 - Todas               listaTipoCamadas[TODAS_AS_CAMADAS]
 
     # ============================
-    def comparaMedidasCamadasSentencas(Si, Sj, camada):
+    def comparaMedidasCamadasSentencas(self, Si, Sj, camada):
         '''
         Facilita a exibição dos valores de comparação de duas orações.
         '''
