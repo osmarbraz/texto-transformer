@@ -67,30 +67,12 @@ class ModeloLinguagem:
          # Carrega o spaCy
         #self.verificaCarregamentoSpacy()
         self.nlp = NLP(modelo_args=modelo_argumentos)
-        self.nlp.carrega();
-        
-        
+                        
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
                                      nlp=self.nlp)
-                                     
         
-    
-    def verificaCarregamentoSpacy(self):
-        ''' 
-        Verifica se é necessário carregar o spacy.
-        Utilizado para as estratégias de palavras relevantes CLEAN e NOUN.
-        ''' 
-        
-        if modelo_argumentos.palavra_relevante != PalavrasRelevantes.ALL.value:
-            # Carrega o modelo spacy
-            print("Carregando o spaCy")
-            self.nlp = carregaSpacy(modelo_argumentos)
-            
-        else:
-            print("spaCy não carregado!")
-            self.nlp = None
     
     def defineEstrategiaPooling(self, estrategiaPooling):
         ''' 

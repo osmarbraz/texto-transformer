@@ -25,6 +25,8 @@ class NLP():
     
         # Parâmetros do modelo
         self.modelo_args = modelo_args
+        
+        self.carrega();
             
     # ============================
     def getStopwords(self):
@@ -90,9 +92,9 @@ class NLP():
         #    os.remove(NOME_ARQUIVO_MODELO_COMPACTADO)
         
     # ============================    
-    def carregaSpacy(self):
+    def carrega(self):
         '''
-        Realiza o carregamento do Spacy.
+        Realiza o carregamento da ferramenta de NLP.
       
         '''
         
@@ -119,6 +121,7 @@ class NLP():
         # Carrega o spaCy. Necessário somente 'tagger' para encontrar os substantivos
         #self.nlp = spacy.load(DIRETORIO_MODELO_SPACY, disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])
         
+        # Verifica se é necessário carregar a ferramenta
         if modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
             print("Carregando o spaCy")
