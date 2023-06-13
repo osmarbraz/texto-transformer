@@ -185,6 +185,11 @@ class Transformer(nn.Module):
                 
         # Gera o texto tokenizado        
         saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
+        
+        # Verifica se existe algum texto maior que o limite de tokenização
+        for tokens in  saida['tokens_texto']:
+            if len(tokens) >= 512:
+                logging.info("Utilizando embeddings do modelo de:", listaTipoCamadas[modelo_argumentos.camadas_embeddings]) 
                         
         return saida
         
@@ -206,11 +211,12 @@ class Transformer(nn.Module):
             token_type_ids uma lista com os tipos dos tokens.
             attention_mask uma lista com os as máscaras de atenção
             token_embeddings uma lista com os embeddings da última camada
-            token_embeddings uma lista com os embeddings da última camada
+            all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
     
         # Recupera o texto preparado pelo tokenizador
-        dic_texto_preparado = {'input_ids': texto_preparado['input_ids'], 'attention_mask': texto_preparado['attention_mask']}
+        dic_texto_preparado = {'input_ids': texto_preparado['input_ids'], 
+                               'attention_mask': texto_preparado['attention_mask']}
         
         # Se token_type_ids estiver no texto preparado copia para dicionário
         if 'token_type_ids' in texto_preparado:
@@ -242,6 +248,7 @@ class Transformer(nn.Module):
                       'input_ids': texto_preparado['input_ids'],
                       'attention_mask': texto_preparado['attention_mask'],
                       'input_ids': texto_preparado['input_ids'],        
+                      'token_type_ids': texto_preparado['token_type_ids'],        
                       'tokens_texto': texto_preparado['tokens_texto']
                       }
                      )
