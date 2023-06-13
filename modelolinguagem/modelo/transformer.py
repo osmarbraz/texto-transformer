@@ -32,16 +32,20 @@ class Transformer(nn.Module):
         # Recupera o nome do modelo
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
         
+        # Parâmetros do modelo
         self.config_keys = ['max_seq_length', 'do_lower_case']
         self.do_lower_case = modelo_args.do_lower_case
 
         #model_args = {"output_attentions": modelo_argumentos.output_attentions, 
         #                 "output_hidden_states": modelo_argumentos.output_hidden_states}
 
+        # Configuração do modelo
+        print("Configurando o modelo")
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
                                             cache_dir=cache_dir)
-                                            
+        
+        # Carrega o modelo
         self._load_model(model_name_or_path, 
                          config, 
                          cache_dir, 
@@ -50,7 +54,7 @@ class Transformer(nn.Module):
         # Carrega o tokenizador
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
 
-        #Sem max_seq_length. Tenta inferir do modelo
+        #Se max_seq_length não foi especificado, tenta inferir do modelo
         if max_seq_length is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
                 max_seq_length = min(self.auto_model.config.max_position_embeddings,
@@ -66,10 +70,18 @@ class Transformer(nn.Module):
 
     def _load_model(self, model_name_or_path, config, cache_dir, **model_args):
         """Carrega o modelo transformer"""
+        # Carregamento T5
         if isinstance(config, T5Config):
-            self._load_t5_model(model_name_or_path, config, cache_dir, **model_args)
+            self._load_t5_model(model_name_or_path, 
+                                config, 
+                                cache_dir, 
+                                **model_args)
+        # Carregamento MT5
         elif isinstance(config, MT5Config):
-            self._load_mt5_model(model_name_or_path, config, cache_dir, **model_args)
+            self._load_mt5_model(model_name_or_path, 
+                                 config, 
+                                 cache_dir, 
+                                 **model_args)
         else:
             # Carrega modelos genéricos
             self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
@@ -81,16 +93,23 @@ class Transformer(nn.Module):
         """Carrega codificador do modelo¨T5"""
         from transformers import T5EncoderModel
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, config=config, cache_dir=cache_dir, **model_args)
+        self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
+                                                         config=config, 
+                                                         cache_dir=cache_dir, 
+                                                         **model_args)
 
     def _load_mt5_model(self, model_name_or_path, config, cache_dir, **model_args):
         """Carrega codificador do modelo MT5"""
         from transformers import MT5EncoderModel
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, config=config, cache_dir=cache_dir, **model_args)
+        self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
+                                                          config=config, 
+                                                          cache_dir=cache_dir, 
+                                                          **model_args)
 
     def __repr__(self):
-        return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), self.auto_model.__class__.__name__)
+        return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), 
+                                                                    self.auto_model.__class__.__name__)
 
     def forward(self, features):
         """Retorna token_embeddings, cls_token"""
@@ -123,20 +142,22 @@ class Transformer(nn.Module):
         output = {}
         if isinstance(texts[0], str):
             to_tokenize = [texts]
-        elif isinstance(texts[0], dict):
-            to_tokenize = []
-            output['text_keys'] = []
-            for lookup in texts:
-                text_key, text = next(iter(lookup.items()))
-                to_tokenize.append(text)
-                output['text_keys'].append(text_key)
-            to_tokenize = [to_tokenize]
-        else:
-            batch1, batch2 = [], []
-            for text_tuple in texts:
-                batch1.append(text_tuple[0])
-                batch2.append(text_tuple[1])
-            to_tokenize = [batch1, batch2]
+            
+        else
+            if isinstance(texts[0], dict):
+                to_tokenize = []
+                output['text_keys'] = []
+                for lookup in texts:
+                    text_key, text = next(iter(lookup.items()))
+                    to_tokenize.append(text)
+                    output['text_keys'].append(text_key)
+                to_tokenize = [to_tokenize]
+            else:
+                batch1, batch2 = [], []
+                for text_tuple in texts:
+                    batch1.append(text_tuple[0])
+                    batch2.append(text_tuple[1])
+                to_tokenize = [batch1, batch2]
 
         #strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
@@ -145,9 +166,13 @@ class Transformer(nn.Module):
         if self.do_lower_case:
             to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
-        output.update(self.tokenizer(*to_tokenize, padding=True, truncation='longest_first', return_tensors="pt", max_length=self.max_seq_length))
+        output.update(self.tokenizer(*to_tokenize, 
+                                     padding=True, 
+                                     truncation='longest_first', 
+                                     return_tensors="pt", 
+                                     max_length=self.max_seq_length))
+        
         return output
-
 
     def get_config_dict(self):
         return {key: self.__dict__[key] for key in self.config_keys}
@@ -156,7 +181,7 @@ class Transformer(nn.Module):
         self.auto_model.save_pretrained(output_path)
         self.tokenizer.save_pretrained(output_path)
 
-        with open(os.path.join(output_path, 'sentence_bert_config.json'), 'w') as fOut:
+        with open(os.path.join(output_path, 'modelo_linguagem_config.json'), 'w') as fOut:
             json.dump(self.get_config_dict(), fOut, indent=2)
 
     def get_auto_model(self):
