@@ -35,9 +35,14 @@ class Transformer(nn.Module):
         self.config_keys = ['max_seq_length', 'do_lower_case']
         self.do_lower_case = modelo_args.do_lower_case
 
+        #model_args = {"output_attentions": modelo_argumentos.output_attentions, 
+        #                 "output_hidden_states": modelo_argumentos.output_hidden_states}
+
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
-                                            cache_dir=cache_dir)
+                                            cache_dir=cache_dir,
+                                            output_attentions=modelo_argumentos.output_attentions,
+                                            output_hidden_states=modelo_argumentos.output_hidden_states)
                                             
         self._load_model(model_name_or_path, 
                          config, 
@@ -102,7 +107,7 @@ class Transformer(nn.Module):
 
         if self.auto_model.config.output_hidden_states:
             all_layer_idx = 2
-            if len(output_states) < 3: #Some models only output last_hidden_states and all_hidden_states
+            if len(output_states) < 3: #Alguns modelos apenas geram last_hidden_states e all_hidden_states
                 all_layer_idx = 1
 
             hidden_states = output_states[all_layer_idx]
@@ -115,7 +120,7 @@ class Transformer(nn.Module):
 
     def tokenize(self, texts: Union[List[str], List[Dict], List[Tuple[str, str]]]):
         """
-        Tokenizes a text and maps tokens to token-ids
+        Tokeniza um texto e mapea tokens para token-ids
         """
         output = {}
         if isinstance(texts[0], str):
