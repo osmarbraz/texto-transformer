@@ -22,11 +22,7 @@ class ModeloArgumentos:
     modelo_spacy: str = field(
                               default='pt_core_news_lg',
                               metadata={'help': 'nome do modelo do spaCy.'},
-                              )
-    versao_spacy: str = field(
-                              default='3.4.4',
-                              metadata={'help': 'versão do spaCy a ser utilizada.'},
-                              )   
+                              )    
     do_lower_case: bool = field(
                                 default=False,
                                 metadata={'help': 'define se o texto do modelo deve ser todo em minúsculo.'},

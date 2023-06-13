@@ -1,6 +1,5 @@
 # Import das bibliotecas.
 import logging  # Biblioteca de logging
-import tarfile # Biblioteca de descompactação
 import os # Biblioteca de manipulação de arquivos
 import spacy # Biblioteca do spaCy
 
@@ -8,7 +7,6 @@ import spacy # Biblioteca do spaCy
 from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
-
 from medidor.medidorenum import *
 
 class NLP():
@@ -51,12 +49,12 @@ class NLP():
         # Verifica se é necessário carregar a ferramenta
         if self.modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
-            print("Carregando o spaCy")
+            logging.info("Carregando o spaCy")
             self.nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])    
-            print("spaCy carregado.")
+            logging.info("spaCy carregado.")
         
         else:
-            print("spaCy não carregado!")
+            logging.info("spaCy não carregado!")
             self.nlp = None
                 
 

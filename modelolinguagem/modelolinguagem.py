@@ -15,7 +15,6 @@ modelo_argumentos = ModeloArgumentos(
                                     max_seq_len=512,
                                     pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
                                     modelo_spacy='pt_core_news_lg',
-                                    #versao_spacy='3.4.4',
                                     do_lower_case=False,        # default True
                                     output_attentions=False,    # default False
                                     output_hidden_states=True,  # default False  /Retornar os embeddings das camadas ocultas  
@@ -52,9 +51,10 @@ class ModeloLinguagem:
         # Recupera o tokenizador.     
         self.tokenizer = self.transformer_model.get_tokenizer()
         
-        # Especifica de qual camada utilizar os embeddings
-        logging.info("Utilizando embeddings do modelo de:", listaTipoCamadas[modelo_argumentos.camadas_embeddings]) 
-        
+        # Especifica de qual camada utilizar os embeddings        
+        logging.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings]))
+          
+          
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
         
@@ -65,7 +65,6 @@ class ModeloLinguagem:
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
         
          # Carrega o spaCy
-        #self.verificaCarregamentoSpacy()
         self.nlp = NLP(modelo_args=modelo_argumentos)
                         
         # Constroi um mensurador
@@ -73,6 +72,8 @@ class ModeloLinguagem:
                                      transformer_model=self.transformer_model, 
                                      nlp=self.nlp)
         
+    
+        logging.info("Modelo de Linguagem carregado: {}.".format(modelo_argumentos))
     
     def defineEstrategiaPooling(self, estrategiaPooling):
         ''' 
@@ -101,12 +102,10 @@ class ModeloLinguagem:
         
         if palavraRelevante == PalavrasRelevantes.CLEAN.name:
             modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value
-            verificaCarregamentoSpacy()
             
         else:
             if palavraRelevante == PalavrasRelevantes.NOUN.name:
                 modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value
-                verificaCarregamentoSpacy()
                 
             else:
                 if palavraRelevante == PalavrasRelevantes.ALL.name:

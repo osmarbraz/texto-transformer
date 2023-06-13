@@ -39,6 +39,8 @@ class Mensurador:
                 
         # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
         self.buffer_embeddings = {}
+        
+        logging.info("Mensurador carregado: {}.".format(modelo_args))
    
     # ============================
     def getTextoTokenizado(self, texto):

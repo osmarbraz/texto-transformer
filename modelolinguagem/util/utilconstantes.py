@@ -23,14 +23,6 @@ SOMA_4_ULTIMAS_CAMADAS = 3
 CONCAT_4_ULTIMAS_CAMADAS = 4
 TODAS_AS_CAMADAS = 5
 
-
-# Constantes para índice dos campos da camada
-LISTATIPOCAMADA_ID = 0
-LISTATIPOCAMADA_CAMADA = 1
-LISTATIPOCAMADA_OPERACAO = 2
-LISTATIPOCAMADA_NOME = 3
-
-
 # Constantes para padronizar o acesso aos dados do modelo de linguagem.
 TEXTO_TOKENIZADO = 0
 INPUT_IDS = 1
