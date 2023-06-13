@@ -8,20 +8,8 @@ from util.utiltempo import *
 from util.utilarquivo import *
 
 from spacynlp.spacymodulo import *
-
 from medidor.medidas import *
-
-# ============================
-# Constantes para padronizar o acesso aos dados do modelo do BERT.
-
-TEXTO_TOKENIZADO = 0
-INPUT_IDS = 1
-ATTENTION_MASK = 2
-TOKEN_TYPE_IDS = 3
-OUTPUTS = 4
-OUTPUTS_LAST_HIDDEN_STATE = 0
-OUTPUTS_POOLER_OUTPUT = 1
-OUTPUTS_HIDDEN_STATES = 2
+from modelolinguagem.modelolinguagem import *
 
 class Mensurador:
 

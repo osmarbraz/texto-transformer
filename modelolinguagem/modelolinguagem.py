@@ -7,7 +7,7 @@ from spacynlp.spacymodulo import *
 
 from medidor.medidorenum import *
 from medidor.mensurador import Mensurador
-from modelo.transformer import Transformer
+from modelo.transformer import *
 
 # ============================
 # listaTipoCamadas
@@ -34,14 +34,26 @@ SOMA_4_ULTIMAS_CAMADAS = 3
 CONCAT_4_ULTIMAS_CAMADAS = 4
 TODAS_AS_CAMADAS = 5
 
-# Índice dos campos da camada
+
+# Constantes para índice dos campos da camada
 LISTATIPOCAMADA_ID = 0
 LISTATIPOCAMADA_CAMADA = 1
 LISTATIPOCAMADA_OPERACAO = 2
 LISTATIPOCAMADA_NOME = 3
 
-# BERT Large possui 25 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
-# BERT Large possui 13 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
+
+# Constantes para padronizar o acesso aos dados do modelo de linguagem.
+TEXTO_TOKENIZADO = 0
+INPUT_IDS = 1
+ATTENTION_MASK = 2
+TOKEN_TYPE_IDS = 3
+OUTPUTS = 4
+OUTPUTS_LAST_HIDDEN_STATE = 0
+OUTPUTS_POOLER_OUTPUT = 1
+OUTPUTS_HIDDEN_STATES = 2
+
+# Modelo de Linguagem BERT Large possui 25 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
+# Modelo de Linguagem BERT Large possui 13 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
 # O índice da camada com valor positivo indica uma camada específica
 # O índica com um valor negativo indica as camadas da posição com base no fim descontado o valor indice até o fim.
 listaTipoCamadas = [
