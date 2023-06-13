@@ -27,6 +27,9 @@ class Mensurador:
         
         # Carrega o spaCy
         self.nlp = nlp
+                
+        # Cria um buffer com os embeddings de sentenças para economizar no processamento.
+        self.buffer_embeddings = {}
    
     # ============================
     def getTextoTokenizado(self, texto):
@@ -126,11 +129,6 @@ class Mensurador:
             
             # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
         return textoTokenizado, input_ids, attention_mask, token_type_ids, outputs
-
-    # ============================
-    # getEmbeddingsTodasCamadasBuffer
-    # Cria um buffer com os embeddings de sentenças para economizar no processamento.
-    self.buffer_embeddings = {}
 
     # ============================
     def getEmbeddingsTodasCamadasBuffer(self, S):
