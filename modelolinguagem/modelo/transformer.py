@@ -244,12 +244,13 @@ class Transformer(nn.Module):
            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
         # Tokeniza o texto
-        saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
+        saida.update(self.tokenizer(to_tokenize,  # Texto a ser codificado.
                                      padding=True, # Preenche o texto até max_length
                                      truncation='longest_first',  # Trunca o texto no maior texto
                                      return_tensors="pt",  # Retorna os dados como tensores pytorch.
-                                     max_length=self.max_seq_length) # Define o tamanho máximo para preencheer ou truncar.
-                                     )
+                                     max_length=self.max_seq_length # Define o tamanho máximo para preencheer ou truncar.
+                                    ) 
+                    )
         
                 
         # Gera o texto tokenizado        
