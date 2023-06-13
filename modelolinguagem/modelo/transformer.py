@@ -201,9 +201,9 @@ class Transformer(nn.Module):
         
             
         # Documento tokenizado        
-        saida['tokens_texto'] = []
-        for texto in to_tokenize:
-            saida['tokens_texto'].append(self.getTextoTokenizado(texto))
+        #saida['tokens_texto'] = []
+        #for texto in to_tokenize:
+        #    saida['tokens_texto'].append(self.getTextoTokenizado(texto))
                 
         return saida
 

@@ -107,7 +107,7 @@ class ModeloLinguagem:
                 else:
                     logging.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
-    def getMedidaCoerencia(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTexto(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
@@ -136,7 +136,7 @@ class ModeloLinguagem:
           
         return self.Ccos, self.Ceuc, self.Cman
     
-    def getMedidaCoerenciaCosseno(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTextoCosseno(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de coerência do texto utilizando a medida de similaridade de cosseno.
         
@@ -163,7 +163,7 @@ class ModeloLinguagem:
           
         return self.Ccos
     
-    def getMedidaCoerenciaEuclediana(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTextoEuclediana(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de incoerência do texto utilizando a medida de distância de Euclidiana.
                  
@@ -190,7 +190,7 @@ class ModeloLinguagem:
           
         return self.Ceuc        
     
-    def getMedidaCoerenciaManhattan(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTextoManhattan(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de incoerência do texto utilizando a medida de distância de Manhattan.
                  
