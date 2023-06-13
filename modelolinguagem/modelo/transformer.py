@@ -164,7 +164,6 @@ class Transformer(nn.Module):
         
         # Se o texto for uma string coloca em uma lista para tokenizar
         if isinstance(textos[0], str):
-            print("lista de string")
             to_tokenize = [textos]            
         else:
             # Se o texto for um dicionário
@@ -202,10 +201,12 @@ class Transformer(nn.Module):
         print("to_tokenize:",to_tokenize)
         
         # Documento tokenizado        
-        saida['tokens_texto'] = []
-        for texto in to_tokenize:
-            saida['tokens_texto'].append(self.getTextoTokenizado(texto[0]))
-            saida['tokens_texto'].append(self.getTextoTokenizado(texto[1]))
+        saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize]
+        
+        #saida['tokens_texto'] = []
+        #for texto in to_tokenize:
+        #    saida['tokens_texto'].append(self.getTextoTokenizado(texto[0]))
+        #    saida['tokens_texto'].append(self.getTextoTokenizado(texto[1]))
                 
         return saida
 
