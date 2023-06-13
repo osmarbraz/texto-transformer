@@ -201,6 +201,7 @@ class Transformer(nn.Module):
                                     return_attention_mask=True, # Constrói a máscara de atenção.
                                     return_tensors='pt' # Retorna os dados como tensores pytorch.
                                     )
+                    )
         
                 
         # Gera o texto tokenizado        
