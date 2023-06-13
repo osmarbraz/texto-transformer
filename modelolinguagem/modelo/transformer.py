@@ -5,16 +5,15 @@ import json
 from typing import List, Dict, Optional, Union, Tuple
 import os
 
-
+# Biblioteca dos modelos de linguagem
 from modelo.modeloarguments import ModeloArgumentos
 
 class Transformer(nn.Module):
-    """Huggingface AutoModel para gerar embeddings de token, palabra, sentença ou documento.
+    """Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou documento.
      Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
-     :param model_name_or_path: nome dos modelos Huggingface (https://huggingface.co/models)
-     :param max_seq_length: trunca quaisquer entradas maiores que max_seq_length
-     :param model_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Transformers
+     :param modelo_args: Argumentos passados para o modelo Huggingface Transformers     
+     :param max_seq_length: trunca quaisquer entradas maiores que max_seq_length     
      :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
      :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
@@ -26,6 +25,7 @@ class Transformer(nn.Module):
                 tokenizer_args: Dict = {}, 
                 tokenizer_name_or_path : str = None):
         
+        # Inicializa o construtor
         super(Transformer, self).__init__()
         
         # Recupera o nome do modelo dos argumentos
@@ -103,6 +103,7 @@ class Transformer(nn.Module):
                                                           cache_dir=cache_dir)
 
     def __repr__(self):
+        """Retorna uma string com descrição do objeto"""
         return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), 
                                                                     self.auto_model.__class__.__name__)
 

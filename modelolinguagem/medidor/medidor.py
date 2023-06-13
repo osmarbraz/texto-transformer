@@ -2,13 +2,12 @@
 import logging  # Biblioteca de logging
 import torch # Biblioteca de aprendizado de máquina
 
-# Import de bibliotecas próprias
+# Biblioteca dos modelos de linguagem
 from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 
 from spacynlp.spacymodulo import *
-
 from medidor.medidas import *
 
 # ============================

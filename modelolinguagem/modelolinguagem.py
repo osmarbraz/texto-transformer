@@ -3,7 +3,6 @@ import logging  # Biblioteca de logging
 
 # Biblioteca dos modelos de linguagem
 from modelo.modeloarguments import ModeloArgumentos
-from modelo.modelomodulo import *
 from spacynlp.spacymodulo import *
 
 from medidor.medidorenum import *
@@ -11,7 +10,7 @@ from medidor.medidor import *
 
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
-model_args = ModeloArgumentos(
+modelo_argumentos = ModeloArgumentos(
                                     max_seq_len=512,
                                     pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
                                     modelo_spacy='pt_core_news_lg',
@@ -35,13 +34,21 @@ class ModeloLinguagem:
     # Construtor da classe
     def __init__(self, pretrained_model_name_or_path, indexTipoCamada=4):
         # Parâmetro recebido para o modelo de linguagem
-        model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
+        modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
+                
+        # Carrega o modelo de linguagem da classe transformador
+        self.transformer_model = Transformer(modelo_args=modelo_argumentos)
+    
+        # Recupera o modelo.
+        self.model = transformer_model.get_auto_model()
+    
+        # Recupera o tokenizador.     
+        self.tokenizer = transformer_model.get_tokenizer()
         
-        # Carrega o modelo e tokenizador do modelo de linguagem
-        self.model, self.tokenizer = carregaModeloLinguagem(model_args)
-        
+        # Carrega o spaCy
         self.verificaCarregamentoSpacy()
         
+        # Especifica de qual camada utilizar os embeddings
         print("Utilizando embeddings da :", listaTipoCamadas[indexTipoCamada])
         self.TipoCamadas = listaTipoCamadas[indexTipoCamada]
     
@@ -51,9 +58,9 @@ class ModeloLinguagem:
         Utilizado para as estratégias de palavras relevantes CLEAN e NOUN.
         ''' 
         
-        if model_args.palavra_relevante != PalavrasRelevantes.ALL.value:
+        if modelo_argumentos.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
-            self.nlp = carregaSpacy(model_args)
+            self.nlp = carregaSpacy(modelo_argumentos)
             
         else:
             self.nlp = None
@@ -67,11 +74,11 @@ class ModeloLinguagem:
         ''' 
         
         if estrategiaPooling == EstrategiasPooling.MAX.name:
-            model_args.estrategia_pooling = EstrategiasPooling.MAX.value
+            modelo_argumentos.estrategia_pooling = EstrategiasPooling.MAX.value
             
         else:
             if estrategiaPooling == EstrategiasPooling.MEAN.name:
-                model_args.estrategia_pooling = EstrategiasPooling.MEAN.value
+                modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
             else:
                 logging.info("Não foi especificado uma estratégia de pooling válida.") 
 
@@ -84,17 +91,17 @@ class ModeloLinguagem:
         ''' 
         
         if palavraRelevante == PalavrasRelevantes.CLEAN.name:
-            model_args.palavra_relevante = PalavrasRelevantes.CLEAN.value
+            modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value
             verificaCarregamentoSpacy()
             
         else:
             if palavraRelevante == PalavrasRelevantes.NOUN.name:
-                model_args.palavra_relevante = PalavrasRelevantes.NOUN.value
+                modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value
                 verificaCarregamentoSpacy()
                 
             else:
                 if palavraRelevante == PalavrasRelevantes.ALL.name:
-                    model_args.palavra_relevante = PalavrasRelevantes.ALL.value
+                    modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value
                     
                 else:
                     logging.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
@@ -123,8 +130,8 @@ class ModeloLinguagem:
                                                                        nlp=self.nlp, 
                                                                        camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
-                                                                       estrategia_pooling=model_args.estrategia_pooling, 
-                                                                       palavra_relevante=model_args.palavra_relevante)
+                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ccos, self.Ceuc, self.Cman
     
@@ -150,8 +157,8 @@ class ModeloLinguagem:
                                                                        nlp=self.nlp, 
                                                                        camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
-                                                                       estrategia_pooling=model_args.estrategia_pooling, 
-                                                                       palavra_relevante=model_args.palavra_relevante)
+                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ccos
     
@@ -177,8 +184,8 @@ class ModeloLinguagem:
                                                                        nlp=self.nlp, 
                                                                        camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
-                                                                       estrategia_pooling=model_args.estrategia_pooling, 
-                                                                       palavra_relevante=model_args.palavra_relevante)
+                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ceuc        
     
@@ -204,8 +211,8 @@ class ModeloLinguagem:
                                                                        nlp=self.nlp, 
                                                                        camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
-                                                                       estrategia_pooling=model_args.estrategia_pooling, 
-                                                                       palavra_relevante=model_args.palavra_relevante)
+                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Cman                
 
@@ -215,3 +222,6 @@ class ModeloLinguagem:
 
     def get_tokenizer(self):
         return self.tokenizer
+
+    def get_transformer_model(self):
+        return self.transformer_model
