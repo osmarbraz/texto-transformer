@@ -42,6 +42,7 @@ class ModeloLinguagem:
         
         self.verificaCarregamentoSpacy()
         
+        print("Utilizando embeddings da :"m listaTipoCamadas[indexTipoCamada])
         self.TipoCamadas = listaTipoCamadas[indexTipoCamada]
     
     def verificaCarregamentoSpacy(self):
