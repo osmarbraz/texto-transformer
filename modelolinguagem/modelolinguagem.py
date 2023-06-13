@@ -86,7 +86,7 @@ class ModeloLinguagem:
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path):
+    def __init__(self, pretrained_model_name_or_path, camadas_embeddings=2):
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
                 
@@ -105,11 +105,14 @@ class ModeloLinguagem:
         # Especifica de qual camada utilizar os embeddings
         logging.info("Utilizando embeddings do modelo de:", listaTipoCamadas[modelo_argumentos.camadas_embeddings]) 
         
+        # Especifica camadas para recuperar os embeddings
+        modelo_argumentos.camadas_embeddings = camadas_embeddings
+        
         # Define que camadas de embeddings a ser utilizada
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
         
         # Constroi um mensurador
-        self.mensurador = Mensurador(self.transformer_model, self.nlp)
+        self.mensurador = Mensurador(modelo_args=modelo_argumentos, self.transformer_model, self.nlp)
     
     def verificaCarregamentoSpacy(self):
         ''' 
@@ -186,9 +189,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto,                                                            camada=self.TipoCamadas, 
-                                                                    tipoTexto='o', 
-                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
+                                                                    tipoTexto='o')
           
         return self.Ccos, self.Ceuc, self.Cman
     
@@ -213,9 +214,7 @@ class ModeloLinguagem:
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoTexto='o', 
-                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
+                                                                    tipoTexto='o')
           
         return self.Ccos
     
@@ -237,9 +236,7 @@ class ModeloLinguagem:
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto,
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoTexto='o', 
-                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
+                                                                    tipoTexto='o')
           
         return self.Ceuc        
     
@@ -263,9 +260,7 @@ class ModeloLinguagem:
         
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoTexto='o', 
-                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
+                                                                    tipoTexto='o')
           
         return self.Cman                
 
@@ -278,5 +273,8 @@ class ModeloLinguagem:
 
     def get_transformer_model(self):
         return self.transformer_model
+        
+    def get_mensurador(self):
+        return self.mensurador        
         
         

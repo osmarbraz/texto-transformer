@@ -14,17 +14,19 @@ from medidor.medidas import *
 class Mensurador:
 
     # Construtor da classe
-    def __init__(self, transformer_model, nlp):
+    def __init__(self, modelo_args, transformer_model, nlp):
     
         # Recupera o modelo.
         self.model = self.transformer_model.get_auto_model()
     
         # Recupera o tokenizador.     
-         = self.transformer_model.get_tokenizer()
+        self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Carrega o spaCy
         self.nlp = nlp
-       
+
+        # Parâmetros do modelo
+        self.model_args = modelo_args
 
     # ============================
     def getTextoLista(listaSentencas):
@@ -575,7 +577,7 @@ class Mensurador:
         return maiorEmbeddingSi, maiorEmbeddingSj, Scos, Seuc, Sman
 
     # ============================
-    def getMedidasSentencasEmbedding(embeddingSi, embeddingSj, estrategia_pooling):
+    def getMedidasSentencasEmbedding(embeddingSi, embeddingSj):
         '''
         Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
         
@@ -585,7 +587,7 @@ class Mensurador:
         `estrategia_pooling` - Estratégia de pooling a ser utilizada.       
         '''
 
-        if estrategia_pooling == 0:
+        if self.model_args.estrategia_pooling == 0:
             return getMedidasSentencasEmbeddingMEAN(embeddingSi, embeddingSj)
         else:
             return getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
@@ -680,7 +682,7 @@ class Mensurador:
         return embeddingSentencaSemStopWord
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca,  tipo_palavra_relevante='NOUN'):
+    def getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca):
         '''
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         '''
@@ -690,7 +692,7 @@ class Mensurador:
         #print(textoTokenizado)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
-        sentencaSomenteRelevante = retornaPalavraRelevante(sentenca, tipo_palavra_relevante)
+        sentencaSomenteRelevante = retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
         sentencaTokenizadaSomenteRelevante = getTextoTokenizado(sentencaSomenteRelevante)
@@ -702,7 +704,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSomenteRelevante))
 
         # Tokeniza a sentença
-        sentencaTokenizada = getTextoTokenizado(sentenca, tokenizador)
+        sentencaTokenizada = getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -738,7 +740,7 @@ class Mensurador:
         return embeddingSentencaComSubstantivo
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTexto(embeddingTexto, texto, sentenca, palavra_relevante=0):
+    def getEmbeddingSentencaEmbeddingTexto(embeddingTexto, texto, sentenca):
         '''
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         '''
@@ -751,14 +753,12 @@ class Mensurador:
                 return getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca,  stopwords)
             else:
                 if palavra_relevante == 2:
-                    return getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca, tipo_palavra_relevante='NOUN')
+                    return getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
 
     # ============================
     def getMedidasComparacaoTexto(texto, 
                                   camada, 
-                                  tipoTexto='p', 
-                                  estrategia_pooling=0, 
-                                  palavra_relevante=0):
+                                  tipoTexto='p'):
         '''
         Retorna as medidas de coerência do texto.
         Considera somente sentenças com pelo menos uma palavra.
@@ -815,14 +815,14 @@ class Mensurador:
             Sj = texto[posSj]
 
             # Recupera os embedding das sentenças Si e Sj do embedding do texto      
-            embeddingSi = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Si, palavra_relevante=palavra_relevante)
-            embeddingSj = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Sj, palavra_relevante=palavra_relevante)
+            embeddingSi = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Si)
+            embeddingSj = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Sj)
 
             # Verifica se os embeddings sentenças estão preenchidos
             if embeddingSi != None and embeddingSj != None:
 
                 # Recupera as medidas entre Si e Sj     
-                ajustadoEmbeddingSi, ajustadoEmbeddingSj, Scos, Seuc, Sman = getMedidasSentencasEmbedding(embeddingSi, embeddingSj, estrategia_pooling=estrategia_pooling)
+                ajustadoEmbeddingSi, ajustadoEmbeddingSj, Scos, Seuc, Sman = getMedidasSentencasEmbedding(embeddingSi, embeddingSj)
 
                 # Acumula as medidas
                 somaScos = somaScos + Scos
