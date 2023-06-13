@@ -7,11 +7,20 @@ from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 
-from spacynlp.spacymodulo import *
+from nlp.nlpmodulo import *
 from medidor.medidas import *
 from util.utilconstantes import *
 
 class Mensurador:
+
+    ''' 
+    Realiza mensurações em textos.
+     
+    Parâmetros:
+    `modelo_args` - Parâmetros do modelo de linguagem.
+    `transformer_model` - Modelo de linguagem carregado.
+    `nlp` - Processador de linguagem natural.
+    ''' 
 
     # Construtor da classe
     def __init__(self, modelo_args, transformer_model, nlp):

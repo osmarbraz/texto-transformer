@@ -3,7 +3,7 @@ import logging  # Biblioteca de logging
 
 # Biblioteca dos modelos de linguagem
 from modelo.modeloarguments import ModeloArgumentos
-from spacynlp.spacymodulo import *
+from nlp.nlpmodulo import *
 from util.utilconstantes import *
 from medidor.medidorenum import *
 from medidor.mensurador import Mensurador
@@ -52,9 +52,6 @@ class ModeloLinguagem:
         # Recupera o tokenizador.     
         self.tokenizer = self.transformer_model.get_tokenizer()
         
-        # Carrega o spaCy
-        self.verificaCarregamentoSpacy()
-        
         # Especifica de qual camada utilizar os embeddings
         logging.info("Utilizando embeddings do modelo de:", listaTipoCamadas[modelo_argumentos.camadas_embeddings]) 
         
@@ -66,6 +63,9 @@ class ModeloLinguagem:
                 
         # Define que camadas de embeddings a ser utilizada
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
+        
+         # Carrega o spaCy
+        self.verificaCarregamentoSpacy()
         
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
