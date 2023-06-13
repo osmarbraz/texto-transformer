@@ -40,9 +40,7 @@ class Transformer(nn.Module):
 
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
-                                            cache_dir=cache_dir,
-                                            output_attentions=modelo_argumentos.output_attentions,
-                                            output_hidden_states=modelo_argumentos.output_hidden_states)
+                                            cache_dir=cache_dir)
                                             
         self._load_model(model_name_or_path, 
                          config, 
