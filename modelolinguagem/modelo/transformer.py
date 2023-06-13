@@ -175,6 +175,7 @@ class Transformer(nn.Module):
         # Tokeniza o texto
         # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strings
         saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
+                                     add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'
                                      padding=True, # Preenche o texto até max_length
                                      truncation='longest_first',  # Trunca o texto no maior texto
                                      return_tensors="pt",  # Retorna os dados como tensores pytorch.

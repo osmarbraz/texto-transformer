@@ -6,12 +6,10 @@ class MedidasComparacao(Enum):
     COSSENO = 0 # Similaridade do Cosseno
     EUCLIDIANA = 1 # Distância Euclidiana
     MANHATTAN = 2 # Distância de Manhattan
-    
 
 class EstrategiasPooling(Enum):
     MEAN = 0 # Média
     MAX = 1 # Máximo
-
 
 class PalavrasRelevantes(Enum):
     ALL = 0 # Todas as palavras
