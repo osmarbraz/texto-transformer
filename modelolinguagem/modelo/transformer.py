@@ -80,17 +80,18 @@ class Transformer(nn.Module):
                                 cache_dir, 
                                 **model_args)
         # Carregamento MT5
-        elif isinstance(config, MT5Config):
-            self._load_mt5_model(model_name_or_path, 
-                                 config, 
-                                 cache_dir, 
-                                 **model_args)
         else:
-            # Carrega modelos genéricos
-            self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
-                                                        config=config, 
-                                                        cache_dir=cache_dir, 
-                                                        **model_args)
+            if isinstance(config, MT5Config):
+                self._load_mt5_model(model_name_or_path, 
+                                    config, 
+                                    cache_dir, 
+                                    **model_args)
+            else:
+                # Carrega modelos genéricos
+                self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
+                                                            config=config, 
+                                                            cache_dir=cache_dir, 
+                                                            **model_args)
 
     def _load_t5_model(self, model_name_or_path, config, cache_dir, **model_args):
         """Carrega codificador do modelo¨T5"""
@@ -146,7 +147,7 @@ class Transformer(nn.Module):
         if isinstance(texts[0], str):
             to_tokenize = [texts]
             
-        else
+        else:
             if isinstance(texts[0], dict):
                 to_tokenize = []
                 output['text_keys'] = []
