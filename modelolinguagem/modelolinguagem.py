@@ -41,10 +41,10 @@ class ModeloLinguagem:
         self.transformer_model = Transformer(modelo_args=modelo_argumentos)
     
         # Recupera o modelo.
-        self.model = transformer_model.get_auto_model()
+        self.model = self.transformer_model.get_auto_model()
     
         # Recupera o tokenizador.     
-        self.tokenizer = transformer_model.get_tokenizer()
+        self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Carrega o spaCy
         self.verificaCarregamentoSpacy()
