@@ -9,7 +9,7 @@ from util.utilarquivo import *
 
 from spacynlp.spacymodulo import *
 from medidor.medidas import *
-from modelolinguagem.modelolinguagem import *
+from modelolinguagem import *
 
 class Mensurador:
 
@@ -28,7 +28,7 @@ class Mensurador:
         # Carrega o spaCy
         self.nlp = nlp
                 
-        # Cria um buffer com os embeddings de sentenças para economizar no processamento.
+        # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
         self.buffer_embeddings = {}
    
     # ============================
