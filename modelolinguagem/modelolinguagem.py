@@ -30,11 +30,16 @@ class ModeloLinguagem:
     Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e textos.
      
     Parâmetros:
-    `pretrained_model_name_or_path' - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download de um modelo pré-treinado do modelo de linguagem. Se isso falhar, tenta construir um modelo do repositório de modelos do Huggingface com esse nome.
+    `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download do repositório de modelos do Huggingface com esse nome.
+    `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul 2. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.    
+    `palavra_relevante` - Especifica que palavras devem ser utilizadas para gerar os embeddings. Valor defaul 0. Valores possíveis: 0-Considera todas as palavras das sentenças/1-Desconsidera as stopwords/2- onsidera somente as palavras substantivas.
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path, camadas_embeddings=2):
+    def __init__(self, pretrained_model_name_or_path, 
+                       camadas_embeddings=2,
+                       palavra_relevante=0):
+                       
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
                 
@@ -56,6 +61,9 @@ class ModeloLinguagem:
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
         
+        # Especifica que palavras devem ser utilizadas na geração dos embeddings
+        modelo_argumentos.palavra_relevante = palavra_relevante
+                
         # Define que camadas de embeddings a ser utilizada
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
         
