@@ -23,7 +23,7 @@ class Mensurador:
         self.model = transformer_model.get_auto_model()
     
         # Recupera o tokenizador.     
-        self.tokenizer = ransformer_model.get_tokenizer()
+        self.tokenizer = transformer_model.get_tokenizer()
         
         # Carrega o spaCy
         self.nlp = nlp
