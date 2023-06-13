@@ -190,8 +190,7 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
 
-        self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto,                                                            camada=self.TipoCamadas, 
-                                                                    tipoTexto='o')
+        self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, camada=modelo_argumentos.camadas_embeddings, tipoTexto='o')
           
         return self.Ccos, self.Ceuc, self.Cman
     
@@ -215,7 +214,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Ccos
@@ -237,7 +236,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto,
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Ceuc        
@@ -261,7 +260,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
         
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Cman                
