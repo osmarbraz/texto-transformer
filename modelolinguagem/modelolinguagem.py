@@ -244,7 +244,7 @@ class ModeloLinguagem:
     
    
 
-   def getMedidasTextoManhattan(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTextoManhattan(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de incoerência do texto utilizando a medida de distância de Manhattan.
                  
