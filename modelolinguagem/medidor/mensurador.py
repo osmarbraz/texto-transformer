@@ -9,7 +9,7 @@ from util.utilarquivo import *
 
 from spacynlp.spacymodulo import *
 from medidor.medidas import *
-from modelolinguagem import *
+from util.utilconstantes import *
 
 class Mensurador:
 
