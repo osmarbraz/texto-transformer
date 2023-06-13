@@ -216,7 +216,7 @@ class Transformer(nn.Module):
             dic_texto_preparado['token_type_ids'] = texto_preparado['token_type_ids']
 
         # Roda o texto através do modelo, e coleta todos os estados ocultos produzidos.
-        with torch.no_grad()
+        with torch.no_grad():
 
             outputs = self.auto_model(**dic_texto_preparado, 
                                       return_dict=False)
