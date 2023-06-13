@@ -26,7 +26,7 @@ modelo_argumentos = ModeloArgumentos(
 class ModeloLinguagem:
     
     ''' 
-    Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e documentos.
+    Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e textos.
      
     Parâmetros:
     `pretrained_model_name_or_path' - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download de um modelo pré-treinado do modelo de linguagem. Se isso falhar, tenta construir um modelo do repositório de modelos do Huggingface com esse nome.

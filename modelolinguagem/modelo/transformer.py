@@ -9,7 +9,7 @@ import os
 from modelo.modeloarguments import ModeloArgumentos
 
 class Transformer(nn.Module):
-    """Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou documento.
+    """Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou texto.
      Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
      :param modelo_args: Argumentos passados para o modelo Huggingface Transformers          
@@ -155,7 +155,7 @@ class Transformer(nn.Module):
         """        
         Tokeniza um texto para submeter ao modelo de linguagem.
         
-        :param textos: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
+        :param textos: Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário
         """

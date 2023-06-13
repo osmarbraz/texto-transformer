@@ -218,7 +218,7 @@ def getEmbeddingsTodasCamadas(texto, modelo, tokenizador):
         # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
         
         # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-    return documentoTokenizado, input_ids, attention_mask, token_type_ids, outputs
+    return textoTokenizado, input_ids, attention_mask, token_type_ids, outputs
 
 # ============================
 # getEmbeddingsTodasCamadasBuffer
