@@ -15,7 +15,7 @@ DIRETORIO_MODELO_LINGUAGEM = 'modelo_linguagem'
 # ============================  
 def verificaDiretorioModeloLinguagem():
     '''    
-    Verifica se existe o diretório coerenciabert no diretório corrente.    
+    Verifica se existe o diretório modelo_linguagem no diretório corrente.    
     '''
     
     # Verifica se o diretório existe

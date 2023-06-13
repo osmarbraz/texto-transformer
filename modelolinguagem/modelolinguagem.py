@@ -15,7 +15,7 @@ modelo_argumentos = ModeloArgumentos(
                                     max_seq_len=512,
                                     pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
                                     modelo_spacy='pt_core_news_lg',
-                                    versao_spacy='3.4.4',
+                                    #versao_spacy='3.4.4',
                                     do_lower_case=False,        # default True
                                     output_attentions=False,    # default False
                                     output_hidden_states=True,  # default False  /Retornar os embeddings das camadas ocultas  
@@ -65,12 +65,17 @@ class ModeloLinguagem:
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
         
          # Carrega o spaCy
-        self.verificaCarregamentoSpacy()
+        #self.verificaCarregamentoSpacy()
+        self.nlp = NLP(modelo_args=modelo_argumentos)
+        self.nlp.carrega();
+        
         
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
                                      nlp=self.nlp)
+                                     
+        
     
     def verificaCarregamentoSpacy(self):
         ''' 
