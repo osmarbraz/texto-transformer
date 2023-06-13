@@ -9,14 +9,16 @@ import os
 from modelo.modeloarguments import ModeloArgumentos
 
 class Transformer(nn.Module):
-    """Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou texto.
-     Carrega a classe correta, por exemplo BERT / RoBERTa etc.
+    '''
+    Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou texto.
+    Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
      :param modelo_args: Argumentos passados para o modelo Huggingface Transformers          
      :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
      :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
-    """
+    
+    '''
     def __init__(self, 
                 modelo_args : ModeloArgumentos,
                 max_seq_length: Optional[int] = None,                
@@ -68,7 +70,9 @@ class Transformer(nn.Module):
 
 
     def _load_model(self, model_name_or_path, config, cache_dir):
-        """Carrega o modelo transformer"""
+        '''
+        Carrega o modelo transformer
+        '''
         # Carregamento T5
         if isinstance(config, T5Config):
             self._load_t5_model(model_name_or_path, 
@@ -88,7 +92,9 @@ class Transformer(nn.Module):
                                                             cache_dir=cache_dir)
 
     def _load_t5_model(self, model_name_or_path, config, cache_dir):
-        """Carrega codificador do modelo¨T5"""
+        '''
+        Carrega codificador do modelo¨T5
+        '''
         from transformers import T5EncoderModel
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
@@ -96,7 +102,9 @@ class Transformer(nn.Module):
                                                          cache_dir=cache_dir)
 
     def _load_mt5_model(self, model_name_or_path, config, cache_dir):
-        """Carrega codificador do modelo MT5"""
+        '''
+        Carrega codificador do modelo MT5
+        '''
         from transformers import MT5EncoderModel
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
@@ -104,34 +112,12 @@ class Transformer(nn.Module):
                                                           cache_dir=cache_dir)
 
     def __repr__(self):
-        """Retorna uma string com descrição do objeto"""
+        '''
+        Retorna uma string com descrição do objeto
+        '''
         return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), 
                                                                     self.auto_model.__class__.__name__)
-
-    def forward(self, features):
-        """Retorna token_embeddings, cls_token"""
-        trans_features = {'input_ids': features['input_ids'], 'attention_mask': features['attention_mask']}
-        if 'token_type_ids' in features:
-            trans_features['token_type_ids'] = features['token_type_ids']
-
-        output_states = self.auto_model(**trans_features, return_dict=False)
-        output_tokens = output_states[0]
-
-        features.update({'token_embeddings': output_tokens, 'attention_mask': features['attention_mask']})
-
-        if self.auto_model.config.output_hidden_states:
-            all_layer_idx = 2
-            if len(output_states) < 3: #Alguns modelos apenas geram last_hidden_states e all_hidden_states
-                all_layer_idx = 1
-
-            hidden_states = output_states[all_layer_idx]
-            features.update({'all_layer_embeddings': hidden_states})
-
-        return features
-
-    def get_word_embedding_dimension(self) -> int:
-        return self.auto_model.config.hidden_size
-
+   
     def getTextoTokenizado(self, texto: str):
         '''
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
@@ -153,7 +139,7 @@ class Transformer(nn.Module):
         
     
     def tokenize(self, textos):
-        """        
+        '''        
         Tokeniza um texto para submeter ao modelo de linguagem.
         
         :param textos: Texto a ser tokenizado para o modelo de linguagem.
@@ -163,7 +149,7 @@ class Transformer(nn.Module):
             input_ids uma lista com os textos indexados.
             token_type_ids uma lista com os tipos dos tokens.
             attention_mask uma lista com os as máscaras de atenção
-        """
+        '''
         
         saida = {}
         
@@ -186,7 +172,7 @@ class Transformer(nn.Module):
            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
         # Tokeniza o texto
-        # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strintgs
+        # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strings
         saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
                                      padding=True, # Preenche o texto até max_length
                                      truncation='longest_first',  # Trunca o texto no maior texto
@@ -201,10 +187,94 @@ class Transformer(nn.Module):
                         
         return saida
         
+        
+    def getEmbeddings(self, texto_preparado):
+        '''
+        Retorna token_embeddings, cls_token
+        '''
+        
+        '''   
+        Retorna os embeddings de todas as camadas de um texto.
+    
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna um dicionário com:
+            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
+            input_ids uma lista com os textos indexados.
+            token_type_ids uma lista com os tipos dos tokens.
+            attention_mask uma lista com os as máscaras de atenção
+            token_embeddings uma lista com os embeddings da última camada
+            token_embeddings uma lista com os embeddings da última camada
+        '''
+    
+        # Recupera o texto preparado pelo tokenizador
+        dic_texto_preparado = {'input_ids': texto_preparado['input_ids'], 'attention_mask': texto_preparado['attention_mask']}
+        
+        # Se token_type_ids estiver no texto preparado copia para dicionário
+        if 'token_type_ids' in texto_preparado:
+            dic_texto_preparado['token_type_ids'] = texto_preparado['token_type_ids']
+
+        # Roda o texto através do modelo, e coleta todos os estados ocultos produzidos.
+        with torch.no_grad()
+
+            outputs = self.auto_model(**dic_texto_preparado, 
+                                      return_dict=False)
+        
+        # A avaliação do modelo retorna um número de diferentes objetos com base em
+        # como é configurado na chamada do método `from_pretrained` anterior. Nesse caso,
+        # porque definimos `output_hidden_states = True`, o terceiro item será o
+        # estados ocultos(hidden_states) de todas as camadas. Veja a documentação para mais detalhes:
+        # https://huggingface.co/transformers/model_doc/bert.html#bertmodel
+
+        # Retorno de model quando ´output_hidden_states=True´ é setado:    
+        # outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
+        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
+        
+        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+        
+        last_hidden_state = outputs[0]
+
+        # Adiciona os embeddings da última camada a saída
+        saida = {}
+        saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
+                      'input_ids': texto_preparado['input_ids'],
+                      'attention_mask': texto_preparado['attention_mask']
+                      'input_ids': texto_preparado['input_ids'],        
+                      'tokens_texto': texto_preparado['tokens_texto']
+                      }
+                     )
+
+        # output_hidden_states == True existem embeddings nas camadas ocultas
+        if self.auto_model.config.output_hidden_states:
+            # 2 é o índice da saída com todos os embeddings em outputs
+            all_layer_idx = 2
+            if len(outputs) < 3: #Alguns modelos apenas geram last_hidden_states e all_hidden_states
+                all_layer_idx = 1
+
+            hidden_states = outputs[all_layer_idx]
+            # Adiciona os embeddings de todas as camadas no retorno
+            saida.update({'all_layer_embeddings': hidden_states})
+
+        return saida
+
+    def get_dimensao_embedding(self) -> int:
+        '''
+        Retorna a dimensão do embedding
+        '''
+        return self.auto_model.config.hidden_size        
+        
+        
     def get_config_dict(self):
+        '''
+        Retorna as configurações com dicionário
+        '''
         return {key: self.__dict__[key] for key in self.config_keys}
 
     def save(self, output_path: str):
+        '''
+        Salva o modelo.
+        '''
         self.auto_model.save_pretrained(output_path)
         self.tokenizer.save_pretrained(output_path)
 
@@ -212,9 +282,15 @@ class Transformer(nn.Module):
             json.dump(self.get_config_dict(), fOut, indent=2)
 
     def get_auto_model(self):
+        '''
+        Recupera o modelo.
+        '''
         return self.auto_model
 
     def get_tokenizer(self):
+        '''
+        Recupera o tokenizador.
+        '''
         return self.tokenizer
 
 

@@ -16,11 +16,12 @@ modelo_argumentos = ModeloArgumentos(
                                     pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
                                     modelo_spacy='pt_core_news_lg',
                                     versao_spacy='3.4.4',
-                                    do_lower_case=False, # default True
-                                    output_attentions=False, # default False
-                                    output_hidden_states=True, # default False    
-                                    estrategia_pooling=0, # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
-                                    palavra_relevante=0 # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
+                                    do_lower_case=False,        # default True
+                                    output_attentions=False,    # default False
+                                    output_hidden_states=True,  # default False  /Retornar os embeddings das camadas ocultas  
+                                    camadas_embeddings = 2,     # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
+                                    estrategia_pooling=0,       # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
+                                    palavra_relevante=0         # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
                                     )
 
 class ModeloLinguagem:
@@ -33,7 +34,7 @@ class ModeloLinguagem:
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path, indexTipoCamada=4):
+    def __init__(self, pretrained_model_name_or_path):
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
                 
@@ -50,8 +51,10 @@ class ModeloLinguagem:
         self.verificaCarregamentoSpacy()
         
         # Especifica de qual camada utilizar os embeddings
-        print("Utilizando embeddings do modelo de:", listaTipoCamadas[indexTipoCamada])
-        self.TipoCamadas = listaTipoCamadas[indexTipoCamada]
+        logging.info("Utilizando embeddings do modelo de:", listaTipoCamadas[modelo_argumentos.camadas_embeddings]) 
+        
+        # Define que camadas de embeddings a ser utilizada
+        self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
     
     def verificaCarregamentoSpacy(self):
         ''' 
@@ -112,7 +115,7 @@ class ModeloLinguagem:
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
         Parâmetros:
-        `texto` - Um texto a ser medido a coerência.           
+        `texto` - Um texto a ser medido.           
         `estrategiaPooling` - Estratégia de pooling das camadas do BERT.
         `palavraRelevante` - Estratégia de relevância das palavras do texto.            
         

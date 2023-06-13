@@ -38,26 +38,10 @@ class ModeloArgumentos:
     output_hidden_states: bool = field(
                                        default=False,
                                        metadata={'help': 'habilita gerar as camadas ocultas do modelo.'},
-                                       )
-    use_wandb: bool = field(
-                            default=True,
-                            metadata={'help': 'habilita o uso do wandb.'},
-                            )
-    salvar_modelo_wandb: bool = field(
-                                      default=True,
-                                      metadata={'help': 'habilita o salvamento do modelo no wandb.'},
-                                      )   
-    salvar_avaliacao: bool = field(
-                                   default=True,
-                                   metadata={'help': 'habilita o salvamento do resultado da avaliação.'},
-                                   )     
-    salvar_medicao: bool = field(
-                                 default=False,
-                                 metadata={'help': 'habilita o salvamento da medicao.'},
-                                 )
-    usar_mcl_ajustado: bool = field(
-                                    default=False,
-                                    metadata={'help': 'habilita o carragamento de mcl ajustado.'},
+                                       )      
+    camadas_embeddings: int = field(
+                                    default=2, # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
+                                    metadata={'help': 'Especifica de onde retirar os embeddings das camadas do transformer.'},
                                     )
     estrategia_pooling: int = field(
                                     default=0, # 0 - MEAN estratégia de pooling média / 1 - MAX  estratégia de pooling maior
