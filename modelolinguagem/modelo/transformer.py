@@ -1,5 +1,6 @@
 # Import das bibliotecas.
 from torch import nn
+import torch # Biblioteca de aprendizado de máquina
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 import json
 from typing import List, Dict, Optional, Union, Tuple
@@ -146,9 +147,9 @@ class Transformer(nn.Module):
          
         Retorna um dicionário com:
             tokens_texto uma lista com os textos tokenizados com os tokens especiais.
-            input_ids uma lista com os textos indexados.
+            input_ids uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
             token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção
+            attention_mask uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         
         saida = {}
