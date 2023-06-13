@@ -16,17 +16,17 @@ class Mensurador:
     # Construtor da classe
     def __init__(self, modelo_args, transformer_model, nlp):
     
+        # Parâmetros do modelo
+        self.model_args = modelo_args
+    
         # Recupera o modelo.
-        self.model = self.transformer_model.get_auto_model()
+        self.model = transformer_model.get_auto_model()
     
         # Recupera o tokenizador.     
-        self.tokenizer = self.transformer_model.get_tokenizer()
+        self.tokenizer = ransformer_model.get_tokenizer()
         
         # Carrega o spaCy
         self.nlp = nlp
-
-        # Parâmetros do modelo
-        self.model_args = modelo_args
 
     # ============================
     def getTextoLista(listaSentencas):
