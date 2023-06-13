@@ -260,7 +260,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
         
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                                    camada=self.TipoCamadas], 
+                                                                    camada=self.TipoCamadas, 
                                                                     tipoTexto='o')
           
         return self.Cman                
