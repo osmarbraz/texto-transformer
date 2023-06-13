@@ -130,13 +130,16 @@ class ModeloLinguagem:
                                                                     tokenizador=self.tokenizer, 
                                                                     nlp=self.nlp, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoDocumento='o', 
+                                                                    tipoTexto='o', 
                                                                     estrategia_pooling=modelo_argumentos.estrategia_pooling, 
                                                                     palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ccos, self.Ceuc, self.Cman
     
-    def getMedidasTextoCosseno(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
+    def getMedidasTextoCosseno(self, 
+                               texto, 
+                               estrategiaPooling='MEAN', 
+                               palavraRelevante='ALL'):
         ''' 
         Retorna a medida de coerência do texto utilizando a medida de similaridade de cosseno.
         
@@ -157,7 +160,7 @@ class ModeloLinguagem:
                                                                     tokenizador=self.tokenizer, 
                                                                     nlp=self.nlp, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoDocumento='o', 
+                                                                    tipoTexto='o', 
                                                                     estrategia_pooling=modelo_argumentos.estrategia_pooling, 
                                                                     palavra_relevante=modelo_argumentos.palavra_relevante)
           
@@ -184,7 +187,7 @@ class ModeloLinguagem:
                                                                     tokenizador=self.tokenizer, 
                                                                     nlp=self.nlp, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoDocumento='o', 
+                                                                    tipoTexto='o', 
                                                                     estrategia_pooling=modelo_argumentos.estrategia_pooling, 
                                                                     palavra_relevante=modelo_argumentos.palavra_relevante)
           
@@ -211,7 +214,7 @@ class ModeloLinguagem:
                                                                     tokenizador=self.tokenizer, 
                                                                     nlp=self.nlp, 
                                                                     camada=self.TipoCamadas, 
-                                                                    tipoDocumento='o', 
+                                                                    tipoTexto='o', 
                                                                     estrategia_pooling=modelo_argumentos.estrategia_pooling, 
                                                                     palavra_relevante=modelo_argumentos.palavra_relevante)
           

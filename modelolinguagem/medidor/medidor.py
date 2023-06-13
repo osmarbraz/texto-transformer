@@ -750,6 +750,7 @@ def getMedidasComparacaoTexto(texto,
                               tipoTexto='p', 
                               estrategia_pooling=0, 
                               palavra_relevante=0):
+                              
     '''
     Retorna as medidas de coerência do texto.
     Considera somente sentenças com pelo menos uma palavra.
