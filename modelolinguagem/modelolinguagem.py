@@ -112,7 +112,9 @@ class ModeloLinguagem:
         self.TipoCamadas = listaTipoCamadas[modelo_argumentos.camadas_embeddings]
         
         # Constroi um mensurador
-        self.mensurador = Mensurador(modelo_args=modelo_argumentos, self.transformer_model, self.nlp)
+        self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
+                                     transformer_model=self.transformer_model, 
+                                     nlp=self.nlp)
     
     def verificaCarregamentoSpacy(self):
         ''' 
