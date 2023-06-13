@@ -79,7 +79,7 @@ class Mensurador:
         '''
 
         # Texto tokenizado
-        textoTokenizado = getTextoTokenizado(texto)
+        textoTokenizado = self.getTextoTokenizado(texto)
 
         #print('O texto (', texto, ') tem tamanho = ', len(textoTokenizado), ' = ', textoTokenizado)
 
@@ -143,7 +143,7 @@ class Mensurador:
             return buffer_embeddings.get(S)
         else:
             # Gera o embedding
-            totalCamada = getEmbeddingsTodasCamadas(S)
+            totalCamada = self.getEmbeddingsTodasCamadas(S)
             buffer_embeddings.update({S: totalCamada})
             return totalCamada
 
@@ -330,27 +330,27 @@ class Mensurador:
         resultadoEmbeddingCamadas = None
       
         if camada[LISTATIPOCAMADA_ID] == PRIMEIRA_CAMADA:
-            resultadoEmbeddingCamadas = getEmbeddingPrimeiraCamada(sentencaEmbedding)
+            resultadoEmbeddingCamadas = self.getEmbeddingPrimeiraCamada(sentencaEmbedding)
             #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
         else:
             if camada[LISTATIPOCAMADA_ID] == PENULTIMA_CAMADA:
-                resultadoEmbeddingCamadas = getEmbeddingPenultimaCamada(sentencaEmbedding)
+                resultadoEmbeddingCamadas = self.getEmbeddingPenultimaCamada(sentencaEmbedding)
                 #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
             else:
                 if camada[LISTATIPOCAMADA_ID] == ULTIMA_CAMADA:
-                    resultadoEmbeddingCamadas = getEmbeddingUltimaCamada(sentencaEmbedding)
+                    resultadoEmbeddingCamadas = self.getEmbeddingUltimaCamada(sentencaEmbedding)
                     #print('resultadoEmbeddingCamadas2=',resultadoEmbeddingCamadas.size())
                 else:
                     if camada[LISTATIPOCAMADA_ID] == SOMA_4_ULTIMAS_CAMADAS:
-                        resultadoEmbeddingCamadas = getEmbeddingSoma4UltimasCamadas(sentencaEmbedding)            
+                        resultadoEmbeddingCamadas = self.getEmbeddingSoma4UltimasCamadas(sentencaEmbedding)            
                         #print('resultadoEmbeddingCamadas3=',resultadoEmbeddingCamadas.size())
                     else:
                         if camada[LISTATIPOCAMADA_ID] == CONCAT_4_ULTIMAS_CAMADAS:
-                            resultadoEmbeddingCamadas = getEmbeddingConcat4UltimasCamadas(sentencaEmbedding)
+                            resultadoEmbeddingCamadas = self.getEmbeddingConcat4UltimasCamadas(sentencaEmbedding)
                             #print('resultadoEmbeddingCamadas4=',resultadoEmbeddingCamadas.size())
                         else:
                             if camada[LISTATIPOCAMADA_ID] == TODAS_AS_CAMADAS:
-                                resultadoEmbeddingCamadas = getEmbeddingSomaTodasAsCamada(sentencaEmbedding)
+                                resultadoEmbeddingCamadas = self.getEmbeddingSomaTodasAsCamada(sentencaEmbedding)
                                 #print('resultadoEmbeddingCamadas5=',resultadoEmbeddingCamadas.size())
                                 # Retorno: <1> x <qtde_tokens> x <768 ou 1024>
           
@@ -481,9 +481,9 @@ class Mensurador:
         '''
 
         if self.model_args.estrategia_pooling == 0:
-            return getMedidasSentencasEmbeddingMEAN(embeddingSi, embeddingSj)
+            return self.getMedidasSentencasEmbeddingMEAN(embeddingSi, embeddingSj)
         else:
-            return getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
+            return self.getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoALL(self, 
@@ -496,11 +496,11 @@ class Mensurador:
         '''
             
         # Tokeniza o texto
-        textoTokenizado = getTextoTokenizado(texto)
+        textoTokenizado = self.getTextoTokenizado(texto)
         #print(textoTokenizado)
 
         # Tokeniza a sentença
-        sentencaTokenizada = getTextoTokenizado(sentenca)
+        sentencaTokenizada = self.getTextoTokenizado(sentenca)
         #print(sentencaTokenizada)
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -529,14 +529,14 @@ class Mensurador:
         '''
           
         # Tokeniza o texto
-        textoTokenizado = getTextoTokenizado(texto)  
+        textoTokenizado = self.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Remove as stopword da sentença
         sentencaSemStopWord = removeStopWord(sentenca, stopwords)
 
         # Tokeniza a sentença sem stopword
-        sentencaTokenizadaSemStopWord = getTextoTokenizado(sentencaSemStopWord)
+        sentencaTokenizadaSemStopWord = self.getTextoTokenizado(sentencaSemStopWord)
         #print(sentencaTokenizadaSemStopWord)
 
         # Remove os tokens de início e fim da sentença
@@ -545,7 +545,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSemStopWord))
 
         # Tokeniza a sentença
-        sentencaTokenizada = getTextoTokenizado(sentenca)
+        sentencaTokenizada = self.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -591,14 +591,14 @@ class Mensurador:
         '''
 
         # Tokeniza o texto
-        textoTokenizado = getTextoTokenizado(texto)  
+        textoTokenizado = self.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
         sentencaSomenteRelevante = retornaPalavraRelevante(sentenca, self.nlp, self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
-        sentencaTokenizadaSomenteRelevante = getTextoTokenizado(sentencaSomenteRelevante)
+        sentencaTokenizadaSomenteRelevante = self.getTextoTokenizado(sentencaSomenteRelevante)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizadaSomenteRelevante.remove('[CLS]')
@@ -607,7 +607,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSomenteRelevante))
 
         # Tokeniza a sentença
-        sentencaTokenizada = getTextoTokenizado(sentenca)
+        sentencaTokenizada = self.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -652,14 +652,14 @@ class Mensurador:
         '''
 
         if palavra_relevante == 0:
-            return getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca)
+            return self.getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca)
         else:
             if palavra_relevante == 1:
                 stopwords = getStopwords(self.nlp)
-                return getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca,  stopwords)
+                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca, stopwords)
             else:
                 if palavra_relevante == 2:
-                    return getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
+                    return self.getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
 
     # ============================
     def getMedidasComparacaoTexto(self, 
@@ -692,17 +692,17 @@ class Mensurador:
             # Retorna os embeddings de todas as camadas do texto
             # O embedding possui os seguintes valores        
             # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-            totalCamadasTexto = getEmbeddingsTodasCamadasBuffer(stringTexto)      
+            totalCamadasTexto = self.getEmbeddingsTodasCamadasBuffer(stringTexto)      
             # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
         else:
             # Retorna os embeddings de todas as camadas do texto
             # O embedding possui os seguintes valores        
             # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-            totalCamadasTexto = getEmbeddingsTodasCamadas(stringTexto)      
+            totalCamadasTexto = self.getEmbeddingsTodasCamadas(stringTexto)      
             # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
 
         # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada  
-        embeddingTexto = getResultadoEmbeddings(totalCamadasTexto, camada=camada)
+        embeddingTexto = self.getResultadoEmbeddings(totalCamadasTexto, camada=camada)
         #print('embeddingTexto=', embeddingTexto.shape)
 
         # Acumuladores das medidas entre as sentenças  
@@ -722,14 +722,14 @@ class Mensurador:
             Sj = texto[posSj]
 
             # Recupera os embedding das sentenças Si e Sj do embedding do texto      
-            embeddingSi = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Si)
-            embeddingSj = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Sj)
+            embeddingSi = self.getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Si)
+            embeddingSj = self.getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Sj)
 
             # Verifica se os embeddings sentenças estão preenchidos
             if embeddingSi != None and embeddingSj != None:
 
                 # Recupera as medidas entre Si e Sj     
-                ajustadoEmbeddingSi, ajustadoEmbeddingSj, Scos, Seuc, Sman = getMedidasSentencasEmbedding(embeddingSi, embeddingSj)
+                ajustadoEmbeddingSi, ajustadoEmbeddingSj, Scos, Seuc, Sman = self.getMedidasSentencasEmbedding(embeddingSi, embeddingSj)
 
                 # Acumula as medidas
                 somaScos = somaScos + Scos
@@ -824,7 +824,7 @@ class Mensurador:
         '''
       
         # Recupera os embeddings da sentença Si e sentença Sj e suas medidas
-        embeddingSi, embeddingSj, Scos, Seuc, Sman = getMedidasCamadasSentencas(Si, Sj, camada)
+        embeddingSi, embeddingSj, Scos, Seuc, Sman = self.getMedidasCamadasSentencas(Si, Sj, camada)
 
         logging.info('  ->Mostra comparação da ' + camada[LISTATIPOCAMADA_NOME] + ' camada(s)')    
         logging.info('   Cosseno(SixSj)     = %.8f' % Scos)
