@@ -146,11 +146,12 @@ class Transformer(nn.Module):
         # Adiciona os tokens especiais.
         textoMarcado = '[CLS] ' + texto + ' [SEP]'
 
-        # Documento tokenizado
+        # Tokeniza o texto
         textoTokenizado = self.tokenizer.tokenize(textoMarcado)
 
         return textoTokenizado
         
+    
     def tokenize(self, textos):
         """        
         Tokeniza um texto para submeter ao modelo de linguagem.
@@ -158,7 +159,7 @@ class Transformer(nn.Module):
         :param textos: Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário com:
-            tokens_texto uma lista com os textos tokenizados.
+            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
             input_ids uma lista com os textos indexados.
             token_type_ids uma lista com os tipos dos tokens.
             attention_mask uma lista com os as máscaras de atenção
@@ -185,66 +186,8 @@ class Transformer(nn.Module):
            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
         # Tokeniza o texto
-        #saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
-        #                             padding=True, # Preenche o texto até max_length
-        #                             truncation='longest_first',  # Trunca o texto no maior texto
-        #                             return_tensors="pt",  # Retorna os dados como tensores pytorch.
-        #                             max_length=self.max_seq_length) # Define o tamanho máximo para preencheer ou truncar.
-        #                             )
-        
-         #tokeniza o texto e retorna os tensores.
-        saida.update(self.tokenizer.encode_plus(*to_tokenize, # Texto a ser codificado.
-                                    add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'
-                                    max_length=self.max_seq_length, # Define o tamanho máximo para preencheer ou truncar.
-                                    truncation=True, # Trunca o texto por max_length
-                                    padding='max_length', # Preenche o texto até max_length
-                                    return_attention_mask=True, # Constrói a máscara de atenção.
-                                    return_tensors='pt' # Retorna os dados como tensores pytorch.
-                                    )
-                    )
-        
-                
-        # Gera o texto tokenizado        
-        saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
-                        
-        return saida        
-        
-
-    def tokenize33(self, textos):
-        """        
-        Tokeniza um texto para submeter ao modelo de linguagem.
-        
-        :param textos: Texto a ser tokenizado para o modelo de linguagem.
-         
-        Retorna um dicionário com:
-            tokens_texto uma lista com os textos tokenizados.
-            input_ids uma lista com os textos indexados.
-            token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção
-        """
-        
-        saida = {}
-        
-        # Se o texto for uma string coloca em uma lista de listas para tokenizar
-        if isinstance(textos, str):
-            to_tokenize = [[textos]]
-        else:
-            # Se for uma lista de strings coloca em uma lista para tokenizar
-            if isinstance(textos[0], str):
-                to_tokenize = [textos]
-            else:
-                # Se for uma lista de listas de strings, não faz nada
-                to_tokenize = textos                          
-                
-        # Remove os espaços em branco antes e depois de cada texto usando strip
-        to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
-
-        # Se for para colocar para minúsculo usa Lowercase nos textos
-        if self.do_lower_case:
-           to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
-
-        # Tokeniza o texto
-        saida.update(self.tokenizer(to_tokenize,  # Texto a ser codificado.
+        # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strintgs
+        saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
                                      padding=True, # Preenche o texto até max_length
                                      truncation='longest_first',  # Trunca o texto no maior texto
                                      return_tensors="pt",  # Retorna os dados como tensores pytorch.
@@ -258,64 +201,6 @@ class Transformer(nn.Module):
                         
         return saida
         
-    # funcionando
-    def tokenize1(self, textos: Union[List[str], List[Dict], List[Tuple[str, str]]]):
-        """        
-        Tokeniza um texto para submeter ao modelo de linguagem.
-        
-        :param textos: Texto a ser tokenizado para o modelo de linguagem.
-         
-        Retorna um dicionário com:
-            tokens_texto uma lista com os textos tokenizados.
-            input_ids uma lista com os textos indexados.
-            token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção
-        """
-        
-        saida = {}
-        
-        # Se o texto for uma string coloca em uma lista para tokenizar
-        if isinstance(textos[0], str):
-            to_tokenize = [textos]            
-        else:
-            # Se o texto for um dicionário
-            if isinstance(textos[0], dict):
-                to_tokenize = []
-                saida['texto_keys'] = []
-                for lookup in textos:
-                    texto_key, texto = next(iter(lookup.items()))
-                    to_tokenize.append(texto)
-                    saida['texto_keys'].append(texto_key)
-                
-                to_tokenize = [to_tokenize]
-            else:
-                # Se o texto for uma lista
-                batch1, batch2 = [], []
-                for texto_tuple in textos:
-                    batch1.append(texto_tuple[0])
-                    batch2.append(texto_tuple[1])
-                    
-                to_tokenize = [batch1, batch2]
-                
-        # Remove os espaços em branco antes e depois de cada texto usando strip
-        to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
-
-        # Se for para colocar para minúsculo usa Lowercase nos textos
-        if self.do_lower_case:
-           to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
-
-        saida.update(self.tokenizer(*to_tokenize, 
-                                     padding=True, 
-                                     truncation='longest_first', 
-                                     return_tensors="pt", 
-                                     max_length=self.max_seq_length))
-        
-                
-        # Gera o texto tokenizado        
-        saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
-                        
-        return saida        
-
     def get_config_dict(self):
         return {key: self.__dict__[key] for key in self.config_keys}
 
