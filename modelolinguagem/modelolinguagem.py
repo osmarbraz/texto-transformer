@@ -7,6 +7,7 @@ from spacynlp.spacymodulo import *
 
 from medidor.medidorenum import *
 from medidor.medidor import *
+from modelo.transformer import Transformer
 
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
