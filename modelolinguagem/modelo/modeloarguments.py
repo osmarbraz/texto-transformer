@@ -8,7 +8,7 @@ from typing import Optional
 @dataclass
 class ModeloArgumentos:        
     '''
-    Classe(ModeloArgumentos) de definição dos parâmetros do modelo de çomgiage,.
+    Classe(ModeloArgumentos) de definição dos parâmetros do modelo de linguagem.
     '''
  
     max_seq_len: Optional[int] = field(

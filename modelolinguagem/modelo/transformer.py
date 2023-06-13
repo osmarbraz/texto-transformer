@@ -24,7 +24,7 @@ class Transformer(nn.Module):
                 tokenizer_args: Dict = {}, 
                 tokenizer_name_or_path : str = None):
         
-        # Inicializa o construtor
+        # Inicializa o construtor da superclasse
         super(Transformer, self).__init__()
         
         # Recupera o nome do modelo dos argumentos
@@ -189,7 +189,7 @@ class Transformer(nn.Module):
         # Remove os espaços em branco antes e depois de cada palavra usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
 
-        # Se for para colocar para minúscolo usa Lowercase
+        # Se for para colocar para minúsculo usa Lowercase nos textos
         if self.do_lower_case:
            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
@@ -199,7 +199,8 @@ class Transformer(nn.Module):
                                      return_tensors="pt", 
                                      max_length=self.max_seq_length))
         
-            
+        print("to_tokenize:",to_tokenize)
+        
         # Documento tokenizado        
         #saida['tokens_texto'] = []
         #for texto in to_tokenize:
