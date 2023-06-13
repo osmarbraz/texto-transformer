@@ -33,7 +33,7 @@ class ModeloLinguagem:
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path):
+    def __init__(self, pretrained_model_name_or_path, indexTipoCamada=4):
         # Parâmetro recebido para o modelo de linguagem
         model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
         
@@ -42,7 +42,7 @@ class ModeloLinguagem:
         
         self.verificaCarregamentoSpacy()
         
-        self.TipoCamadas = listaTipoCamadas[2]
+        self.TipoCamadas = listaTipoCamadas[indexTipoCamada]
     
     def verificaCarregamentoSpacy(self):
         ''' 
@@ -120,7 +120,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=TipoCamadas, 
+                                                                       camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -147,7 +147,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=TipoCamadas, 
+                                                                       camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -174,7 +174,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=TipoCamadas, 
+                                                                       camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
@@ -201,7 +201,7 @@ class ModeloLinguagem:
                                                                        modelo=self.model, 
                                                                        tokenizador=self.tokenizer, 
                                                                        nlp=self.nlp, 
-                                                                       camada=TipoCamadas, 
+                                                                       camada=self.TipoCamadas, 
                                                                        tipoDocumento='o', 
                                                                        estrategia_pooling=model_args.estrategia_pooling, 
                                                                        palavra_relevante=model_args.palavra_relevante)
