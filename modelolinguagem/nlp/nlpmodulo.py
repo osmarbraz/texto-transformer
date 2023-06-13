@@ -123,7 +123,7 @@ class NLP():
             # Carrega o modelo spacy
             print("Carregando o spaCy")
             self.nlp = spacy.load(model_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])    
-            print("spaCy carregado.")1
+            print("spaCy carregado.")
         
         else:
             print("spaCy não carregado!")
