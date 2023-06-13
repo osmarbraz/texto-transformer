@@ -15,6 +15,7 @@ modelo_argumentos = ModeloArgumentos(
                                     max_seq_len=512,
                                     pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
                                     modelo_spacy='pt_core_news_lg',
+                                    versao_spacy= '3.4.4',                              
                                     do_lower_case=False,        # default True
                                     output_attentions=False,    # default False
                                     output_hidden_states=True,  # default False  /Retornar os embeddings das camadas ocultas  
