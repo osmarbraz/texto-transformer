@@ -179,12 +179,13 @@ class Transformer(nn.Module):
                 to_tokenize = [to_tokenize]
             else:
                 # Se o texto for uma lista
-                batch1, batch2 = [], []
-                for texto_tuple in textos:
-                    batch1.append(texto_tuple[0])
-                    batch2.append(texto_tuple[1])
+                #batch1, batch2 = [], []
+                #for texto_tuple in textos:
+                #    batch1.append(texto_tuple[0])
+                #    batch2.append(texto_tuple[1])
                     
-                to_tokenize = [batch1, batch2]
+                #to_tokenize = [batch1, batch2]
+                to_tokenize = textos
 
         # Remove os espaços em branco antes e depois de cada palavra usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
@@ -202,9 +203,9 @@ class Transformer(nn.Module):
         print("to_tokenize:",to_tokenize)
         
         # Documento tokenizado        
-        #saida['tokens_texto'] = []
-        #for texto in to_tokenize:
-        #    saida['tokens_texto'].append(self.getTextoTokenizado(texto))
+        saida['tokens_texto'] = []
+        for texto in to_tokenize:
+            saida['tokens_texto'].append(self.getTextoTokenizado(texto))
                 
         return saida
 

@@ -50,7 +50,7 @@ class ModeloLinguagem:
         self.verificaCarregamentoSpacy()
         
         # Especifica de qual camada utilizar os embeddings
-        print("Utilizando embeddings da :", listaTipoCamadas[indexTipoCamada])
+        print("Utilizando embeddings do modelo de:", listaTipoCamadas[indexTipoCamada])
         self.TipoCamadas = listaTipoCamadas[indexTipoCamada]
     
     def verificaCarregamentoSpacy(self):
