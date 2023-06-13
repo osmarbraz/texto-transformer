@@ -48,8 +48,11 @@ class Transformer(nn.Module):
         # Carrega o modelo
         self._load_model(model_name_or_path, 
                          config, 
-                         cache_dir, 
-                         **model_args)
+                         cache_dir)
+        #self._load_model(model_name_or_path, 
+        #                 config, 
+        #                 cache_dir, 
+        #                 **model_args)                         
 
         # Carrega o tokenizador
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
