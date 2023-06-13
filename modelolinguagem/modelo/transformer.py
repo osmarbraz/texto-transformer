@@ -37,9 +37,7 @@ class Transformer(nn.Module):
 
         config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
-                                            cache_dir=cache_dir,
-                                            output_attentions=model_args.output_attentions,
-                                            output_hidden_states = model_args.output_hidden_states)
+                                            cache_dir=cache_dir)
                                             
         self._load_model(model_name_or_path, 
                          config, 
@@ -52,7 +50,8 @@ class Transformer(nn.Module):
         #Sem max_seq_length. Tenta inferir do modelo
         if max_seq_length is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
-                max_seq_length = min(self.auto_model.config.max_position_embeddings, self.tokenizer.model_max_length)
+                max_seq_length = min(self.auto_model.config.max_position_embeddings,
+                                     self.tokenizer.model_max_length)
 
         # Define o máximo de tokens
         self.max_seq_length = max_seq_length
