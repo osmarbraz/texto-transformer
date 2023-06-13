@@ -1,4 +1,5 @@
 # Import das bibliotecas.
+import logging  # Biblioteca de logging
 # Biblioteca de aprendizado de máquina
 from torch import nn 
 import torch 
