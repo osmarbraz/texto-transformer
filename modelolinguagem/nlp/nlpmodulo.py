@@ -122,7 +122,7 @@ class NLP():
         #self.nlp = spacy.load(DIRETORIO_MODELO_SPACY, disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])
         
         # Verifica se é necessário carregar a ferramenta
-        if modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
+        if self.modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
             print("Carregando o spaCy")
             self.nlp = spacy.load(modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])    
