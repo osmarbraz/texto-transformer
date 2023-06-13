@@ -164,8 +164,8 @@ class Transformer(nn.Module):
         
         # Se o texto for uma string coloca em uma lista para tokenizar
         if isinstance(textos[0], str):
-            to_tokenize = [textos]
-            
+            print("lista de string")
+            to_tokenize = [textos]            
         else:
             # Se o texto for um dicionário
             if isinstance(textos[0], dict):
@@ -179,15 +179,14 @@ class Transformer(nn.Module):
                 to_tokenize = [to_tokenize]
             else:
                 # Se o texto for uma lista
-                #batch1, batch2 = [], []
-                #for texto_tuple in textos:
-                #    batch1.append(texto_tuple[0])
-                #    batch2.append(texto_tuple[1])
+                batch1, batch2 = [], []
+                for texto_tuple in textos:
+                    batch1.append(texto_tuple[0])
+                    batch2.append(texto_tuple[1])
                     
-                #to_tokenize = [batch1, batch2]
-                to_tokenize = textos
-
-        # Remove os espaços em branco antes e depois de cada palavra usando strip
+                to_tokenize = [batch1, batch2]
+                
+        # Remove os espaços em branco antes e depois de cada texto usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
 
         # Se for para colocar para minúsculo usa Lowercase nos textos
@@ -205,7 +204,8 @@ class Transformer(nn.Module):
         # Documento tokenizado        
         saida['tokens_texto'] = []
         for texto in to_tokenize:
-            saida['tokens_texto'].append(self.getTextoTokenizado(texto))
+            saida['tokens_texto'].append(self.getTextoTokenizado(texto[0]))
+            saida['tokens_texto'].append(self.getTextoTokenizado(texto[1]))
                 
         return saida
 
