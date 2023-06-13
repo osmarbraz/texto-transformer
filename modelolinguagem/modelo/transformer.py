@@ -235,11 +235,11 @@ class Transformer(nn.Module):
         
         last_hidden_state = outputs[0]
 
-        # Adiciona os embeddings da última camada a saída
+        # Adiciona os embeddings da última camada e os dados do texto preparado na saída
         saida = {}
         saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
                       'input_ids': texto_preparado['input_ids'],
-                      'attention_mask': texto_preparado['attention_mask']
+                      'attention_mask': texto_preparado['attention_mask'],
                       'input_ids': texto_preparado['input_ids'],        
                       'tokens_texto': texto_preparado['tokens_texto']
                       }
@@ -253,7 +253,7 @@ class Transformer(nn.Module):
                 all_layer_idx = 1
 
             hidden_states = outputs[all_layer_idx]
-            # Adiciona os embeddings de todas as camadas no retorno
+            # Adiciona os embeddings de todas as camadas na saída
             saida.update({'all_layer_embeddings': hidden_states})
 
         return saida
