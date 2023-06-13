@@ -198,10 +198,11 @@ class Transformer(nn.Module):
                                      return_tensors="pt", 
                                      max_length=self.max_seq_length))
         
-        print("to_tokenize:",to_tokenize)
+        #print("to_tokenize:",to_tokenize)
         
+        # Gera o texto tokenizado
         # Documento tokenizado        
-        saida['tokens_texto'] = [self.getTextoTokenizado(s) for s in col] for col in to_tokenize
+        saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
         
         #saida['tokens_texto'] = []
         #for texto in to_tokenize:
