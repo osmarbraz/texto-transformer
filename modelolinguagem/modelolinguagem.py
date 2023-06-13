@@ -125,14 +125,14 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
 
-        self.Ccos, self.Ceuc, self.Cman = getMedidasCoerenciaDocumento(texto, 
-                                                                       modelo=self.model, 
-                                                                       tokenizador=self.tokenizer, 
-                                                                       nlp=self.nlp, 
-                                                                       camada=self.TipoCamadas, 
-                                                                       tipoDocumento='o', 
-                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
+        self.Ccos, self.Ceuc, self.Cman = getMedidasComparacaoTexto(texto, 
+                                                                    modelo=self.model, 
+                                                                    tokenizador=self.tokenizer, 
+                                                                    nlp=self.nlp, 
+                                                                    camada=self.TipoCamadas, 
+                                                                    tipoDocumento='o', 
+                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ccos, self.Ceuc, self.Cman
     
@@ -152,14 +152,14 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
 
-        self.Ccos, self.Ceuc, self.Cman = getMedidasCoerenciaDocumento(texto, 
-                                                                       modelo=self.model, 
-                                                                       tokenizador=self.tokenizer, 
-                                                                       nlp=self.nlp, 
-                                                                       camada=self.TipoCamadas, 
-                                                                       tipoDocumento='o', 
-                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
+        self.Ccos, self.Ceuc, self.Cman = getMedidasComparacaoTexto(texto, 
+                                                                    modelo=self.model, 
+                                                                    tokenizador=self.tokenizer, 
+                                                                    nlp=self.nlp, 
+                                                                    camada=self.TipoCamadas, 
+                                                                    tipoDocumento='o', 
+                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ccos
     
@@ -179,14 +179,14 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
 
-        self.Ccos, self.Ceuc, self.Cman = getMedidasCoerenciaDocumento(texto, 
-                                                                       modelo=self.model, 
-                                                                       tokenizador=self.tokenizer, 
-                                                                       nlp=self.nlp, 
-                                                                       camada=self.TipoCamadas, 
-                                                                       tipoDocumento='o', 
-                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
+        self.Ccos, self.Ceuc, self.Cman = getMedidasComparacaoTexto(texto, 
+                                                                    modelo=self.model, 
+                                                                    tokenizador=self.tokenizer, 
+                                                                    nlp=self.nlp, 
+                                                                    camada=self.TipoCamadas, 
+                                                                    tipoDocumento='o', 
+                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Ceuc        
     
@@ -206,14 +206,14 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
         
-        self.Ccos, self.Ceuc, self.Cman = getMedidasCoerenciaDocumento(texto, 
-                                                                       modelo=self.model, 
-                                                                       tokenizador=self.tokenizer, 
-                                                                       nlp=self.nlp, 
-                                                                       camada=self.TipoCamadas, 
-                                                                       tipoDocumento='o', 
-                                                                       estrategia_pooling=modelo_argumentos.estrategia_pooling, 
-                                                                       palavra_relevante=modelo_argumentos.palavra_relevante)
+        self.Ccos, self.Ceuc, self.Cman = getMedidasComparacaoTexto(texto, 
+                                                                    modelo=self.model, 
+                                                                    tokenizador=self.tokenizer, 
+                                                                    nlp=self.nlp, 
+                                                                    camada=self.TipoCamadas, 
+                                                                    tipoDocumento='o', 
+                                                                    estrategia_pooling=modelo_argumentos.estrategia_pooling, 
+                                                                    palavra_relevante=modelo_argumentos.palavra_relevante)
           
         return self.Cman                
 

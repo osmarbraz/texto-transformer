@@ -11,32 +11,32 @@ from spacynlp.spacymodulo import *
 from medidor.medidas import *
 
 # ============================
-def getDocumentoLista(listaSentencas):
+def getTextoLista(listaSentencas):
     '''
     Recebe uma lista de sentenças e faz a concatenação em uma string.
     
     Parâmetros:
-    `listaDocumento` - Uma lista contendo diversas sentenças.           
+    `listaTexto` - Uma lista contendo diversas sentenças.           
     '''
 
-    stringDocumento = ''  
-    # Concatena as sentenças do documento
+    stringTexto = ''  
+    # Concatena as sentenças do texto
     for sentenca in listaSentencas:                
-        stringDocumento = stringDocumento + sentenca
+        stringTexto = stringTexto + sentenca
 
 # ============================
-def getListaSentencasDocumento(documento, nlp):
+def getListaSentencasTexto(texto, nlp):
     '''
-    Retorna uma lista com as sentenças de um documento. Utiliza o spacy para dividir o documento em sentenças.
+    Retorna uma lista com as sentenças de um texto. Utiliza o spacy para dividir o texto em sentenças.
     
     Parâmetros:
-    `documento` - Um documento a ser convertido em uma lista de sentenças.           
+    `texto` - Um texto a ser convertido em uma lista de sentenças.           
     `nlp` - Um objeto de sentenciação de textos.           
        
     '''
 
-    # Aplica sentenciação do spacy no documento
-    doc = nlp(documento) 
+    # Aplica sentenciação do spacy no texto
+    doc = nlp(texto) 
 
     # Lista para as sentenças
     lista = []
@@ -120,26 +120,26 @@ def retornaPalavraRelevante(texto, nlp, tipo_palavra_relevante='NOUN'):
     return textoComRelevantesConcatenado
 
 # ============================
-def getDocumentoTokenizado(documento, tokenizador):
+def getTextoTokenizado(texto, tokenizador):
 
     '''
-    Retorna um documento tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao BERT.
+    Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao BERT.
     
     Parâmetros:
-    `documento` - Um documento a ser tokenizado para o BERT.
+    `texto` - Um texto a ser tokenizado para o BERT.
     `tokenizador` - Tokenizador BERT.
     
     Retorno:
-    `documentoTokenizado` - Documento tokenizado.
+    `textoTokenizado` - Texto tokenizado.
     '''
 
     # Adiciona os tokens especiais.
-    documentoMarcado = '[CLS] ' + documento + ' [SEP]'
+    textoMarcado = '[CLS] ' + texto + ' [SEP]'
 
-    # Documento tokenizado
-    documentoTokenizado = tokenizador.tokenize(documentoMarcado)
+    # Texto tokenizado
+    textoTokenizado = tokenizador.tokenize(textoMarcado)
 
-    return documentoTokenizado
+    return textoTokenizado
 
 # ============================
 # Constantes para padronizar o acesso aos dados do modelo do BERT.
@@ -154,38 +154,38 @@ OUTPUTS_POOLER_OUTPUT = 1
 OUTPUTS_HIDDEN_STATES = 2
  
 # ============================
-def getEmbeddingsTodasCamadas(documento, modelo, tokenizador):    
+def getEmbeddingsTodasCamadas(texto, modelo, tokenizador):    
     '''   
-    Retorna os embeddings de todas as camadas de um documento.
+    Retorna os embeddings de todas as camadas de um texto.
     
     Parâmetros:
-    `documento` - Um documento a ser recuperado os embeddings do BERT.
+    `texto` - Um texto a ser recuperado os embeddings do BERT.
     `model` - Modelo BERT.
     `tokenizador` - Tokenizador BERT.
     
     Retorno:
-    `documentoTokenizado` - Documento tokenizado.
-    `input_ids` - Input ids do documento.
-    `attention_mask` - Máscara de atenção do documento
-    `token_type_ids` - Token types ids do documento.
-    `outputs` - Embeddings do documento.
+    `textoTokenizado` - Texto tokenizado.
+    `input_ids` - Input ids do texto.
+    `attention_mask` - Máscara de atenção do texto
+    `token_type_ids` - Token types ids do texto.
+    `outputs` - Embeddings do texto.
     '''
 
-    # Documento tokenizado
-    documentoTokenizado = getDocumentoTokenizado(documento, tokenizador)
+    # Texto tokenizado
+    textoTokenizado = getTextoTokenizado(texto, tokenizador)
 
-    #print('O documento (', documento, ') tem tamanho = ', len(documentoTokenizado), ' = ', documentoTokenizado)
+    #print('O texto (', texto, ') tem tamanho = ', len(textoTokenizado), ' = ', textoTokenizado)
 
-    # Recupera a quantidade tokens do documento tokenizado.
-    qtdeTokens = len(documentoTokenizado)
+    # Recupera a quantidade tokens do texto tokenizado.
+    qtdeTokens = len(textoTokenizado)
 
-    #tokeniza o documento e retorna os tensores.
+    #tokeniza o texto e retorna os tensores.
     dicCodificado = tokenizador.encode_plus(
-                                            documento, # Documento a ser codificado.
+                                            texto, # Texto a ser codificado.
                                             add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'
                                             max_length=qtdeTokens, # Define o tamanho máximo para preencheer ou truncar.
-                                            truncation=True, # Trunca o documento por max_length
-                                            padding='max_length', # Preenche o documento até max_length
+                                            truncation=True, # Trunca o texto por max_length
+                                            padding='max_length', # Preenche o texto até max_length
                                             return_attention_mask=True, # Constrói a máscara de atenção.
                                             return_tensors='pt' # Retorna os dados como tensores pytorch.
                                             )
@@ -199,7 +199,7 @@ def getEmbeddingsTodasCamadas(documento, modelo, tokenizador):
     # Recupera os tensores dos segmentos.
     token_type_ids = dicCodificado['token_type_ids']
 
-    # Roda o documento através do BERT, e coleta todos os estados ocultos produzidos.
+    # Roda o texto através do BERT, e coleta todos os estados ocultos produzidos.
     # das 12 camadas. 
     with torch.no_grad():
 
@@ -217,7 +217,7 @@ def getEmbeddingsTodasCamadas(documento, modelo, tokenizador):
         # outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
         # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
         
-        # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     return documentoTokenizado, input_ids, attention_mask, token_type_ids, outputs
 
 # ============================
@@ -255,7 +255,7 @@ def getEmbeddingPrimeiraCamada(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbeddinging é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -275,7 +275,7 @@ def getEmbeddingPenultimaCamada(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -295,7 +295,7 @@ def getEmbeddingUltimaCamada(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -315,7 +315,7 @@ def getEmbeddingSoma4UltimasCamadas(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -347,7 +347,7 @@ def getEmbeddingConcat4UltimasCamadas(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -378,7 +378,7 @@ def getEmbeddingSomaTodasAsCamada(sentencaEmbedding):
     '''
     
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -414,7 +414,7 @@ def getResultadoEmbeddings(sentencaEmbedding, camada):
     '''
 
     # Cada elemento do vetor sentencaEmbedding é formado por:  
-    # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+    # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
     # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
     #[4]outpus e [2]hidden_states 
     #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
@@ -565,7 +565,7 @@ def getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj):
 # ============================
 def getMedidasSentencasEmbedding(embeddingSi, embeddingSj, estrategia_pooling):
     '''
-    Realiza o cálculo da medida do documento de acordo com a estratégia de pooling(MAX ou MEAN).
+    Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
     
     Parâmetros:
     `embeddingSi` - Embeddings da primeira sentença.
@@ -579,50 +579,50 @@ def getMedidasSentencasEmbedding(embeddingSi, embeddingSj, estrategia_pooling):
         return getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
 
 # ============================
-def getEmbeddingSentencaEmbeddingDocumentoALL(embeddingDocumento, documento, sentenca, tokenizador):
+def getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca, tokenizador):
     '''
-    Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do documento.
+    Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
     
     '''
         
-    # Tokeniza o documento
-    documentoTokenizado = getDocumentoTokenizado(documento, tokenizador)
-    #print(documentoTokenizado)
+    # Tokeniza o texto
+    textoTokenizado = getTextoTokenizado(texto, tokenizador)
+    #print(textoTokenizado)
 
     # Tokeniza a sentença
-    sentencaTokenizada = getDocumentoTokenizado(sentenca, tokenizador)
+    sentencaTokenizada = getTextoTokenizado(sentenca, tokenizador)
     #print(sentencaTokenizada)
     # Remove os tokens de início e fim da sentença
     sentencaTokenizada.remove('[CLS]')
     sentencaTokenizada.remove('[SEP]')    
     #print(len(sentencaTokenizada))
 
-    # Localiza os índices dos tokens da sentença no documento
-    inicio, fim = encontrarIndiceSubLista(documentoTokenizado, sentencaTokenizada)
+    # Localiza os índices dos tokens da sentença no texto
+    inicio, fim = encontrarIndiceSubLista(textoTokenizado, sentencaTokenizada)
     #print(inicio,fim) 
 
-    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do documento
-    embeddingSentenca = embeddingDocumento[inicio:fim + 1]
+    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
+    embeddingSentenca = embeddingTexto[inicio:fim + 1]
     #print('embeddingSentenca=', embeddingSentenca.shape)
 
-    # Retorna o embedding da sentença no documento
+    # Retorna o embedding da sentença no texto
     return embeddingSentenca
 
 # ============================
-def getEmbeddingSentencaEmbeddingDocumentoCLEAN(embeddingDocumento, documento, sentenca, tokenizador, stopwords):
+def getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca, tokenizador, stopwords):
     '''
-    Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do documento.
+    Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
     '''
       
-    # Tokeniza o documento
-    documentoTokenizado = getDocumentoTokenizado(documento, tokenizador)  
-    #print(documentoTokenizado)
+    # Tokeniza o texto
+    textoTokenizado = getTextoTokenizado(texto, tokenizador)  
+    #print(textoTokenizado)
 
     # Remove as stopword da sentença
     sentencaSemStopWord = removeStopWord(sentenca, stopwords)
 
     # Tokeniza a sentença sem stopword
-    sentencaTokenizadaSemStopWord = getDocumentoTokenizado(sentencaSemStopWord, tokenizador)
+    sentencaTokenizadaSemStopWord = getTextoTokenizado(sentencaSemStopWord, tokenizador)
     #print(sentencaTokenizadaSemStopWord)
 
     # Remove os tokens de início e fim da sentença
@@ -631,7 +631,7 @@ def getEmbeddingSentencaEmbeddingDocumentoCLEAN(embeddingDocumento, documento, s
     #print(len(sentencaTokenizadaSemStopWord))
 
     # Tokeniza a sentença
-    sentencaTokenizada = getDocumentoTokenizado(sentenca, tokenizador)
+    sentencaTokenizada = getTextoTokenizado(sentenca, tokenizador)
 
     # Remove os tokens de início e fim da sentença
     sentencaTokenizada.remove('[CLS]')
@@ -639,12 +639,12 @@ def getEmbeddingSentencaEmbeddingDocumentoCLEAN(embeddingDocumento, documento, s
     #print(sentencaTokenizada)
     #print(len(sentencaTokenizada))
 
-    # Localiza os índices dos tokens da sentença no documento
-    inicio, fim = encontrarIndiceSubLista(documentoTokenizado, sentencaTokenizada)
+    # Localiza os índices dos tokens da sentença no texto
+    inicio, fim = encontrarIndiceSubLista(textoTokenizado, sentencaTokenizada)
     #print('Sentença inicia em:', inicio, 'até', fim) 
 
-    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do documento
-    embeddingSentenca = embeddingDocumento[inicio:fim + 1]
+    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
+    embeddingSentenca = embeddingTexto[inicio:fim + 1]
     #print('embeddingSentenca=', embeddingSentenca.shape)
 
     # Lista com os tensores selecionados
@@ -664,24 +664,24 @@ def getEmbeddingSentencaEmbeddingDocumentoCLEAN(embeddingDocumento, documento, s
         embeddingSentencaSemStopWord = torch.cat(listaTokensSelecionados, dim=0)
         #print("embeddingSentencaSemStopWord:",embeddingSentencaSemStopWord.shape)
 
-    # Retorna o embedding da sentença no documento
+    # Retorna o embedding da sentença no texto
     return embeddingSentencaSemStopWord
 
 # ============================
-def getEmbeddingSentencaEmbeddingDocumentoNOUN(embeddingDocumento, documento, sentenca, tokenizador, nlp, tipo_palavra_relevante='NOUN'):
+def getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca, tokenizador, nlp, tipo_palavra_relevante='NOUN'):
     '''
-    Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do documento.
+    Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
     '''
 
-    # Tokeniza o documento
-    documentoTokenizado = getDocumentoTokenizado(documento, tokenizador)  
-    #print(documentoTokenizado)
+    # Tokeniza o texto
+    textoTokenizado = getTextoTokenizado(texto, tokenizador)  
+    #print(textoTokenizado)
 
     # Retorna as palavras relevantes da sentença do tipo especificado
     sentencaSomenteRelevante = retornaPalavraRelevante(sentenca, nlp, tipo_palavra_relevante)
 
     # Tokeniza a sentença 
-    sentencaTokenizadaSomenteRelevante = getDocumentoTokenizado(sentencaSomenteRelevante, tokenizador)
+    sentencaTokenizadaSomenteRelevante = getTextoTokenizado(sentencaSomenteRelevante, tokenizador)
 
     # Remove os tokens de início e fim da sentença
     sentencaTokenizadaSomenteRelevante.remove('[CLS]')
@@ -690,7 +690,7 @@ def getEmbeddingSentencaEmbeddingDocumentoNOUN(embeddingDocumento, documento, se
     #print(len(sentencaTokenizadaSomenteRelevante))
 
     # Tokeniza a sentença
-    sentencaTokenizada = getDocumentoTokenizado(sentenca, tokenizador)
+    sentencaTokenizada = getTextoTokenizado(sentenca, tokenizador)
 
     # Remove os tokens de início e fim da sentença
     sentencaTokenizada.remove('[CLS]')
@@ -698,12 +698,12 @@ def getEmbeddingSentencaEmbeddingDocumentoNOUN(embeddingDocumento, documento, se
     #print(sentencaTokenizada)
     #print(len(sentencaTokenizada))
 
-    # Localiza os índices dos tokens da sentença no documento
-    inicio, fim = encontrarIndiceSubLista(documentoTokenizado, sentencaTokenizada)
+    # Localiza os índices dos tokens da sentença no texto
+    inicio, fim = encontrarIndiceSubLista(textoTokenizado, sentencaTokenizada)
     #print('Sentença inicia em:', inicio, 'até', fim) 
 
-    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do documento
-    embeddingSentenca = embeddingDocumento[inicio:fim + 1]
+    # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
+    embeddingSentenca = embeddingTexto[inicio:fim + 1]
     #print('embeddingSentenca=', embeddingSentenca.shape)
 
     # Lista com os tensores selecionados
@@ -722,65 +722,72 @@ def getEmbeddingSentencaEmbeddingDocumentoNOUN(embeddingDocumento, documento, se
         embeddingSentencaComSubstantivo = torch.cat(listaTokensSelecionados, dim=0)
         #print("embeddingSentencaComSubstantivo:",embeddingSentencaComSubstantivo.shape)
 
-    # Retorna o embedding da sentença do documento
+    # Retorna o embedding da sentença do texto
     return embeddingSentencaComSubstantivo
 
 # ============================
-def getEmbeddingSentencaEmbeddingDocumento(embeddingDocumento, documento, sentenca, tokenizador, nlp, palavra_relevante=0):
+def getEmbeddingSentencaEmbeddingTexto(embeddingTexto, texto, sentenca, tokenizador, nlp, palavra_relevante=0):
     '''
-    Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do documento.    
+    Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
     '''
 
     if palavra_relevante == 0:
-        return getEmbeddingSentencaEmbeddingDocumentoALL(embeddingDocumento, documento, sentenca, tokenizador)
+        return getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca, tokenizador)
     else:
         if palavra_relevante == 1:
             stopwords = getStopwords(nlp)
-            return getEmbeddingSentencaEmbeddingDocumentoCLEAN(embeddingDocumento, documento, sentenca, tokenizador, stopwords)
+            return getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca, tokenizador, stopwords)
         else:
             if palavra_relevante == 2:
-                return getEmbeddingSentencaEmbeddingDocumentoNOUN(embeddingDocumento, documento, sentenca, tokenizador, nlp, tipo_palavra_relevante='NOUN')
+                return getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca, tokenizador, nlp, tipo_palavra_relevante='NOUN')
 
 # ============================
-def getMedidasCoerenciaDocumento(documento, modelo, tokenizador, nlp, camada, tipoDocumento='p', estrategia_pooling=0, palavra_relevante=0):
+def getMedidasComparacaoTexto(texto, 
+                              modelo, 
+                              tokenizador, 
+                              nlp, 
+                              camada, 
+                              tipoTexto='p', 
+                              estrategia_pooling=0, 
+                              palavra_relevante=0):
     '''
-    Retorna as medidas de coerência do documento.
+    Retorna as medidas de coerência do texto.
     Considera somente sentenças com pelo menos uma palavra.
     Estratégia de pooling padrão é MEAN(0).
     Palavra relavante padrão é ALL(0).
     '''
 
-    # Quantidade de sentenças no documento
-    n = len(documento)
+    # Quantidade de sentenças no texto
+    n = len(texto)
     
-    # Divisor da quantidade de documentos
+    # Divisor da quantidade de textos
     divisor = n - 1
 
-    # Documento é uma lista com as sentenças
+    # Texto é uma lista com as sentenças
     #print('camada=',camada)
-    #print('Documento=', documento)
+    #print('Texto=', texto)
 
-    # Junta a lista de sentenças em um documento(string)
-    stringDocumento = ' '.join(documento)
+    # Junta a lista de sentenças em um texto(string)
+    stringTexto = ' '.join(texto)
 
-    # Envia o documento ao MCL e recupera os embeddings de todas as camadas
-    # Se for o documento original pega do buffer para evitar a repetição
-    if tipoDocumento == 'o':
-        # Retorna os embeddings de todas as camadas do documento
+    # Envia o texto ao MCL e recupera os embeddings de todas as camadas
+    # Se for o texto original pega do buffer para evitar a repetição
+    if tipoTexto == 'o':
+        # Retorna os embeddings de todas as camadas do texto
         # O embedding possui os seguintes valores        
-        # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        totalCamadasDocumento = getEmbeddingsTodasCamadasBuffer(stringDocumento, modelo, tokenizador)      
+        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+        totalCamadasTexto = getEmbeddingsTodasCamadasBuffer(stringTexto, modelo, tokenizador)      
         # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
     else:
-        # Retorna os embeddings de todas as camadas do documento
+        # Retorna os embeddings de todas as camadas do texto
         # O embedding possui os seguintes valores        
-        # 0-documento_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        totalCamadasDocumento = getEmbeddingsTodasCamadas(stringDocumento, modelo, tokenizador)      
+        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+        totalCamadasTexto = getEmbeddingsTodasCamadas(stringTexto, modelo, tokenizador)      
         # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
 
     # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada  
-    embeddingDocumento = getResultadoEmbeddings(totalCamadasDocumento, camada=camada)
-    #print('embeddingDocumento=', embeddingDocumento.shape)
+    embeddingTexto = getResultadoEmbeddings(totalCamadasTexto, camada=camada)
+    #print('embeddingTexto=', embeddingTexto.shape)
 
     # Acumuladores das medidas entre as sentenças  
     somaScos = 0
@@ -794,13 +801,13 @@ def getMedidasCoerenciaDocumento(documento, modelo, tokenizador, nlp, camada, ti
     #Enquanto o indíce da sentneça posSj(2a sentença) não chegou ao final da quantidade de sentenças
     while posSj <= (n-1):  
 
-        # Seleciona as sentenças do documento  
-        Si = documento[posSi]
-        Sj = documento[posSj]
+        # Seleciona as sentenças do texto  
+        Si = texto[posSi]
+        Sj = texto[posSj]
 
-        # Recupera os embedding das sentenças Si e Sj do embedding do documento      
-        embeddingSi = getEmbeddingSentencaEmbeddingDocumento(embeddingDocumento, stringDocumento, Si, tokenizador, nlp, palavra_relevante=palavra_relevante)
-        embeddingSj = getEmbeddingSentencaEmbeddingDocumento(embeddingDocumento, stringDocumento, Sj, tokenizador, nlp, palavra_relevante=palavra_relevante)
+        # Recupera os embedding das sentenças Si e Sj do embedding do texto      
+        embeddingSi = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Si, tokenizador, nlp, palavra_relevante=palavra_relevante)
+        embeddingSj = getEmbeddingSentencaEmbeddingTexto(embeddingTexto, stringTexto, Sj, tokenizador, nlp, palavra_relevante=palavra_relevante)
 
         # Verifica se os embeddings sentenças estão preenchidos
         if embeddingSi != None and embeddingSj != None:
