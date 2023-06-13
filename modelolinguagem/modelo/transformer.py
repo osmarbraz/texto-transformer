@@ -12,8 +12,7 @@ class Transformer(nn.Module):
     """Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou documento.
      Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
-     :param modelo_args: Argumentos passados para o modelo Huggingface Transformers     
-     :param max_seq_length: trunca quaisquer entradas maiores que max_seq_length     
+     :param modelo_args: Argumentos passados para o modelo Huggingface Transformers          
      :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
      :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
@@ -30,6 +29,8 @@ class Transformer(nn.Module):
         
         # Recupera o nome do modelo dos argumentos
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
+        # Recupera o tamanho máximo de um texto
+        max_seq_length = modelo_args.max_seq_len
         
         # Parâmetros do modelo
         self.config_keys = ['max_seq_length', 'do_lower_case']
@@ -131,44 +132,80 @@ class Transformer(nn.Module):
     def get_word_embedding_dimension(self) -> int:
         return self.auto_model.config.hidden_size
 
-    def tokenize(self, texts: Union[List[str], List[Dict], List[Tuple[str, str]]]):
+    def getTextoTokenizado(self, texto: str):
+        '''
+        Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
+        
+        Parâmetros:
+        `texto` - Um texto a ser tokenizado.
+        
+        Retorno:
+        `textoTokenizado` - Texto tokenizado.
+        '''
+
+        # Adiciona os tokens especiais.
+        textoMarcado = '[CLS] ' + texto + ' [SEP]'
+
+        # Documento tokenizado
+        textoTokenizado = self.tokenizer.tokenize(textoMarcado)
+
+        return textoTokenizado
+
+    def tokenize(self, textos: Union[List[str], List[Dict], List[Tuple[str, str]]]):
+        """        
+        Tokeniza um texto para submeter ao modelo de linguagem.
+        
+        :param textos: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
+         
+        Retorna um dicionário
         """
-        Tokeniza um texto e mapea tokens para token-ids
-        """
-        output = {}
-        if isinstance(texts[0], str):
-            to_tokenize = [texts]
+        
+        saida = {}
+        
+        # Se o texto for uma string coloca em uma lista para tokenizar
+        if isinstance(textos[0], str):
+            to_tokenize = [textos]
             
         else:
-            if isinstance(texts[0], dict):
+            # Se o texto for um dicionário
+            if isinstance(textos[0], dict):
                 to_tokenize = []
-                output['text_keys'] = []
-                for lookup in texts:
-                    text_key, text = next(iter(lookup.items()))
-                    to_tokenize.append(text)
-                    output['text_keys'].append(text_key)
+                saida['texto_keys'] = []
+                for lookup in textos:
+                    texto_key, texto = next(iter(lookup.items()))
+                    to_tokenize.append(texto)
+                    saida['texto_keys'].append(texto_key)
+                
                 to_tokenize = [to_tokenize]
             else:
+                # Se o texto for uma lista
                 batch1, batch2 = [], []
-                for text_tuple in texts:
-                    batch1.append(text_tuple[0])
-                    batch2.append(text_tuple[1])
+                for texto_tuple in textos:
+                    batch1.append(texto_tuple[0])
+                    batch2.append(texto_tuple[1])
+                    
                 to_tokenize = [batch1, batch2]
 
-        #strip
+        # Remove os espaços em branco antes e depois de cada palavra usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
 
-        #Lowercase
+        # Se for para colocar para minúscolo usa Lowercase
         if self.do_lower_case:
-            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
+           to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
-        output.update(self.tokenizer(*to_tokenize, 
+        saida.update(self.tokenizer(*to_tokenize, 
                                      padding=True, 
                                      truncation='longest_first', 
                                      return_tensors="pt", 
                                      max_length=self.max_seq_length))
         
-        return output
+            
+        # Documento tokenizado        
+        saida['tokens_texto'] = []
+        for texto in to_tokenize:
+            saida['tokens_texto'].append(self.getTextoTokenizado(texto))
+                
+        return saida
 
     def get_config_dict(self):
         return {key: self.__dict__[key] for key in self.config_keys}

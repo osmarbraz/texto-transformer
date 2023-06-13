@@ -19,22 +19,22 @@ class PalavrasRelevantes(Enum):
     NOUN = 2 # Somente substantivos
 
 
-# Índice dos campos do enum EmbeddingsCamadasBERT
+# Índice dos campos do enum EmbeddingsCamadas
 LISTATIPOCAMADA_ID = 0
 LISTATIPOCAMADA_CAMADA = 1
 LISTATIPOCAMADA_OPERACAO = 2
 LISTATIPOCAMADA_NOME = 3
 
 # ============================
-# EmbeddingsCamadasBERT
+# EmbeddingsCamadas
 # Define um enum com as camadas a serem analisadas nos teste.
-# Cada elemento do enum 'EmbeddingsCamadasBERT' é chamado de camada sendo formado por:
+# Cada elemento do enum 'EmbeddingsCamadas' é chamado de camada sendo formado por:
 #  - camada.value[0] = Índice da camada
 #  - camada.value[1] = Um inteiro com o índice da camada a ser avaliada. Pode conter valores negativos.
 #  - camada.value[2] = Operação para n camadas, CONCAT ou SUM.
 #  - camada.value[3] = Nome do tipo camada
 
-class EmbeddingsCamadasBERT(Enum):
+class EmbeddingsCamadas(Enum):
     
     # BERT Large possui 25 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
     # BERT Large possui 13 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)
