@@ -26,6 +26,8 @@ class NLP():
         
         self.carrega();
             
+        logging.info("NLP carregado: {}.".format(modelo_args))    
+            
     # ============================
     def getStopwords(self):
         '''

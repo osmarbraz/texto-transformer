@@ -73,7 +73,7 @@ class ModeloLinguagem:
                                      nlp=self.nlp)
         
     
-        logging.info("Modelo de Linguagem carregado: {}.".format(modelo_argumentos))
+        logging.info("ModeloLinguagem carregado: {}.".format(modelo_argumentos))
     
     def defineEstrategiaPooling(self, estrategiaPooling):
         ''' 
