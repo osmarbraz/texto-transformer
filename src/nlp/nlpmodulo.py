@@ -44,6 +44,8 @@ class NLP():
         '''
         
         spacy_stopwords = self.model_nlp.Defaults.stop_words
+        
+        logging.info("Carregando as stopwords: {}.".format(modelo_args))    
 
         return spacy_stopwords 
        
