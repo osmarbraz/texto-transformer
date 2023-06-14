@@ -18,7 +18,7 @@ classifiers = [
 		
 dependencies = [
 		"transformers==4.26.1", 
-		"spacy=="3.5.2"]
+		"spacy==3.5.2"]
 
 	 
 [tool.setuptools.packages.find]
