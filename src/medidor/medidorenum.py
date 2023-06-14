@@ -2,15 +2,18 @@
 import logging  # Biblioteca de logging
 from enum import Enum # Biblioteca de Enum
 
+# ============================
 class MedidasComparacao(Enum):
     COSSENO = 0 # Similaridade do Cosseno
     EUCLIDIANA = 1 # Distância Euclidiana
     MANHATTAN = 2 # Distância de Manhattan
 
+# ============================
 class EstrategiasPooling(Enum):
     MEAN = 0 # Média
     MAX = 1 # Máximo
 
+# ============================
 class PalavrasRelevantes(Enum):
     ALL = 0 # Todas as palavras
     CLEAN = 1 # Sem stopwords
@@ -25,6 +28,7 @@ class PalavrasRelevantes(Enum):
 #  - camada.value[2] = Operação para n camadas, CONCAT ou SUM.
 #  - camada.value[3] = Nome do tipo camada
 
+# ============================
 class EmbeddingsCamadas(Enum):
     
     # BERT Large possui 25 camadas(1a camada com os tokens de entrada e 24 camadas dos transformers)

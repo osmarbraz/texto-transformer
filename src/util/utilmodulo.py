@@ -2,6 +2,9 @@
 import logging  # Biblioteca de logging
 import re # Biblioteca de expressão regular
 import unicodedata # Biblioteca de codificação de caracteres
+from collections import Counter
+from functools import reduce
+
 
 # ============================  
 def removeAcentos(texto):   
@@ -79,7 +82,7 @@ def encontrarIndiceSubLista(lista, sublista):
         
     return -1, -1
     
- # ============================
+# ============================
 def getTextoLista(listaSentencas):
     '''
     Recebe uma lista de sentenças e faz a concatenação em uma string.
@@ -92,3 +95,22 @@ def getTextoLista(listaSentencas):
     # Concatena as sentenças do texto
     for sentenca in listaSentencas:                
         stringTexto = stringTexto + sentenca
+
+# ============================   
+def atualizaValor(a,b):
+    a.update(b)
+    return a
+
+# ============================   
+def getSomaDic(lista):
+    '''
+    Soma os valores de dicionários com as mesmas chaves.
+    
+    Parâmetros:
+    `lista` - Uma lista contendo dicionários.           
+    '''
+    
+    # Soma os dicionários da lista
+    novodic = reduce(atualizaValor, (Counter(dict(x)) for x in lista))
+ 
+    return novodic        
