@@ -39,9 +39,6 @@ class Mensurador:
         
         # Recupera a classe NLP
         self.nlp = nlp
-                
-        # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
-        self.buffer_embeddings = {}
         
         logging.info("Classe Mensurador carregada: {}.".format(modelo_args))
       
@@ -111,6 +108,9 @@ class Mensurador:
         return textoTokenizado, input_ids, attention_mask, token_type_ids, outputs
 
     # ============================
+    # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
+    buffer_embeddings = {}
+    
     def getEmbeddingsTodasCamadasBuffer(self, S):
         '''
         Retorna os embeddings de uma sentença de um buffer ou do modelo..
@@ -118,11 +118,11 @@ class Mensurador:
         
         # Se está no dicionário retorna o embedding
         if S in self.buffer_embeddings:
-            return self.buffer_embeddings.get(S)
+            return buffer_embeddings.get(S)
         else:
             # Gera o embedding
             totalCamada = self.getEmbeddingsTodasCamadas(S)
-            self.buffer_embeddings.update({S: totalCamada})
+            buffer_embeddings.update({S: totalCamada})
             return totalCamada
 
     # ============================
@@ -131,7 +131,7 @@ class Mensurador:
         Esvazia o buffer de embeddings das sentenças.
         '''
         
-        self.buffer_embeddings.clear(self)
+        buffer_embeddings.clear(self)
 
     # ============================
     def getEmbeddingPrimeiraCamada(self, sentencaEmbedding):
