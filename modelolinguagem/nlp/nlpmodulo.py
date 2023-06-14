@@ -27,7 +27,7 @@ class NLP():
         self.modelo_args = modelo_args
         
         #Instala o spaCy
-        installspacy(modelo_args)
+        InstaladorSpacy(modelo_args=modelo_args)
         
         #Carrega o modelo do spacy
         self.carrega();
