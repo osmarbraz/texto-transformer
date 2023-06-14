@@ -11,14 +11,17 @@ setup(
     description="Multilingual text embeddings",
     long_description=readme,
     long_description_content_type="text/markdown",
-    license="Apache License 2.0",    
+    license="MIT",    
     download_url="https://github.com/osmarbraz/modelolinguagem/",
-    packages=find_packages(),
-    python_requires=">=3.6.0",
+    packages=find_packages(),modelolinguagem # Procura automaticamente os pacotes no diretório corrente.
+    python_requires=">=3.6.0", 
+    
+    # Dependências
     install_requires=[
         'transformers==4.26.1',
         'spacy==3.5.2'
     ],
+
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
