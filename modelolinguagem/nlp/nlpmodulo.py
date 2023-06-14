@@ -56,8 +56,7 @@ class NLP():
           
         # Verifica se é necessário carregar a ferramenta
         if self.modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
-            # Carrega o modelo spacy
-            logging.info("Carregando o spaCy")
+            # Carrega o modelo spacy            
             self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)                
             #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
             logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    

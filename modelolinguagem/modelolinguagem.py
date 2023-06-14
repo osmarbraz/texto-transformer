@@ -57,7 +57,7 @@ class ModeloLinguagem:
         self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Especifica de qual camada utilizar os embeddings        
-        logging.info("Utilizando embeddings do modelo da {} camada.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][3]))
+        logging.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][3]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
