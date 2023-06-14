@@ -52,4 +52,4 @@ class InstaladorModelo:
             subprocess.run(["pip", "install", "transformers={self.modelo_args.versao_transformers_huggingface}"])
             logging.info("Transformers Huggingface versão {} instalado!".format(self.modelo_args.versao_transformers_huggingface))    
         except subprocess.CalledProcessError as e:
-            logging.info("Falha em instalar Transformers Huggingface versão {}. Erro: {}.".format(self.modelo_args.versao_transformers_huggingface, e)
+            logging.info("Falha em instalar Transformers Huggingface versão {}. Erro: {}.".format(self.modelo_args.versao_transformers_huggingface, e))
