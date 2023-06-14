@@ -26,6 +26,7 @@ class NLP():
         # Parâmetros do modelo
         self.modelo_args = modelo_args
         
+        #Instala o spaCy
         installspacy(modelo_args)
         
         self.carrega();
