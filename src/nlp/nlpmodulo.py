@@ -50,7 +50,7 @@ class NLP():
         return spacy_stopwords 
 
     # ============================
-    def removeStopWord(texto):
+    def removeStopWord(self, texto):
         '''
         Remove as stopwords de um texto.
         
@@ -71,7 +71,7 @@ class NLP():
         return textoLimpo
        
     # ============================
-    def retornaPalavraRelevante(texto, tipo_palavra_relevante='NOUN'):
+    def retornaPalavraRelevante(self, texto, tipo_palavra_relevante='NOUN'):
         '''
         Retorna somente os palavras do texto ou sentença do tipo especificado.
         
