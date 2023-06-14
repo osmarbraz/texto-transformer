@@ -126,8 +126,6 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
         
-        logging.info("modelo_argumentos.camadas_embeddings:" + modelo_argumentos.camadas_embeddings)
-
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
                                                                                     camada=modelo_argumentos.camadas_embeddings, 
                                                                                     tipoTexto='o')
@@ -153,8 +151,6 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
         
-        logging.info("modelo_argumentos.camadas_embeddings:" + modelo_argumentos.camadas_embeddings)
-
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
                                                                     camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
