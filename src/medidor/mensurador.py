@@ -326,30 +326,32 @@ class Mensurador:
 
         resultadoEmbeddingCamadas = None
       
-        if camada[LISTATIPOCAMADA_ID] == PRIMEIRA_CAMADA:
+        if camada == EmbeddingsCamadas.PRIMEIRA_CAMADA.value[0]:
             resultadoEmbeddingCamadas = self.getEmbeddingPrimeiraCamada(sentencaEmbedding)
             #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
         else:
-            if camada[LISTATIPOCAMADA_ID] == PENULTIMA_CAMADA:
+            if camada == EmbeddingsCamadas.PENULTIMA_CAMADA.value[0]:
                 resultadoEmbeddingCamadas = self.getEmbeddingPenultimaCamada(sentencaEmbedding)
                 #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
-            else:
-                if camada[LISTATIPOCAMADA_ID] == ULTIMA_CAMADA:
+            else:                
+                if camada == EmbeddingsCamadas.ULTIMA_CAMADA.value[0]:
                     resultadoEmbeddingCamadas = self.getEmbeddingUltimaCamada(sentencaEmbedding)
                     #print('resultadoEmbeddingCamadas2=',resultadoEmbeddingCamadas.size())
                 else:
-                    if camada[LISTATIPOCAMADA_ID] == SOMA_4_ULTIMAS_CAMADAS:
-                        resultadoEmbeddingCamadas = self.getEmbeddingSoma4UltimasCamadas(sentencaEmbedding)            
+                    if camada == EmbeddingsCamadas.SOMA_4_ULTIMAS_CAMADAS.value[0]:
+                        resultadoEmbeddingCamadas = self.getEmbeddingSoma4UltimasCamadas(sentencaEmbedding)
                         #print('resultadoEmbeddingCamadas3=',resultadoEmbeddingCamadas.size())
-                    else:
-                        if camada[LISTATIPOCAMADA_ID] == CONCAT_4_ULTIMAS_CAMADAS:
+                    else:                        
+                        if camada == EmbeddingsCamadas.CONCAT_4_ULTIMAS_CAMADAS.value[0]:
                             resultadoEmbeddingCamadas = self.getEmbeddingConcat4UltimasCamadas(sentencaEmbedding)
                             #print('resultadoEmbeddingCamadas4=',resultadoEmbeddingCamadas.size())
                         else:
-                            if camada[LISTATIPOCAMADA_ID] == TODAS_AS_CAMADAS:
+                            if camada == EmbeddingsCamadas.TODAS_AS_CAMADAS.value[0]:                            
                                 resultadoEmbeddingCamadas = self.getEmbeddingSomaTodasAsCamada(sentencaEmbedding)
                                 #print('resultadoEmbeddingCamadas5=',resultadoEmbeddingCamadas.size())
                                 # Retorno: <1> x <qtde_tokens> x <768 ou 1024>
+                            else:
+                                logging.info("Nenhuma seleção da camada dos embeddings foi especificada.")
           
         # Verifica se a primeira dimensão é igual 1 para remover a dimensão de lote 'batches'
         # Entrada: <1> x <qtde_tokens> x <768 ou 1024>
@@ -477,10 +479,13 @@ class Mensurador:
         `estrategia_pooling` - Estratégia de pooling a ser utilizada.       
         '''
 
-        if self.model_args.estrategia_pooling == 0:
+        if self.model_args.estrategia_pooling == EstrategiasPooling.MEAN.value:
             return self.getMedidasSentencasEmbeddingMEAN(embeddingSi, embeddingSj)
         else:
-            return self.getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
+            if self.model_args.estrategia_pooling == EstrategiasPooling.MAX.value:
+                return self.getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
+            else:
+                logging.info("Nenhuma seleção da estratégia de pooling foi especificada.")
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoALL(self, 
@@ -658,7 +663,7 @@ class Mensurador:
                 if self.model_args.palavra_relevante == PalavrasRelevantes.ALL.value:
                     return self.getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
                 else:
-                    logging.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
+                    logging.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
 
     # ============================
     def getMedidasComparacaoTexto(self, 

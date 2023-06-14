@@ -59,16 +59,14 @@ class ModeloLinguagem:
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
-       
-       
+      
         # Carrega o spaCy
         self.nlp = NLP(modelo_args=modelo_argumentos)
                         
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
-                                     nlp=self.nlp.get_model_nlp())
-        
+                                     nlp=self.nlp.get_model_nlp())        
     
         logging.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
     
@@ -128,7 +126,9 @@ class ModeloLinguagem:
         self.defineEstrategiaPooling(estrategiaPooling)
         self.definePalavraRelevante(palavraRelevante)
 
-        self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, camada=self.TipoCamadas, tipoTexto='o')
+        self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
+                                                                                    camada=modelo_argumentos.camadas_embeddings, 
+                                                                                    tipoTexto='o')
           
         return self.Ccos, self.Ceuc, self.Cman
     
@@ -152,7 +152,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Ccos
@@ -174,7 +174,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
 
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto,
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Ceuc        
@@ -198,7 +198,7 @@ class ModeloLinguagem:
         self.definePalavraRelevante(palavraRelevante)
         
         self.Ccos, self.Ceuc, self.Cman = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                                    camada=self.TipoCamadas, 
+                                                                    camada=modelo_argumentos.camadas_embeddings, 
                                                                     tipoTexto='o')
           
         return self.Cman                
