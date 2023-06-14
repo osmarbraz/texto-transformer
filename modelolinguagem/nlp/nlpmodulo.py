@@ -29,6 +29,7 @@ class NLP():
         #Instala o spaCy
         installspacy(modelo_args)
         
+        #Carrega o modelo do spacy
         self.carrega();
             
         logging.info("NLP carregado: {}.".format(modelo_args))    
@@ -57,11 +58,12 @@ class NLP():
         if self.modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
             logging.info("Carregando o spaCy")
-            self.nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])    
-            logging.info("spaCy carregado.")
+            self.nlp = spacy.load(self.modelo_args.modelo_spacy)                
+            #self.nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
+            logging.info("Modelo spaCy versão {} carregado!".format(modelo_args.versao_spacy))    
         
         else:
-            logging.info("spaCy não carregado!")
+           logging.info("Modelo spaCy versão {} não carregado!".format(modelo_args.versao_spacy)) 
             self.nlp = None
                 
 

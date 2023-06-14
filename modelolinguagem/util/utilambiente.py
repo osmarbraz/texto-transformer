@@ -5,8 +5,8 @@ import subprocess
 def installspacy(modelo_args):
     install_setuptools()
     install_spacy(modelo_args)
-    install_model_spacy(modelo_args)
-    logging.info("Instalação spacy realizada!.")
+    install_model_spacy(modelo_args)    
+    logging.info("Instalação spacy versão {} realizada!".format(modelo_args.versao_spacy)) 
 
 
 def install_setuptools():

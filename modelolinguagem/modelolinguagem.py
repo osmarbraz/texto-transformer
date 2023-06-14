@@ -31,17 +31,26 @@ class ModeloLinguagem:
      
     Parâmetros:
     `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download do repositório de modelos do Huggingface com esse nome.
+    `versao_spacy` - Versão da ferramentra de nlp spaCy a ser instalada e utilizada. Valor default 3.4.4.                       
+    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de nlp spaCy. Valor defaul pt_core_news_lg.                       
     `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul 2. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.    
     `palavra_relevante` - Especifica que palavras devem ser utilizadas para gerar os embeddings. Valor defaul 0. Valores possíveis: 0-Considera todas as palavras das sentenças/1-Desconsidera as stopwords/2- onsidera somente as palavras substantivas.
     ''' 
     
     # Construtor da classe
     def __init__(self, pretrained_model_name_or_path, 
+                       versao_spacy= '3.4.4',
+                       modelo_spacy= 'pt_core_news_lg',                         
                        camadas_embeddings=2,
                        palavra_relevante=0):
                        
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
+        
+        # Parâmetro recebido com a versão da ferramenta de nlp
+        modelo_argumentos.versao_spacy = versao_spacy
+        # Parâmetro recebido com o modelo da ferramenta de nlp
+        modelo_argumentos.modelo_spacy = modelo_spacy
                 
         # Carrega o modelo de linguagem da classe transformador
         self.transformer_model = Transformer(modelo_args=modelo_argumentos)
