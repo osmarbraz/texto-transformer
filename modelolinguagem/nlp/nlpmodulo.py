@@ -63,7 +63,7 @@ class NLP():
             logging.info("Modelo spaCy versão {} carregado!".format(modelo_args.versao_spacy))    
         
         else:
-           logging.info("Modelo spaCy versão {} não carregado!".format(modelo_args.versao_spacy)) 
+            logging.info("Modelo spaCy versão {} não carregado!".format(modelo_args.versao_spacy)) 
             self.nlp = None
                 
 
