@@ -30,9 +30,9 @@ class NLP():
         InstaladorModelo(modelo_args=modelo_args)
         
         #Carrega o modelo do spacy
-        self.carrega();
+        self.carrega()
             
-        logging.info("NLP carregado: {}.".format(modelo_args))    
+        logging.info("Classe NLP carregada: {}.".format(modelo_args))    
             
     # ============================
     def getStopwords(self):
@@ -65,7 +65,7 @@ class NLP():
         
         else:
             logging.info("Modelo spaCy versão {} não carregado!".format(self.modelo_args.modelo_spacy)) 
-            self.nlp = None
+            self.model_nlp = None
                 
 
     def get_model_nlp(self):

@@ -75,7 +75,7 @@ class Transformer(nn.Module):
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
             
-        logging.info("Transformer carregado: {}.".format(modelo_args))            
+        logging.info("Classe Transformer carregada: {}.".format(modelo_args))            
 
 
     def _load_model(self, model_name_or_path, config, cache_dir):
