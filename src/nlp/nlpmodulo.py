@@ -300,7 +300,7 @@ class NLP():
             if valor != None:
                 conjunto[x] = valor + 1
             else:
-            conjunto[x] = 1
+                conjunto[x] = 1
 
         return conjunto
 
