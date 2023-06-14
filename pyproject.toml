@@ -1,6 +1,6 @@
 [project]
-name = modelolinguagem
-version = 1.0.0
+name = "modelolinguagem"
+version = "1.0.0"
 authors = [
     {name = " Osmar de Oliveira Braz Junior", email = "osmar.braz@udesc.br"},
 ]
