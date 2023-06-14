@@ -2,19 +2,19 @@
 import logging  # Biblioteca de logging
 import subprocess
 
-class InstaladorSpacy:
+class InstaladorModelo:
     ''' 
-    Realiza a instalação do spaCy.
+    Realiza a instalação do modelo spaCy.
      
     Parâmetros:
-    `nome_pln` - rgumentos passados para o instalador.
+    `nome_pln` - argumentos passados para o instalador.
     ''' 
     def __init__(self, modelo_args):
         #Atualiza os parâmetros
         self.modelo_args = modelo_args
         
         # Executa o processo de atualização e instalação do spaCy
-        self.installspacy()
+        self.install_model_spacy()
 
     def installspacy(self):
         self.install_setuptools()
@@ -45,3 +45,11 @@ class InstaladorSpacy:
             logging.info("Download do modelo {} realizado!".format(self.modelo_args.modelo_spacy))    
         except subprocess.CalledProcessError as e:
             logging.info("Falha em instalar modelo spaCy {}. Erro: {}.".format(self.modelo_args.modelo_spacy, e))
+
+
+    def install_transformers_huggingface(self):
+        try:
+            subprocess.run(["pip", "install", "transformers={self.modelo_args.versao_transformers_huggingface}"])
+            logging.info("Transformers Huggingface versão {} instalado!".format(self.modelo_args.versao_transformers_huggingface))    
+        except subprocess.CalledProcessError as e:
+            logging.info("Falha em instalar Transformers Huggingface versão {}. Erro: {}.".format(self.modelo_args.versao_transformers_huggingface, e)

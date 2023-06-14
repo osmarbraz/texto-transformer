@@ -27,7 +27,7 @@ class NLP():
         self.modelo_args = modelo_args
         
         #Instala o spaCy
-        InstaladorSpacy(modelo_args=modelo_args)
+        InstaladorModelo(modelo_args=modelo_args)
         
         #Carrega o modelo do spacy
         self.carrega();
@@ -37,13 +37,13 @@ class NLP():
     # ============================
     def getStopwords(self):
         '''
-        Recupera as stop words do nlp(Spacy).
+        Recupera as stop words do model_nlp(Spacy).
         
         Parâmetros:
         `nlp` - Um modelo spaCy carregado.           
         '''
         
-        spacy_stopwords = self.nlp.Defaults.stop_words
+        spacy_stopwords = self.model_nlp.Defaults.stop_words
 
         return spacy_stopwords 
        
@@ -58,8 +58,8 @@ class NLP():
         if self.modelo_args.palavra_relevante != PalavrasRelevantes.ALL.value:
             # Carrega o modelo spacy
             logging.info("Carregando o spaCy")
-            self.nlp = spacy.load(self.modelo_args.modelo_spacy)                
-            #self.nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
+            self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)                
+            #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
             logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.versao_spacy))    
         
         else:
@@ -67,11 +67,11 @@ class NLP():
             self.nlp = None
                 
 
-    def get_nlp(self):
+    def get_model_nlp(self):
         '''
         Recupera o modelo de NLP.
         '''
-        return self.nlp
+        return self.model_nlp
         
    
           

@@ -13,9 +13,8 @@ from modelo.transformer import *
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
 modelo_argumentos = ModeloArgumentos(
                                     max_seq_len=512,
-                                    pretrained_model_name_or_path='neuralmind/bert-base-portuguese-cased', 
-                                    modelo_spacy='pt_core_news_lg',
-                                    versao_spacy= '3.4.4',                              
+                                    pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", 
+                                    modelo_spacy="pt_core_news_lg",
                                     do_lower_case=False,        # default True
                                     output_attentions=False,    # default False
                                     output_hidden_states=True,  # default False  /Retornar os embeddings das camadas ocultas  
@@ -30,25 +29,21 @@ class ModeloLinguagem:
     Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e textos.
      
     Parâmetros:
-    `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro tenta fazer o download do repositório de modelos do Huggingface com esse nome.
-    `versao_spacy` - Versão da ferramentra de nlp spaCy a ser instalada e utilizada. Valor default 3.4.4.                       
-    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de nlp spaCy. Valor defaul pt_core_news_lg.                       
-    `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul 2. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.    
-    `palavra_relevante` - Especifica que palavras devem ser utilizadas para gerar os embeddings. Valor defaul 0. Valores possíveis: 0-Considera todas as palavras das sentenças/1-Desconsidera as stopwords/2- onsidera somente as palavras substantivas.
+    `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
+    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de nlp spaCy. Valor default 'pt_core_news_lg'.                       
+    `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.    
+    `palavra_relevante` - Especifica que palavras devem ser utilizadas para gerar os embeddings. Valor defaul '0'. Valores possíveis: 0-Considera todas as palavras das sentenças/1-Desconsidera as stopwords/2- onsidera somente as palavras substantivas.
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path, 
-                       versao_spacy= '3.4.4',
-                       modelo_spacy= 'pt_core_news_lg',                         
+    def __init__(self, pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", 
+                       modelo_spacy="pt_core_news_lg",
                        camadas_embeddings=2,
                        palavra_relevante=0):
                        
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
-        
-        # Parâmetro recebido com a versão da ferramenta de nlp
-        modelo_argumentos.versao_spacy = versao_spacy
+               
         # Parâmetro recebido com o modelo da ferramenta de nlp
         modelo_argumentos.modelo_spacy = modelo_spacy
                 
@@ -63,8 +58,7 @@ class ModeloLinguagem:
         
         # Especifica de qual camada utilizar os embeddings        
         logging.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings]))
-          
-          
+                    
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
         
@@ -80,7 +74,7 @@ class ModeloLinguagem:
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
-                                     nlp=self.nlp)
+                                     nlp=self.nlp.get_model_nlp())
         
     
         logging.info("ModeloLinguagem carregado: {}.".format(modelo_argumentos))
@@ -229,5 +223,8 @@ class ModeloLinguagem:
         
     def get_mensurador(self):
         return self.mensurador        
+        
+    def get_nlp(self):
+        return self.nlp          
         
         

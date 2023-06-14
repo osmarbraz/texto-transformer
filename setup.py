@@ -17,7 +17,7 @@ setup(
     python_requires=">=3.6.0",
     install_requires=[
         'transformers==4.26.1',
-        'spacy==3.4.4'
+        'spacy==3.5.2'
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
