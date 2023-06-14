@@ -48,6 +48,52 @@ class NLP():
         logging.info("Carregando as stopwords: {}.".format(modelo_args))    
 
         return spacy_stopwords 
+
+    # ============================
+    def removeStopWord(texto):
+        '''
+        Remove as stopwords de um texto.
+        
+        Parâmetros:
+        `texto` - Um texto com stopwords.
+        '''
+
+        # Recupera as stopwords
+        stopwords = self.getStopwords()
+
+        # Remoção das stop words do texto
+        textoSemStopwords = [palavra for palavra in texto.split() if palavra.lower() not in stopwords]
+
+        # Concatena o texto sem os stopwords
+        textoLimpo = ' '.join(textoSemStopwords)
+
+        # Retorna o texto
+        return textoLimpo
+       
+    # ============================
+    def retornaPalavraRelevante(texto, tipo_palavra_relevante='NOUN'):
+        '''
+        Retorna somente os palavras do texto ou sentença do tipo especificado.
+        
+        Parâmetros:
+        `texto` - Um texto com todas as palavras.        
+        `tipo_palavra_relevante` - Tipo de palavra relevante a ser selecionada.
+        
+        Retorno:
+        `textoComRelevantesConcatenado` - Texto somente com as palavras relevantes.
+        '''
+      
+        # Realiza o parsing no texto usando spacy
+        doc = self.model_nlp(texto)
+
+        # Retorna a lista das palavras relevantes de um tipo
+        textoComRelevantes = [token.text for token in doc if token.pos_ == tipo_palavra_relevante]
+
+        # Concatena o texto com as palavras relevantes
+        textoComRelevantesConcatenado = ' '.join(textoComRelevantes)
+
+        # Retorna o texto
+        return textoComRelevantesConcatenado       
        
     # ============================    
     def carrega(self):

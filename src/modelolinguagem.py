@@ -66,7 +66,7 @@ class ModeloLinguagem:
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
-                                     nlp=self.nlp.get_model_nlp())        
+                                     nlp=self.nlp)        
     
         logging.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
     

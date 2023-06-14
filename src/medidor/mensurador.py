@@ -34,36 +34,14 @@ class Mensurador:
         # Recupera o tokenizador.     
         self.tokenizer = transformer_model.get_tokenizer()
         
-        # Carrega o spaCy
+        # Recupera a classe NLP
         self.nlp = nlp
                 
         # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
         self.buffer_embeddings = {}
         
         logging.info("Classe Mensurador carregada: {}.".format(modelo_args))
-   
-    # ============================
-    def getTextoTokenizado(self, texto):
-
-        '''
-        Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao BERT.
-        
-        Parâmetros:
-        `texto` - Um texto a ser tokenizado para o BERT.
-        `tokenizador` - Tokenizador BERT.
-        
-        Retorno:
-        `textoTokenizado` - Texto tokenizado.
-        '''
-
-        # Adiciona os tokens especiais.
-        textoMarcado = '[CLS] ' + texto + ' [SEP]'
-
-        # Texto tokenizado
-        textoTokenizado = self.tokenizer.tokenize(textoMarcado)
-
-        return textoTokenizado
-    
+      
     # ============================
     def getEmbeddingsTodasCamadas(self, texto):    
         '''   
@@ -81,7 +59,7 @@ class Mensurador:
         '''
 
         # Texto tokenizado
-        textoTokenizado = self.getTextoTokenizado(texto)
+        textoTokenizado =  self.model.getTextoTokenizado(texto)
 
         #print('O texto (', texto, ') tem tamanho = ', len(textoTokenizado), ' = ', textoTokenizado)
 
@@ -498,11 +476,11 @@ class Mensurador:
         '''
             
         # Tokeniza o texto
-        textoTokenizado = self.getTextoTokenizado(texto)
+        textoTokenizado =  self.model.getTextoTokenizado(texto)
         #print(textoTokenizado)
 
         # Tokeniza a sentença
-        sentencaTokenizada = self.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.model.getTextoTokenizado(sentenca)
         #print(sentencaTokenizada)
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -524,21 +502,20 @@ class Mensurador:
     def getEmbeddingSentencaEmbeddingTextoCLEAN(self, 
                                                 embeddingTexto, 
                                                 texto, 
-                                                sentenca, 
-                                                stopwords):
+                                                sentenca):
         '''
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         '''
           
         # Tokeniza o texto
-        textoTokenizado = self.getTextoTokenizado(texto)  
+        textoTokenizado =  self.model.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Remove as stopword da sentença
-        sentencaSemStopWord = removeStopWord(sentenca, stopwords)
+        sentencaSemStopWord = self.nlp.removeStopWord(sentenca)
 
         # Tokeniza a sentença sem stopword
-        sentencaTokenizadaSemStopWord = self.getTextoTokenizado(sentencaSemStopWord)
+        sentencaTokenizadaSemStopWord =  self.model.getTextoTokenizado(sentencaSemStopWord)
         #print(sentencaTokenizadaSemStopWord)
 
         # Remove os tokens de início e fim da sentença
@@ -547,7 +524,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSemStopWord))
 
         # Tokeniza a sentença
-        sentencaTokenizada = self.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.model.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -593,14 +570,14 @@ class Mensurador:
         '''
 
         # Tokeniza o texto
-        textoTokenizado = self.getTextoTokenizado(texto)  
+        textoTokenizado =  self.model.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
-        sentencaSomenteRelevante = retornaPalavraRelevante(sentenca, self.nlp, self.model_args.palavra_relevante)
+        sentencaSomenteRelevante = self.nlp.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
-        sentencaTokenizadaSomenteRelevante = self.getTextoTokenizado(sentencaSomenteRelevante)
+        sentencaTokenizadaSomenteRelevante =  self.model.getTextoTokenizado(sentencaSomenteRelevante)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizadaSomenteRelevante.remove('[CLS]')
@@ -609,7 +586,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSomenteRelevante))
 
         # Tokeniza a sentença
-        sentencaTokenizada = self.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.model.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -656,9 +633,8 @@ class Mensurador:
         if self.model_args.palavra_relevante == PalavrasRelevantes.CLEAN.value:
             return self.getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca)
         else:
-            if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:
-                stopwords = getStopwords(self.nlp)
-                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca, stopwords)
+            if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:                
+                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca)
             else:
                 if self.model_args.palavra_relevante == PalavrasRelevantes.ALL.value:
                     return self.getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
