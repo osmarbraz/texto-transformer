@@ -284,8 +284,8 @@ class Transformer(nn.Module):
     
     # Dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do BERT em relação ao spaCy
     # A tokenização do BERT gera mais tokens que a tokenização das palavras do spaCy
-    self.dic_excecao_maior = {"":-1,
-                             }
+    dic_excecao_maior = {"":-1,
+                        }
                              
     def getExcecaoDicMaior(self, token, dic_excecao_maior):   
     
@@ -297,7 +297,7 @@ class Transformer(nn.Module):
     
     # Dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do BERT em relação ao spaCy
     # A tokenização do BERT gera menos tokens que a tokenização das palavras do spaCy
-    self.dic_excecao_menor = {"1°":1,
+    dic_excecao_menor = {"1°":1,
                         }
     def getExcecaoDicMenor(self, token, dic_excecao_menor):   
         
