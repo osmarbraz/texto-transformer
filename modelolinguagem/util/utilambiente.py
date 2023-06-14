@@ -11,14 +11,14 @@ class InstaladorSpacy:
         # Executa o processo de atualização e instalação do spaCy
         self.installspacy()
 
-    def installspacy():
-        install_setuptools()
-        install_spacy()
-        install_model_spacy()    
-        logging.info("Instalação spacy versão {} realizada!".format(self.modelo_args.versao_spacy)) 
+    def installspacy(self):
+        self.install_setuptools()
+        self.install_spacy()
+        self.install_model_spacy()    
+        self.logging.info("Instalação spacy versão {} realizada!".format(self.modelo_args.versao_spacy)) 
 
 
-    def install_setuptools():
+    def install_setuptools(self):
         try:
             subprocess.run(["pip", "-U", "install", "pip","setuptools", "wheel"])
             logging.info("Atualizado as instalações do pip, setuptools e wheell!")    
