@@ -3,7 +3,12 @@ import logging  # Biblioteca de logging
 import subprocess
 
 class InstaladorSpacy:
-
+    ''' 
+    Realiza a instalação do spaCy.
+     
+    Parâmetros:
+    `nome_pln` - rgumentos passados para o instalador.
+    ''' 
     def __init__(self, modelo_args):
         #Atualiza os parâmetros
         self.modelo_args = modelo_args
@@ -15,7 +20,7 @@ class InstaladorSpacy:
         self.install_setuptools()
         self.install_spacy()
         self.install_model_spacy()    
-        self.logging.info("Instalação spacy versão {} realizada!".format(self.modelo_args.versao_spacy)) 
+        logging.info("Instalação spacy versão {} realizada!".format(self.modelo_args.versao_spacy)) 
 
 
     def install_setuptools(self):
