@@ -60,10 +60,10 @@ class NLP():
             logging.info("Carregando o spaCy")
             self.nlp = spacy.load(self.modelo_args.modelo_spacy)                
             #self.nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
-            logging.info("Modelo spaCy versão {} carregado!".format(modelo_args.versao_spacy))    
+            logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.versao_spacy))    
         
         else:
-            logging.info("Modelo spaCy versão {} não carregado!".format(modelo_args.versao_spacy)) 
+            logging.info("Modelo spaCy versão {} não carregado!".format(self.modelo_args.versao_spacy)) 
             self.nlp = None
                 
 
