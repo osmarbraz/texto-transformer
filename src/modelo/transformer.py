@@ -287,9 +287,9 @@ class Transformer(nn.Module):
     dic_excecao_maior = {"":-1,
                         }
                              
-    def getExcecaoDicMaior(self, token, dic_excecao_maior):   
+    def getExcecaoDicMaior(self, token):   
     
-        valor = dic_excecao_maior.get(token)
+        valor = self.dic_excecao_maior.get(token)
         if valor != None:
             return valor
         else:
@@ -299,9 +299,9 @@ class Transformer(nn.Module):
     # A tokenização do BERT gera menos tokens que a tokenização das palavras do spaCy
     dic_excecao_menor = {"1°":1,
                         }
-    def getExcecaoDicMenor(self, token, dic_excecao_menor):   
+    def getExcecaoDicMenor(self, token):   
         
-        valor = dic_excecao_menor.get(token)
+        valor = self.dic_excecao_menor.get(token)
         if valor != None:
             return valor
         else:
@@ -360,7 +360,7 @@ class Transformer(nn.Module):
                 wi1 = sentenca_token[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
-                pos2 = self.getExcecaoDicMenor(wi+wi1, dic_excecao_menor)  
+                pos2 = self.getExcecaoDicMenor(wi+wi1)  
                 #print("Exceção pos2:", pos2)
 
             wj = sentenca_tokenizada_MCL[pos_wj] # Recupera o token da palavra gerado pelo MCL
@@ -369,7 +369,7 @@ class Transformer(nn.Module):
 
             # Tratando exceções
             # Localiza o deslocamento da exceção
-            pos = self.getExcecaoDicMaior(wi, dic_excecao_maior)  
+            pos = self.getExcecaoDicMaior(wi)  
             #print("Exceção pos:", pos)
                 
             if pos != -1 or pos2 != -1:      
