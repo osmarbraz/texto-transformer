@@ -34,6 +34,18 @@ class NLP():
             
         logging.info("Classe NLP carregada: {}.".format(modelo_args))    
             
+    # ============================    
+    def carrega(self):
+        '''
+        Realiza o carregamento da ferramenta de NLP.
+     
+        '''
+       
+        # Carrega o modelo spacy            
+        self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)                
+        #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
+        logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
+    
     # ============================
     def getStopwords(self):
         '''
@@ -45,7 +57,7 @@ class NLP():
         
         spacy_stopwords = self.model_nlp.Defaults.stop_words
         
-        logging.info("Carregando as stopwords: {}.".format(modelo_args))    
+        logging.info("Carregando as stopwords do modelo {}.".format(self.modelo_args.modelo_spacy))    
 
         return spacy_stopwords 
 
@@ -95,17 +107,27 @@ class NLP():
         # Retorna o texto
         return textoComRelevantesConcatenado       
        
-    # ============================    
-    def carrega(self):
+    # ============================
+    def getListaSentencasTexto(self, texto):
         '''
-        Realiza o carregamento da ferramenta de NLP.
-     
+        Retorna uma lista com as sentenças de um texto. Utiliza o spacy para dividir o texto em sentenças.
+        
+        Parâmetros:
+        `texto` - Um texto a ser convertido em uma lista de sentenças.           
+                 
         '''
-       
-        # Carrega o modelo spacy            
-        self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)                
-        #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
-        logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
+
+        # Aplica sentenciação do spacy no texto
+        doc = self.model_nlp(texto) 
+
+        # Lista para as sentenças
+        lista = []
+        # Percorre as sentenças
+        for sentenca in doc.sents: 
+            # Adiciona as sentenças a lista
+            lista.append(str(sentenca))
+
+        return lista       
        
     def get_model_nlp(self):
         '''

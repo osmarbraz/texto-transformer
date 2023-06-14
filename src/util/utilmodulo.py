@@ -92,25 +92,3 @@ def getTextoLista(listaSentencas):
     # Concatena as sentenças do texto
     for sentenca in listaSentencas:                
         stringTexto = stringTexto + sentenca
-
-# ============================
-def getListaSentencasTexto(texto, nlp):
-    '''
-    Retorna uma lista com as sentenças de um texto. Utiliza o spacy para dividir o texto em sentenças.
-    
-    Parâmetros:
-    `texto` - Um texto a ser convertido em uma lista de sentenças.           
-             
-    '''
-
-    # Aplica sentenciação do spacy no texto
-    doc = nlp(texto) 
-
-    # Lista para as sentenças
-    lista = []
-    # Percorre as sentenças
-    for sentenca in doc.sents: 
-        # Adiciona as sentenças a lista
-        lista.append(str(sentenca))
-
-    return lista
