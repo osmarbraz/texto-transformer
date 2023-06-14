@@ -42,7 +42,8 @@ class NLP():
         '''
        
         # Carrega o modelo spacy            
-        self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)                
+        self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)    
+        # Opção para remover funcionalidades
         #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
         logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
     
@@ -50,15 +51,11 @@ class NLP():
     def getStopwords(self):
         '''
         Recupera as stop words do model_nlp(Spacy).
-        
-        Parâmetros:
-        `nlp` - Um modelo spaCy carregado.           
+                
         '''
         
         spacy_stopwords = self.model_nlp.Defaults.stop_words
         
-        logging.info("Carregando as stopwords do modelo {}.".format(self.modelo_args.modelo_spacy))    
-
         return spacy_stopwords 
 
     # ============================

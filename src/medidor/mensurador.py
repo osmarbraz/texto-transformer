@@ -633,13 +633,13 @@ class Mensurador:
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         '''
 
-        if self.model_args.palavra_relevante == PalavrasRelevantes.CLEAN.value:
+        if self.model_args.palavra_relevante == PalavrasRelevantes.ALL.value:
             return self.getEmbeddingSentencaEmbeddingTextoALL(embeddingTexto, texto, sentenca)
         else:
-            if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:                
+            if self.model_args.palavra_relevante == PalavrasRelevantes.CLEAN.value:                
                 return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embeddingTexto, texto, sentenca)
             else:
-                if self.model_args.palavra_relevante == PalavrasRelevantes.ALL.value:
+                if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:
                     return self.getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
                 else:
                     logging.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
