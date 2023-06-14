@@ -24,7 +24,7 @@ def install_spacy(modelo_args):
     except subprocess.CalledProcessError as e:
         logging.info("Falha em instalar spaCy versão {}. Erro: {}.".format(modelo_args.versao_spacy, e))    
 
-def install_model_spacy():
+def install_model_spacy(modelo_args):
     try:
         # Download do modelo de linguagem na linguagem solicitada
         subprocess.run(["python", "-m", "spacy", "download", modelo_args.modelo_spacy])
