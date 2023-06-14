@@ -4,7 +4,7 @@ import subprocess
 
 class InstaladorSpacy:
 
-    def __init__(self, modelo_args : ModeloArgumentos):
+    def __init__(self, modelo_args):
         #Atualiza os parâmetros
         self.modelo_args = modelo_args
         
