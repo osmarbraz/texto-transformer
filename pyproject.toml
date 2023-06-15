@@ -1,5 +1,5 @@
 [project]
-name = modelolinguagem
+name = "modelolinguagem"
 version = "1.0.0"
 description = "Framework Multilingual para processamento de textos utilizando modelos de linguagem"
 readme = "README.md"
