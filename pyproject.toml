@@ -24,3 +24,7 @@ dependencies = ["transformers==4.26.1",
 
 [project.urls]
 repository = "https://github.com/osmarbraz/modelolinguagem/"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
