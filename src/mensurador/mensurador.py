@@ -10,7 +10,7 @@ from util.utilconstantes import *
 
 from nlp.nlpmodulo import *
 from mensurador.medidas import *
-from mensurador.mensuradorenum import EmbeddingsCamadas
+from mensurador.mensuradorenum import *
 
 logger = logging.getLogger(__name__)
 
