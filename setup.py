@@ -5,7 +5,7 @@ with open("README.md", mode="r", encoding="utf-8") as readme_file:
 
 setup(
     name="modelolinguagem",
-    version="1.0.3",
+    version="1.0.4",
     author="Osmar de Oliveira Braz Junior",
     author_email="osmar.braz@udesc.br",
     description="Framework Multilingual para processamento de textos utilizando modelos de linguagem",
