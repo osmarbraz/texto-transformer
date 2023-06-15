@@ -3,13 +3,13 @@ import logging  # Biblioteca de logging
 import torch # Biblioteca de aprendizado de máquina
 
 # Import de bibliotecas próprias
-from util.utilmodulo import *
-from util.utiltempo import *
-from util.utilarquivo import *
+#from util.utilmodulo import *
+#from util.utiltempo import *
+#from util.utilarquivo import *
 
-from nlp.nlpmodulo import *
-from mensurador.medidas import *
-from util.utilconstantes import *
+#from nlp.nlpmodulo import *
+#from mensurador.medidas import *
+#from util.utilconstantes import *
 
 logger = logging.getLogger(__name__)
 
