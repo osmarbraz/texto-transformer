@@ -1,3 +1,6 @@
+# Diretório do cohebert
+DIRETORIO_MODELO_LINGUAGEM = 'modelo_linguagem'
+
 # ============================
 # listaTipoCamadas
 # Define uma lista com as camadas a serem analisadas nos teste.

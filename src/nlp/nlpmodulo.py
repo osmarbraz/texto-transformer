@@ -9,9 +9,10 @@ from spacy.matcher import Matcher
 from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
+from util.utilambiente import *
 from medidor.medidorenum import *
 
-from util.utilambiente import *
+logger = logging.getLogger(__name__)
 
 class NLP():
 
@@ -34,7 +35,7 @@ class NLP():
         #Carrega o modelo do spacy
         self.carrega()
             
-        logging.info("Classe NLP carregada: {}.".format(modelo_args))    
+        logger.info("Classe NLP carregada: {}.".format(modelo_args))    
             
     # ============================    
     def carrega(self):
@@ -47,7 +48,7 @@ class NLP():
         self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)    
         # Opção para remover funcionalidades
         #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
-        logging.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
+        logger.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
     
     # ============================
     

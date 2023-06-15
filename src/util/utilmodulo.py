@@ -5,6 +5,7 @@ import unicodedata # Biblioteca de codificação de caracteres
 from collections import Counter
 from functools import reduce
 
+logger = logging.getLogger(__name__)
 
 # ============================  
 def removeAcentos(texto):   

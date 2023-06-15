@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
 
+logger = logging.getLogger(__name__)
+
 # ============================
 @dataclass
 class ModeloArgumentos:        

@@ -8,9 +8,9 @@ import sys
 # Import de bibliotecas próprias
 from util.utilmodulo import *
 from util.utiltempo import *
+from util.utilconstantes import *
 
-# Diretório do cohebert
-DIRETORIO_MODELO_LINGUAGEM = 'modelo_linguagem'
+logger = logging.getLogger(__name__)
 
 # ============================  
 def verificaDiretorioModeloLinguagem():
@@ -22,7 +22,7 @@ def verificaDiretorioModeloLinguagem():
     if not os.path.exists(DIRETORIO_MODELO_LINGUAGEM):  
         # Cria o diretório
         os.makedirs(DIRETORIO_MODELO_LINGUAGEM)
-        logging.info("Diretório Cohebert criado: {}".format(DIRETORIO_MODELO_LINGUAGEM))
+        logger.info("Diretório Cohebert criado: {}".format(DIRETORIO_MODELO_LINGUAGEM))
     
     return DIRETORIO_MODELO_LINGUAGEM
 
@@ -44,7 +44,7 @@ def downloadArquivo(url_arquivo, nome_arquivo_destino):
     
     # Verifica se o arquivo existe
     if data.status_code != 200:
-        logging.info("Exceção ao tentar realizar download {}. Response {}.".format(url_arquivo, data.status_code))
+        logger.info("Exceção ao tentar realizar download {}. Response {}.".format(url_arquivo, data.status_code))
         data.raise_for_status()
         return
 
@@ -54,7 +54,7 @@ def downloadArquivo(url_arquivo, nome_arquivo_destino):
     # Define o nome e caminho do arquivo temporário    
     nome_arquivo_temporario = DIRETORIO_MODELO_LINGUAGEM + "/" + nome_arquivo + "_part"
     
-    logging.info("Download do arquivo: {}.".format(nome_arquivo_destino))
+    logger.info("Download do arquivo: {}.".format(nome_arquivo_destino))
     
     # Baixa o arquivo
     with open(nome_arquivo_temporario, "wb") as arquivo_binario:        

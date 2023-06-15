@@ -9,6 +9,7 @@ from medidor.medidorenum import *
 from medidor.mensurador import Mensurador
 from modelo.transformer import *
 
+logger = logging.getLogger(__name__)
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
 modelo_argumentos = ModeloArgumentos(
@@ -55,7 +56,7 @@ class ModeloLinguagem:
         self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Especifica de qual camada utilizar os embeddings        
-        logging.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][3]))
+        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][3]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
@@ -68,7 +69,7 @@ class ModeloLinguagem:
                                      transformer_model=self.transformer_model, 
                                      nlp=self.nlp)        
     
-        logging.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
+        logger.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
     
     def defineEstrategiaPooling(self, estrategiaPooling):
         ''' 
@@ -85,7 +86,7 @@ class ModeloLinguagem:
             if estrategiaPooling == EstrategiasPooling.MEAN.name:
                 modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
             else:
-                logging.info("Não foi especificado uma estratégia de pooling válida.") 
+                logger.info("Não foi especificado uma estratégia de pooling válida.") 
 
     def definePalavraRelevante(self, palavraRelevante):
         ''' 
@@ -106,7 +107,7 @@ class ModeloLinguagem:
                 if palavraRelevante == PalavrasRelevantes.ALL.name:
                     modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value                    
                 else:
-                    logging.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
+                    logger.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
     def getMedidasTexto(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 

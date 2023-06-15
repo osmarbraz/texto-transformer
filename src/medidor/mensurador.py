@@ -11,6 +11,8 @@ from nlp.nlpmodulo import *
 from medidor.medidas import *
 from util.utilconstantes import *
 
+logger = logging.getLogger(__name__)
+
 class Mensurador:
 
     ''' 
@@ -332,7 +334,7 @@ class Mensurador:
                                 #print('resultadoEmbeddingCamadas5=',resultadoEmbeddingCamadas.size())
                                 # Retorno: <1> x <qtde_tokens> x <768 ou 1024>
                             else:
-                                logging.info("Nenhuma seleção da camada dos embeddings foi especificada.")
+                                logger.info("Nenhuma seleção da camada dos embeddings foi especificada.")
           
         # Verifica se a primeira dimensão é igual 1 para remover a dimensão de lote 'batches'
         # Entrada: <1> x <qtde_tokens> x <768 ou 1024>
@@ -466,7 +468,7 @@ class Mensurador:
             if self.model_args.estrategia_pooling == EstrategiasPooling.MAX.value:
                 return self.getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
             else:
-                logging.info("Nenhuma seleção da estratégia de pooling foi especificada.")
+                logger.info("Nenhuma seleção da estratégia de pooling foi especificada.")
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoALL(self, 
@@ -642,7 +644,7 @@ class Mensurador:
                 if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:
                     return self.getEmbeddingSentencaEmbeddingTextoNOUN(embeddingTexto, texto, sentenca)
                 else:
-                    logging.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
+                    logger.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
 
     # ============================
     def getMedidasComparacaoTexto(self, 
@@ -757,7 +759,7 @@ class Mensurador:
         # Recupera os embeddings da sentença Si e sentença Sj e suas medidas
         embeddingSi, embeddingSj, Scos, Seuc, Sman = self.getMedidasCamadasSentencas(Si, Sj, camada)
 
-        logging.info('  ->Mostra comparação da ' + camada[LISTATIPOCAMADA_NOME] + ' camada(s)')    
-        logging.info('   Cosseno(SixSj)     = %.8f' % Scos)
-        logging.info('   Euclidiana(SixSj)  = %.8f' % Seuc)
-        logging.info('   Manhattan(SixSj)   = %.8f' % Sman)
+        logger.info('  ->Mostra comparação da ' + camada[LISTATIPOCAMADA_NOME] + ' camada(s)')    
+        logger.info('   Cosseno(SixSj)     = %.8f' % Scos)
+        logger.info('   Euclidiana(SixSj)  = %.8f' % Seuc)
+        logger.info('   Manhattan(SixSj)   = %.8f' % Sman)

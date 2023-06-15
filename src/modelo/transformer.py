@@ -15,6 +15,8 @@ import os
 # Biblioteca dos modelos de linguagem
 from modelo.modeloarguments import ModeloArgumentos
 
+logger = logging.getLogger(__name__)
+
 class Transformer(nn.Module):
     '''
     Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou texto.
@@ -75,7 +77,7 @@ class Transformer(nn.Module):
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
             
-        logging.info("Classe Transformer carregada: {}.".format(modelo_args))            
+        logger.info("Classe Transformer carregada: {}.".format(modelo_args))            
 
     # ============================   
     def _load_model(self, model_name_or_path, config, cache_dir):
@@ -201,7 +203,7 @@ class Transformer(nn.Module):
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in  saida['tokens_texto']:
             if len(tokens) >= 512:
-                logging.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings]))   
+                logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings]))   
                         
         return saida
         
@@ -488,17 +490,17 @@ class Transformer(nn.Module):
         # Verificação se as listas estão com o mesmo tamanho
         #if (len(lista_tokens) != len(sentenca_token)) or (len(lista_embeddings_MEAN) != len(sentenca_token)):
         if (len(lista_tokens) !=  len(lista_embeddings_MEAN)):
-            logging.info("sentenca                   :{}.".format(sentenca))
-            logging.info("sentenca_pos               :{}.".format(sentenca_pos))
-            logging.info("sentenca_token             :{}.".format(sentenca_token))
-            logging.info("sentenca_tokenizada_MCL    :{}.".format(sentenca_tokenizada_MCL))
-            logging.info("lista_tokens               :{}.".format(lista_tokens))
-            logging.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logging.info("sentenca_token             :{}.".format(sentenca_token))            
-            logging.info("lista_embeddings_MEAN      :{}.".format(lista_embeddings_MEAN))
-            logging.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
-            logging.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
-            logging.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
+            logger.info("sentenca                   :{}.".format(sentenca))
+            logger.info("sentenca_pos               :{}.".format(sentenca_pos))
+            logger.info("sentenca_token             :{}.".format(sentenca_token))
+            logger.info("sentenca_tokenizada_MCL    :{}.".format(sentenca_tokenizada_MCL))
+            logger.info("lista_tokens               :{}.".format(lista_tokens))
+            logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
+            logger.info("sentenca_token             :{}.".format(sentenca_token))            
+            logger.info("lista_embeddings_MEAN      :{}.".format(lista_embeddings_MEAN))
+            logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
+            logger.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
+            logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
             
        
         del embedding_sentenca

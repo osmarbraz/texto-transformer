@@ -4,6 +4,8 @@ from scipy.spatial.distance import cosine
 from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cityblock
 
+logger = logging.getLogger(__name__)
+
 # ============================  
 def similaridadeCoseno(texto1, texto2):
     '''
