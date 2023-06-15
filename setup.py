@@ -8,7 +8,7 @@ setup(
     version="1.0.0",
     author="Osmar de Oliveira Braz Junior",
     author_email="osmar.braz@udesc.br",
-    description="Multilingual text embeddings",
+    description="Framework Multilingual para processamento de textos utilizando modelos de linguagem",
     long_description=readme,
     long_description_content_type="text/markdown",
     license="MIT",    
