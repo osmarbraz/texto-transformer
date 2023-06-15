@@ -1,1 +1,1 @@
-from .nlpmodulo import NLP
+import nlpmodulo

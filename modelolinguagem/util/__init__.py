@@ -1,5 +1,5 @@
-from .utilambiente import *
-from .utilarquivo import *
-from .utilconstantes import *
-from .utilmodulo import *
-from .utiltempo import *
+import utilambiente
+import utilarquivo
+import utilconstantes
+import utilmodulo
+import utiltempo

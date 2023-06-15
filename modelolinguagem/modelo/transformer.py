@@ -13,7 +13,7 @@ from typing import List, Dict, Optional, Union, Tuple
 import os
 
 # Biblioteca dos modelos de linguagem
-from .modeloarguments import ModeloArgumentos
+import modeloarguments
 
 logger = logging.getLogger(__name__)
 
