@@ -1,6 +1,6 @@
 [project]
 name = "modelolinguagem"
-version = "1.0.0"
+version = "1.0.3"
 description = "Framework Multilingual para processamento de textos utilizando modelos de linguagem"
 readme = "README.md"
 requires-python = ">=3.6.0"
@@ -20,7 +20,7 @@ classifiers = [
 keywords = ["Framework", "Transformer","embedding","texto sentença","palavra","token"]
 
 dependencies = ["transformers==4.26.1", 
-		"spacy==3.5.2"]
+			    "spacy==3.5.2"]
 
 [project.urls]
 repository = "https://github.com/osmarbraz/modelolinguagem/"
