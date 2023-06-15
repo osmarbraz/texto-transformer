@@ -9,8 +9,8 @@ from util.utilarquivo import *
 from util.utilconstantes import *
 
 from nlp.nlpmodulo import *
-from medidas import *
-from mensuradorenum import *
+from mensurador.medidas import *
+from mensurador.mensuradorenum import *
 
 logger = logging.getLogger(__name__)
 
