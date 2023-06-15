@@ -1,2 +1,2 @@
-from .modeloarguments import ModeloArgumentos
-from .transformer import Transformer
+from modeloarguments import ModeloArgumentos
+from transformer import Transformer
