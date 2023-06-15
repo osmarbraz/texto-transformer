@@ -1,3 +1,3 @@
-from medidas import *
-from mensuradorenum import *
-from mensurador import Mensurador
+from mensurador.medidas import *
+from mensurador.mensuradorenum import *
+from mensurador.mensurador import Mensurador
