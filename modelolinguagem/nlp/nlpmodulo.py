@@ -6,11 +6,11 @@ from spacy.util import filter_spans
 from spacy.matcher import Matcher
 
 # Import de bibliotecas próprias
-from .utilmodulo import *
-from .utiltempo import *
-from .utilarquivo import *
-from .utilambiente import *
-from ..mensurador.mensuradorenum import *
+from utilmodulo import *
+from utiltempo import *
+from utilarquivo import *
+from utilambiente import *
+from mensurador.mensuradorenum import *
 
 logger = logging.getLogger(__name__)
 
