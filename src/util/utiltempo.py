@@ -4,7 +4,7 @@ from cmath import rect, phase
 from math import radians, degrees
 import datetime # Biblioteca de data e tempo
  
- logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
  
 # ============================    
 def formataTempo(tempo):
