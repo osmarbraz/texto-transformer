@@ -6,9 +6,9 @@ import os # Biblioteca para manipular arquivos
 import sys
 
 # Import de bibliotecas próprias
-import utilmodulo
-import utiltempo
-import utilconstantes
+from .utilmodulo import *
+from .utiltempo import *
+from .utilconstantes import *
 
 logger = logging.getLogger(__name__)
 
