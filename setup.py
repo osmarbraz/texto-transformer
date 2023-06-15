@@ -5,7 +5,7 @@ with open("README.md", mode="r", encoding="utf-8") as readme_file:
 
 setup(
     name="modelolinguagem",
-    version="1.0.2",
+    version="1.0.0",
     author="Osmar de Oliveira Braz Junior",
     author_email="osmar.braz@udesc.br",
     description="Multilingual text embeddings",
