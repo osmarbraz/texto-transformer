@@ -42,7 +42,7 @@ class Mensurador:
         # Recupera a classe NLP
         self.nlp = nlp
         
-        logging.info("Classe Mensurador carregada: {}.".format(modelo_args))
+        logger.info("Classe Mensurador carregada: {}.".format(modelo_args))
       
     # ============================
     def getEmbeddingsTodasCamadas(self, texto):    
