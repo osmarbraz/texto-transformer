@@ -8,7 +8,7 @@ from util.utiltempo import *
 from util.utilarquivo import *
 
 from nlp.nlpmodulo import *
-from medidor.medidas import *
+from mensurador.medidas import *
 from util.utilconstantes import *
 
 logger = logging.getLogger(__name__)

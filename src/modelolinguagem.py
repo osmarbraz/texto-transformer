@@ -5,8 +5,8 @@ import logging  # Biblioteca de logging
 from modelo.modeloarguments import ModeloArgumentos
 from nlp.nlpmodulo import *
 from util.utilconstantes import *
-from medidor.medidorenum import *
-from medidor.mensurador import Mensurador
+from mensurador.mensuradorenum import *
+from mensurador.mensurador import Mensurador
 from modelo.transformer import *
 
 logger = logging.getLogger(__name__)

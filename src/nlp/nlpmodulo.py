@@ -10,7 +10,7 @@ from util.utilmodulo import *
 from util.utiltempo import *
 from util.utilarquivo import *
 from util.utilambiente import *
-from medidor.medidorenum import *
+from mensurador.mensuradorenum import *
 
 logger = logging.getLogger(__name__)
 
