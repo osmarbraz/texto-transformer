@@ -14,6 +14,7 @@ import os
 
 # Biblioteca dos modelos de linguagem
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
+from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_CAMADA
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,9 @@ class Transformer(nn.Module):
         # Inicializa o construtor da superclasse
         super(Transformer, self).__init__()
         
+        # Define os argumentos do modelo
+        self.modelo_args = modelo_args
+
         # Recupera o nome do modelo dos argumentos
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
         # Recupera o tamanho máximo de um texto
@@ -203,7 +207,7 @@ class Transformer(nn.Module):
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in  saida['tokens_texto']:
             if len(tokens) >= 512:
-                logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings]))   
+                logger.info("Utilizando embeddings do modelo de: {}.".format(LISTATIPOCAMADA_CAMADA[self.modelo_args.camadas_embeddings]))   
                         
         return saida
         
@@ -234,7 +238,8 @@ class Transformer(nn.Module):
     
         # Recupera o texto preparado pelo tokenizador
         dic_texto_tokenizado = {'input_ids': texto['input_ids'], 
-                               'attention_mask': texto['attention_mask']}
+                                'tokens_texto': texto['tokens_texto'], 
+                                'attention_mask': texto['attention_mask']}
         
         # Se token_type_ids estiver no texto preparado copia para dicionário
         if 'token_type_ids' in texto:
@@ -265,7 +270,6 @@ class Transformer(nn.Module):
         saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
                       'input_ids': dic_texto_tokenizado['input_ids'],
                       'attention_mask': dic_texto_tokenizado['attention_mask'],
-                      'input_ids': dic_texto_tokenizado['input_ids'],        
                       'token_type_ids': dic_texto_tokenizado['token_type_ids'],        
                       'tokens_texto': dic_texto_tokenizado['tokens_texto']
                       }
