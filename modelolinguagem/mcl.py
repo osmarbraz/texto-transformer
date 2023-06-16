@@ -226,6 +226,7 @@ class ModeloLinguagem:
         # Acumula a saída do método
         saida = {}
         saida.update({'tokens_texto': [], 
+                      'tokens_texto_mcl' : [],
                       'tokens_texto_pln' : [],
                       'tokens_pos': [],
                       'tokens_oov': [],                      
@@ -255,6 +256,7 @@ class ModeloLinguagem:
 
             #Acumula a saída do método 
             saida['tokens_texto'].append(lista_tokens_texto)
+            saida['tokens_texto_mcl'].append(tokens_texto_mcl)
             saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
             saida['tokens_pos'].append(lista_tokens_texto_pos)
             saida['tokens_oov'].append(lista_tokens_oov)            
