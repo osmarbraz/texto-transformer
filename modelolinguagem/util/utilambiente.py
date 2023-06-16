@@ -18,6 +18,7 @@ class InstaladorModelo:
         # Executa o processo de atualização e instalação do spaCy
         self.install_model_spacy()
 
+    # ============================
     def install_model_spacy(self):
         try:
             # Download do modelo de linguagem na linguagem solicitada

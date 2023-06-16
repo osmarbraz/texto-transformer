@@ -71,6 +71,7 @@ class ModeloLinguagem:
     
         logger.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
     
+    # ============================
     def defineEstrategiaPooling(self, estrategiaPooling):
         ''' 
         Define a estratégia de pooling para os parâmetros do modelo.
@@ -87,7 +88,8 @@ class ModeloLinguagem:
                 modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
             else:
                 logger.info("Não foi especificado uma estratégia de pooling válida.") 
-
+    
+    # ============================
     def definePalavraRelevante(self, palavraRelevante):
         ''' 
         Define a estratégia de palavra relavante para os parâmetros do modelo.
@@ -109,6 +111,7 @@ class ModeloLinguagem:
                 else:
                     logger.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
+    # ============================
     def getMedidasTexto(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
@@ -133,6 +136,7 @@ class ModeloLinguagem:
           
         return self.Ccos, self.Ceuc, self.Cman
     
+    # ============================
     def getMedidasTextoCosseno(self, 
                                texto, 
                                estrategiaPooling='MEAN', 
@@ -158,6 +162,7 @@ class ModeloLinguagem:
           
         return self.Ccos
     
+    # ============================
     def getMedidasTextoEuclediana(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de incoerência do texto utilizando a medida de distância de Euclidiana.
@@ -179,9 +184,8 @@ class ModeloLinguagem:
                                                                     tipoTexto='o')
           
         return self.Ceuc        
-    
-   
-
+       
+    # ============================
     def getMedidasTextoManhattan(self, texto, estrategiaPooling='MEAN', palavraRelevante='ALL'):
         ''' 
         Retorna a medida de incoerência do texto utilizando a medida de distância de Manhattan.
@@ -203,20 +207,39 @@ class ModeloLinguagem:
                                                                     tipoTexto='o')
           
         return self.Cman                
+    
+    # ============================
+    def tokenize(self, texto):
+        return self.get_transformer_model().tokenize(texto)
+    
+    # ============================
+    def getEmbeddings(self, texto):
+        return self.get_transformer_model().getEmbeddings(texto)
 
+    # ============================
+    def getEmbeddingsPalavras(self, 
+                              texto):
+        
+        return self.get_transformer_model().getEmbeddingsPalavras(texto,
+                                                                  self.get_pln().get_model_pln())
 
+    # ============================
     def get_model(self):
         return self.model
 
+    # ============================
     def get_tokenizer(self):
         return self.tokenizer
 
+    # ============================
     def get_transformer_model(self):
         return self.transformer_model
-        
+
+    # ============================    
     def get_mensurador(self):
         return self.mensurador        
         
+    # ============================        
     def get_pln(self):
         return self.pln          
         

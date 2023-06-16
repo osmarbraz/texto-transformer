@@ -208,9 +208,9 @@ class Transformer(nn.Module):
         return saida
         
     # ============================           
-    def getEmbeddings(self, texto_preparado):
+    def getEmbeddings(self, texto):
         '''
-        Retorna token_embeddings, cls_token
+        De um texto preparado(tokenizado) retorna tokens_texto, input_ids, token_type_ids, attention_mask, token_embeddings e all_layer_embeddings em um dicionário.
         '''
         
         '''   
@@ -227,19 +227,23 @@ class Transformer(nn.Module):
             token_embeddings uma lista com os embeddings da última camada
             all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
+
+        # Se o texto não estiver tokenizado, tokeniza
+        if not isinstance(texto, dict):
+            texto = self.tokenize(texto)
     
         # Recupera o texto preparado pelo tokenizador
-        dic_texto_preparado = {'input_ids': texto_preparado['input_ids'], 
-                               'attention_mask': texto_preparado['attention_mask']}
+        dic_texto_tokenizado = {'input_ids': texto['input_ids'], 
+                               'attention_mask': texto['attention_mask']}
         
         # Se token_type_ids estiver no texto preparado copia para dicionário
-        if 'token_type_ids' in texto_preparado:
-            dic_texto_preparado['token_type_ids'] = texto_preparado['token_type_ids']
+        if 'token_type_ids' in texto:
+            dic_texto_tokenizado['token_type_ids'] = texto['token_type_ids']
 
         # Roda o texto através do modelo, e coleta todos os estados ocultos produzidos.
         with torch.no_grad():
 
-            outputs = self.auto_model(**dic_texto_preparado, 
+            outputs = self.auto_model(**dic_texto_tokenizado, 
                                       return_dict=False)
         
         # A avaliação do modelo retorna um número de diferentes objetos com base em
@@ -259,11 +263,11 @@ class Transformer(nn.Module):
         # Adiciona os embeddings da última camada e os dados do texto preparado na saída
         saida = {}
         saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
-                      'input_ids': texto_preparado['input_ids'],
-                      'attention_mask': texto_preparado['attention_mask'],
-                      'input_ids': texto_preparado['input_ids'],        
-                      'token_type_ids': texto_preparado['token_type_ids'],        
-                      'tokens_texto': texto_preparado['tokens_texto']
+                      'input_ids': dic_texto_tokenizado['input_ids'],
+                      'attention_mask': dic_texto_tokenizado['attention_mask'],
+                      'input_ids': dic_texto_tokenizado['input_ids'],        
+                      'token_type_ids': dic_texto_tokenizado['token_type_ids'],        
+                      'tokens_texto': dic_texto_tokenizado['tokens_texto']
                       }
                      )
 
@@ -286,12 +290,12 @@ class Transformer(nn.Module):
     
     # Dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do BERT em relação ao spaCy
     # A tokenização do BERT gera mais tokens que a tokenização das palavras do spaCy
-    dic_excecao_maior = {"":-1,
-                        }
+    _dic_excecao_maior = {"":-1,
+                         }
                              
-    def getExcecaoDicMaior(self, token):   
+    def _getExcecaoDicMaior(self, token):   
     
-        valor = self.dic_excecao_maior.get(token)
+        valor = self._dic_excecao_maior.get(token)
         if valor != None:
             return valor
         else:
@@ -299,9 +303,10 @@ class Transformer(nn.Module):
     
     # Dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do BERT em relação ao spaCy
     # A tokenização do BERT gera menos tokens que a tokenização das palavras do spaCy
-    dic_excecao_menor = {"1°":1,
-                        }
-    def getExcecaoDicMenor(self, token):   
+    _dic_excecao_menor = {"1°":1,
+                          }
+    
+    def _getExcecaoDicMenor(self, token):   
         
         valor = self.dic_excecao_menor.get(token)
         if valor != None:
@@ -309,12 +314,11 @@ class Transformer(nn.Module):
         else:
             return -1
 
-
     def getTokensEmbeddingsPOSSentenca(self, 
                                        embedding_documento, 
                                        token_MCL_documento,                                       
                                        sentenca,
-                                       pln):
+                                       model_pln):
         '''    
           Retorna os tokens, as postagging e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
           Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
@@ -329,7 +333,7 @@ class Transformer(nn.Module):
         lista_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        sentenca_token, sentenca_pos = pln.getListaTokensPOSSentenca(sentenca)
+        sentenca_token, sentenca_pos = model_pln.getListaTokensPOSSentenca(sentenca)
 
         # print("\nsentenca          :",sentenca)    
         # print("sentenca_token      :",sentenca_token)
@@ -362,7 +366,7 @@ class Transformer(nn.Module):
                 wi1 = sentenca_token[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
-                pos2 = self.getExcecaoDicMenor(wi+wi1)  
+                pos2 = self._getExcecaoDicMenor(wi+wi1)  
                 #print("Exceção pos2:", pos2)
 
             wj = sentenca_tokenizada_MCL[pos_wj] # Recupera o token da palavra gerado pelo MCL
@@ -371,7 +375,7 @@ class Transformer(nn.Module):
 
             # Tratando exceções
             # Localiza o deslocamento da exceção
-            pos = self.getExcecaoDicMaior(wi)  
+            pos = self._getExcecaoDicMaior(wi)  
             #print("Exceção pos:", pos)
                 
             if pos != -1 or pos2 != -1:      
@@ -508,6 +512,21 @@ class Transformer(nn.Module):
         del sentenca_token
 
         return lista_tokens, sentenca_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
+
+    # ============================   
+    def getEmbeddingsPalavras(self, 
+                              texto,
+                              model_pln):
+        
+        texto_embeddings = self.getEmbeddings(texto)            
+
+
+        return self.getTokensEmbeddingsPOSSentenca(self,                                        
+                                       texto_embeddings['token_embeddings'],
+                                       texto_embeddings['tokens_texto'],
+                                       texto,
+                                       model_pln)
+    
 
     # ============================   
     def get_dimensao_embedding(self) -> int:
