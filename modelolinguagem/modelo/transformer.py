@@ -156,11 +156,11 @@ class Transformer(nn.Module):
         return textoTokenizado
         
     # ============================       
-    def tokenize(self, textos):
+    def tokenize(self, texto):
         '''        
         Tokeniza um texto para submeter ao modelo de linguagem.
         
-        :param textos: Texto a ser tokenizado para o modelo de linguagem.
+        :param texto: Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário com:
             tokens_texto uma lista com os textos tokenizados com os tokens especiais.
@@ -172,15 +172,15 @@ class Transformer(nn.Module):
         saida = {}
         
         # Se o texto for uma string coloca em uma lista de listas para tokenizar
-        if isinstance(textos, str):
-            to_tokenize = [[textos]]
+        if isinstance(texto, str):
+            to_tokenize = [[texto]]
         else:
             # Se for uma lista de strings coloca em uma lista para tokenizar
-            if isinstance(textos[0], str):
-                to_tokenize = [textos]
+            if isinstance(texto[0], str):
+                to_tokenize = [texto]
             else:
                 # Se for uma lista de listas de strings, não faz nada
-                to_tokenize = textos                          
+                to_tokenize = texto                          
                 
         # Remove os espaços em branco antes e depois de cada texto usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
@@ -199,8 +199,7 @@ class Transformer(nn.Module):
                                      max_length=self.max_seq_length # Define o tamanho máximo para preencheer ou truncar.
                                     ) 
                     )
-        
-                
+                        
         # Gera o texto tokenizado        
         saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
         
@@ -524,11 +523,10 @@ class Transformer(nn.Module):
         texto_embeddings = self.getEmbeddings(texto)            
 
 
-        return self.getTokensEmbeddingsPOSSentenca(self,                                        
-                                       texto_embeddings['token_embeddings'],
-                                       texto_embeddings['tokens_texto'],
-                                       texto,
-                                       model_pln)
+        return self.getTokensEmbeddingsPOSSentenca(texto_embeddings['token_embeddings'],
+                                                   texto_embeddings['tokens_texto'],
+                                                   texto,
+                                                   model_pln)
     
 
     # ============================   
