@@ -267,9 +267,9 @@ class Transformer(nn.Module):
         # Adiciona os embeddings da última camada e os dados do texto preparado na saída
         saida = {}
         saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
-                      'input_ids': dic_texto_tokenizado['input_ids'],
-                      'attention_mask': dic_texto_tokenizado['attention_mask'],
-                      'token_type_ids': dic_texto_tokenizado['token_type_ids'],        
+                      'input_ids': texto['input_ids'],
+                      'attention_mask': texto['attention_mask'],
+                      'token_type_ids': texto['token_type_ids'],        
                       'tokens_texto': texto['tokens_texto']
                       }
                      )

@@ -1,16 +1,12 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+import logging # Biblioteca de logging
 import torch # Biblioteca de aprendizado de máquina
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utiltexto import *
-from modelolinguagem.util.utiltempo import *
-from modelolinguagem.util.utilarquivo import *
-from modelolinguagem.util.utilconstantes import *
-
-from modelolinguagem.pln.pln import *
-from modelolinguagem.mensurador.medidas import *
-from modelolinguagem.mensurador.mensuradorenum import *
+from modelolinguagem.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
+from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling, PalavrasRelevantes
+from modelolinguagem.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
+from modelolinguagem.util.utiltexto import encontrarIndiceSubLista  
 
 logger = logging.getLogger(__name__)
 
