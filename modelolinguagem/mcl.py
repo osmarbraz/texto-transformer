@@ -3,7 +3,7 @@ import logging  # Biblioteca de logging
 
 # Biblioteca dos modelos de linguagem
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.nlp.nlpmodulo import NLP
+from modelolinguagem.pln.pln import PLN
 from modelolinguagem.util.utilconstantes import *
 from modelolinguagem.mensurador.mensuradorenum import *
 from modelolinguagem.mensurador.mensurador import Mensurador
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 modelo_argumentos = ModeloArgumentos(
         max_seq_len=512,
         pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
-        modelo_spacy="pt_core_news_lg", # Nome do modelo de linguagem da ferramenta de NLP
+        modelo_spacy="pt_core_news_lg", # Nome do modelo de linguagem da ferramenta de PLN
         do_lower_case=False,            # default True
         output_attentions=False,        # default False
         output_hidden_states=True,      # default False  /Retornar os embeddings das camadas ocultas  
@@ -31,7 +31,7 @@ class ModeloLinguagem:
      
     Parâmetros:
     `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
-    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de nlp spaCy. Valor default 'pt_core_news_lg'.                       
+    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.                       
     `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.       
     ''' 
     
@@ -43,7 +43,7 @@ class ModeloLinguagem:
         # Parâmetro recebido para o modelo de linguagem
         modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
                
-        # Parâmetro recebido para o modelo da ferramenta de nlp
+        # Parâmetro recebido para o modelo da ferramenta de pln
         modelo_argumentos.modelo_spacy = modelo_spacy
                 
         # Carrega o modelo de linguagem da classe transformador
@@ -62,12 +62,12 @@ class ModeloLinguagem:
         modelo_argumentos.camadas_embeddings = camadas_embeddings
       
         # Carrega o spaCy
-        self.nlp = NLP(modelo_args=modelo_argumentos)
+        self.pln = PLN(modelo_args=modelo_argumentos)
                         
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
                                      transformer_model=self.transformer_model, 
-                                     nlp=self.nlp)        
+                                     pln=self.pln)        
     
         logger.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
     
@@ -217,7 +217,7 @@ class ModeloLinguagem:
     def get_mensurador(self):
         return self.mensurador        
         
-    def get_nlp(self):
-        return self.nlp          
+    def get_pln(self):
+        return self.pln          
         
         

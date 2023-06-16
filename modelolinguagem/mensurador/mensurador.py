@@ -3,12 +3,12 @@ import logging  # Biblioteca de logging
 import torch # Biblioteca de aprendizado de máquina
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utilmodulo import *
+from modelolinguagem.util.utiltexto import *
 from modelolinguagem.util.utiltempo import *
 from modelolinguagem.util.utilarquivo import *
 from modelolinguagem.util.utilconstantes import *
 
-from modelolinguagem.nlp.nlpmodulo import *
+from modelolinguagem.pln.pln import *
 from modelolinguagem.mensurador.medidas import *
 from modelolinguagem.mensurador.mensuradorenum import *
 
@@ -22,11 +22,11 @@ class Mensurador:
     Parâmetros:
     `modelo_args` - Parâmetros do modelo de linguagem.
     `transformer_model` - Modelo de linguagem carregado.
-    `nlp` - Processador de linguagem natural.
+    `pln` - Processador de linguagem natural.
     ''' 
 
     # Construtor da classe
-    def __init__(self, modelo_args, transformer_model, nlp):
+    def __init__(self, modelo_args, transformer_model, pln):
     
         # Parâmetros do modelo
         self.model_args = modelo_args
@@ -40,8 +40,8 @@ class Mensurador:
         # Recupera o tokenizador.     
         self.tokenizer = transformer_model.get_tokenizer()
         
-        # Recupera a classe NLP
-        self.nlp = nlp
+        # Recupera a classe PLN
+        self.pln = pln
         
         logger.info("Classe Mensurador carregada: {}.".format(modelo_args))
       
@@ -518,7 +518,7 @@ class Mensurador:
         #print(textoTokenizado)
 
         # Remove as stopword da sentença
-        sentencaSemStopWord = self.nlp.removeStopWord(sentenca)
+        sentencaSemStopWord = self.pln.removeStopWord(sentenca)
 
         # Tokeniza a sentença sem stopword
         sentencaTokenizadaSemStopWord =  self.transformer_model.getTextoTokenizado(sentencaSemStopWord)
@@ -580,7 +580,7 @@ class Mensurador:
         #print(textoTokenizado)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
-        sentencaSomenteRelevante = self.nlp.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
+        sentencaSomenteRelevante = self.pln.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
         sentencaTokenizadaSomenteRelevante =  self.transformer_model.getTextoTokenizado(sentencaSomenteRelevante)

@@ -6,7 +6,7 @@ import os # Biblioteca para manipular arquivos
 import sys
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utilmodulo import *
+from modelolinguagem.util.utiltexto import *
 from modelolinguagem.util.utiltempo import *
 from modelolinguagem.util.utilconstantes import *
 

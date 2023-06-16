@@ -6,7 +6,7 @@ from spacy.util import filter_spans
 from spacy.matcher import Matcher
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utilmodulo import *
+from modelolinguagem.util.utiltexto import *
 from modelolinguagem.util.utiltempo import *
 from modelolinguagem.util.utilarquivo import *
 from modelolinguagem.util.utilambiente import *
@@ -14,13 +14,13 @@ from modelolinguagem.mensurador.mensuradorenum import *
 
 logger = logging.getLogger(__name__)
 
-class NLP():
+class PLN():
 
     ''' 
     Realiza o processamento de linguagem natural.
      
     Parâmetros:
-    `nome_pln` - Nome da ferramenta de PLN a ser carregada.    
+    `modelo_args` - Parâmetros da classe PLN a ser carregado.    
     ''' 
 
     # Construtor da classe
@@ -35,19 +35,19 @@ class NLP():
         #Carrega o modelo do spacy
         self.carrega()
             
-        logger.info("Classe NLP carregada: {}.".format(modelo_args))    
+        logger.info("Classe PLN carregada: {}.".format(modelo_args))    
             
     # ============================    
     def carrega(self):
         '''
-        Realiza o carregamento da ferramenta de NLP.
+        Realiza o carregamento da ferramenta de PLN.
      
         '''
        
         # Carrega o modelo spacy            
-        self.model_nlp = spacy.load(self.modelo_args.modelo_spacy)    
+        self.model_pln = spacy.load(self.modelo_args.modelo_spacy)    
         # Opção para remover funcionalidades
-        #self.model_nlp = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
+        #self.model_pln = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
         logger.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
     
     # ============================
@@ -93,11 +93,11 @@ class NLP():
     # ============================
     def getStopwords(self):
         '''
-        Recupera as stop words do model_nlp(Spacy).
+        Recupera as stop words do model_pln(Spacy).
                 
         '''
         
-        spacy_stopwords = self.model_nlp.Defaults.stop_words
+        spacy_stopwords = self.model_pln.Defaults.stop_words
         
         return spacy_stopwords 
 
@@ -136,7 +136,7 @@ class NLP():
         '''
       
         # Realiza o parsing no texto usando spacy
-        doc = self.model_nlp(texto)
+        doc = self.model_pln(texto)
 
         # Retorna a lista das palavras relevantes de um tipo
         textoComRelevantes = [token.text for token in doc if token.pos_ == tipo_palavra_relevante]
@@ -158,7 +158,7 @@ class NLP():
         '''
 
         # Aplica sentenciação do spacy no texto
-        doc = self.model_nlp(texto) 
+        doc = self.model_pln(texto) 
 
         # Lista para as sentenças
         lista = []
@@ -197,7 +197,7 @@ class NLP():
                         {"POS": "AUX", "OP": "?"}  #Verbos auxiliar 
                        ] 
 
-        matcherv = Matcher(nlp.vocab)
+        matcherv = Matcher(model_pln.vocab)
                  
         matcherv.add("frase verbal", [gramaticav1])
         matcherv.add("frase verbal", [gramaticav2])
@@ -205,10 +205,10 @@ class NLP():
 
         #Processa o período        
         if isinstance(texto, str):            
-            doc1 = model_nlp(texto)
+            doc1 = model_pln(texto)
         else:
             #Processa o período
-            doc1 = model_nlp(texto.text)
+            doc1 = model_pln(texto.text)
           
         # Chama o mather para encontrar o padrão
         matches = matcherv(doc1)
@@ -239,7 +239,7 @@ class NLP():
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
-            doc = self.model_nlp(texto)
+            doc = self.model_pln(texto)
         else:
             doc = texto
 
@@ -267,7 +267,7 @@ class NLP():
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
-            doc = self.model_nlp(texto)
+            doc = self.model_pln(texto)
         else:
             doc = texto
 
@@ -318,7 +318,7 @@ class NLP():
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
-            doc = self.model_nlp(texto)
+            doc = self.model_pln(texto)
         else:
             doc = texto
 
@@ -344,7 +344,7 @@ class NLP():
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
-            doc = self.model_nlp(texto)
+            doc = self.model_pln(texto)
         else:
             doc = texto
 
@@ -369,7 +369,7 @@ class NLP():
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
-            doc = self.model_nlp(texto)
+            doc = self.model_pln(texto)
         else:
             doc = texto
 
@@ -410,10 +410,10 @@ class NLP():
         return lista
 
     # ============================   
-    def get_model_nlp(self):
+    def get_model_pln(self):
         '''
-        Recupera o modelo de NLP.
+        Recupera o modelo de PLN.
         '''
-        return self.model_nlp
+        return self.model_pln
         
    

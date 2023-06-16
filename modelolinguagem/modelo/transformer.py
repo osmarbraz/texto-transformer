@@ -314,7 +314,7 @@ class Transformer(nn.Module):
                                        embedding_documento, 
                                        token_MCL_documento,                                       
                                        sentenca,
-                                       NLP):
+                                       pln):
         '''    
           Retorna os tokens, as postagging e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
           Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
@@ -329,7 +329,7 @@ class Transformer(nn.Module):
         lista_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        sentenca_token, sentenca_pos = NLP.getListaTokensPOSSentenca(sentenca)
+        sentenca_token, sentenca_pos = pln.getListaTokensPOSSentenca(sentenca)
 
         # print("\nsentenca          :",sentenca)    
         # print("sentenca_token      :",sentenca_token)
@@ -501,7 +501,6 @@ class Transformer(nn.Module):
             logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
             logger.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
             logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
-            
        
         del embedding_sentenca
         del token_MCL_documento
@@ -509,7 +508,6 @@ class Transformer(nn.Module):
         del sentenca_token
 
         return lista_tokens, sentenca_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
-
 
     # ============================   
     def get_dimensao_embedding(self) -> int:
