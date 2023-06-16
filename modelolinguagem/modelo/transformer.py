@@ -236,9 +236,8 @@ class Transformer(nn.Module):
         if not isinstance(texto, dict):
             texto = self.tokenize(texto)
     
-        # Recupera o texto preparado pelo tokenizador
-        dic_texto_tokenizado = {'input_ids': texto['input_ids'], 
-                                'tokens_texto': texto['tokens_texto'], 
+        # Recupera o texto preparado pelo tokenizador para envio ao modelo
+        dic_texto_tokenizado = {'input_ids': texto['input_ids'],                                 
                                 'attention_mask': texto['attention_mask']}
         
         # Se token_type_ids estiver no texto preparado copia para dicionário
@@ -271,7 +270,7 @@ class Transformer(nn.Module):
                       'input_ids': dic_texto_tokenizado['input_ids'],
                       'attention_mask': dic_texto_tokenizado['attention_mask'],
                       'token_type_ids': dic_texto_tokenizado['token_type_ids'],        
-                      'tokens_texto': dic_texto_tokenizado['tokens_texto']
+                      'tokens_texto': texto['tokens_texto']
                       }
                      )
 
