@@ -247,7 +247,7 @@ class ModeloLinguagem:
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
             #print(tokens_texto_concatenado)
-            lista_tokens_texto, lista_tokens_texto_pos, lista_tokens_oov, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer_model().getTokensEmbeddingsPOSSentenca(
+            lista_tokens_texto, lista_tokens_texto_pos, lista_tokens_oov, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer_model().getTokensEmbeddingsPOSTexto(
                                                     embeddings_texto,
                                                     tokens_texto_mcl,
                                                     tokens_texto_concatenado,
