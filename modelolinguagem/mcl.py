@@ -221,7 +221,7 @@ class ModeloLinguagem:
                               texto):
         
         return self.get_transformer_model().getEmbeddingsPalavras(texto,
-                                                                  self.get_pln().get_pln())
+                                                                  self.get_pln())
 
     # ============================
     def get_model(self):
