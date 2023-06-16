@@ -308,7 +308,7 @@ class PLN():
     # ============================
     def getTokensTexto(self, texto):
         '''
-        Retorna a lista de tokens da sentenca.
+        Retorna a lista de tokens do texto.
         
         Parâmetros:
         `texto` - Um texto a ser recuperado os tokens.
@@ -334,7 +334,7 @@ class PLN():
     # ============================
     def getPOSTokensTexto(self, texto):
         '''
-        Retorna a lista das POS-Tagging dos tokens da sentenca.
+        Retorna a lista das POS-Tagging dos tokens do texto.
         
         Parâmetros:
         `texto` - Um texto a ser recuperado as POS-Tagging.
@@ -360,7 +360,7 @@ class PLN():
     # ============================
     def getListaTokensPOSTexto(self, texto):
         '''
-        Retorna duas listas uma com os tokens e a outra com a POS-Tagging dos tokens da sentenca.
+        Retorna duas listas uma com os tokens e a outra com a POS-Tagging dos tokens do texto.
         
         Parâmetros:
         `texto` - Um texto a ser recuperado as listas de tokens e POS-Tagging.
@@ -385,7 +385,7 @@ class PLN():
         return lista_tokens, lista_pos
 
     # ============================   
-    def getSentencaSemStopWord(self, listaTokens):
+    def getTextoSemStopWord(self, listaTokens):
         '''
         Retorna uma lista com tokens de um texto excluindo as stopwords.
         

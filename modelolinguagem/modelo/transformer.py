@@ -324,9 +324,9 @@ class Transformer(nn.Module):
             return -1
 
     def getTokensEmbeddingsPOSTexto(self, 
-                                   embedding_documento, 
-                                   token_MCL_documento,                                       
-                                   texto,
+                                   embeddings_texto, 
+                                   tokens_texto_mcl,                                       
+                                   tokens_texto_concatenado,
                                    model_pln):
         '''    
           Retorna os tokens, as postagging e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -335,29 +335,25 @@ class Transformer(nn.Module):
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
         '''
        
-        #Guarda os tokens e embeddings
+        #Guarda os tokens e embeddings de retorno
         lista_tokens = []
         lista_tokens_OOV = []
         lista_embeddings_MEAN = []
         lista_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        texto_token, texto_pos = model_pln.getListaTokensPOSTexto(texto)
+        texto_token_pln, texto_pos_pln = model_pln.getListaTokensPOSTexto(tokens_texto_concatenado)
 
-        # print("\texto          :",texto)    
-        # print("texto_token      :",texto_token)
-        # print("len(stexto_token) :",len(texto_token))    
-        # print("texto_pos        :",texto_pos)
-        # print("len(texto_pos)   :",len(texto_pos))
-        
-        # Recupera os embeddings da sentença dos embeddings do documento    
-        embedding_texto = embedding_documento    
-        texto_tokenizado_MCL = token_MCL_documento
+        # print("\tokens_texto_concatenado  :",tokens_texto_concatenado)    
+        # print("texto_token_pln            :",texto_token_pln)
+        # print("len(stexto_token_pln)      :",len(texto_token_pln))    
+        # print("texto_pos_pln              :",texto_pos)
+        # print("len(texto_pos_pln)         :",len(texto_po_plns))
         
         # embedding <qtde_tokens x 4096>        
-        # print("embedding_texto          :",embedding_texto.shape)
-        # print("texto_tokenizada_MCL     :",stexto_tokenizado_MCL)
-        # print("len(texto_tokenizada_MCL):",len(texto_tokenizado_MCL))
+        # print("embeddings_texto          :",embeddings_texto.shape)
+        # print("tokens_texto_mcl          :",tokens_texto_mcl)
+        # print("len(tokens_texto_mcl)     :",len(tokens_texto_mcl))
 
         # Seleciona os pares de palavra a serem avaliadas
         pos_wi = 0 # Posição do token da palavra gerado pelo spaCy
@@ -365,20 +361,20 @@ class Transformer(nn.Module):
         pos2 = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
-        while pos_wj < len(texto_tokenizado_MCL):  
+        while pos_wj < len(tokens_texto_mcl):  
 
             # Seleciona os tokens da sentença
-            wi = texto_token[pos_wi] # Recupera o token da palavra gerado pelo spaCy
+            wi = texto_token_pln[pos_wi] # Recupera o token da palavra gerado pelo spaCy
             wi1 = ""
             pos2 = -1
-            if pos_wi+1 < len(texto_token):
-                wi1 = texto_token[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
+            if pos_wi+1 < len(texto_token_pln):
+                wi1 = texto_token_pln[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
                 pos2 = self._getExcecaoDicMenor(wi+wi1)  
                 #print("Exceção pos2:", pos2)
 
-            wj = texto_tokenizado_MCL[pos_wj] # Recupera o token da palavra gerado pelo MCL
+            wj = tokens_texto_mcl[pos_wj] # Recupera o token da palavra gerado pelo MCL
             # print("wi[",pos_wi,"]=", wi)
             # print("wj[",pos_wj,"]=", wj)
 
@@ -397,7 +393,7 @@ class Transformer(nn.Module):
                     if pos != 1:
                         indice_token = pos_wj + pos
                         #print("Calcula a média de :", pos_wj , "até", indice_token)
-                        embeddings_tokens_palavra = embedding_texto[pos_wj:indice_token]
+                        embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra:",embeddings_tokens_palavra.shape)
                         # calcular a média dos embeddings dos tokens do MCL da palavra
                         embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
@@ -410,8 +406,8 @@ class Transformer(nn.Module):
                         lista_embeddings_MAX.append(embedding_estrategia_MAX)
                     else:
                         # Adiciona o embedding do token a lista de embeddings
-                        lista_embeddings_MEAN.append(embedding_texto[pos_wj])            
-                        lista_embeddings_MAX.append(embedding_texto[pos_wj])
+                        lista_embeddings_MEAN.append(embeddings_texto[pos_wj])            
+                        lista_embeddings_MAX.append(embeddings_texto[pos_wj])
              
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
@@ -428,8 +424,8 @@ class Transformer(nn.Module):
                         # Verifica se tem mais de um token
                         if pos2 == 1: 
                             # Adiciona o embedding do token a lista de embeddings
-                            lista_embeddings_MEAN.append(embedding_texto[pos_wj])
-                            lista_embeddings_MAX.append(embedding_texto[pos_wj])
+                            lista_embeddings_MEAN.append(embeddings_texto[pos_wj])
+                            lista_embeddings_MAX.append(embeddings_texto[pos_wj])
               
                         # Avança para a próxima palavra e token do MCL
                         pos_wi = pos_wi + 2
@@ -446,8 +442,8 @@ class Transformer(nn.Module):
                     # Marca como dentro do vocabulário do MCL
                     lista_tokens_OOV.append(0)
                     # Adiciona o embedding do token a lista de embeddings
-                    lista_embeddings_MEAN.append(embedding_texto[pos_wj])
-                    lista_embeddings_MAX.append(embedding_texto[pos_wj])
+                    lista_embeddings_MEAN.append(embeddings_texto[pos_wj])
+                    lista_embeddings_MAX.append(embeddings_texto[pos_wj])
                     #print("embedding1[pos_wj]:", embedding_texto[pos_wj].shape)
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
@@ -458,12 +454,12 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     palavra_POS = wj
                     indice_token = pos_wj + 1                 
-                    while  ((palavra_POS != wi) and indice_token < len(texto_tokenizado_MCL)):
-                        if "##" in texto_tokenizado_MCL[indice_token]:
+                    while  ((palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
+                        if "##" in tokens_texto_mcl[indice_token]:
                             # Remove os caracteres "##" do token
-                            parte = texto_tokenizado_MCL[indice_token][2:]
+                            parte = tokens_texto_mcl[indice_token][2:]
                         else:                
-                            parte = texto_tokenizado_MCL[indice_token]
+                            parte = tokens_texto_mcl[indice_token]
                   
                         palavra_POS = palavra_POS + parte
                         #print("palavra_POS:",palavra_POS)
@@ -479,7 +475,7 @@ class Transformer(nn.Module):
                         lista_tokens_OOV.append(1)
                         # Calcula a média dos tokens da palavra
                         #print("Calcula o máximo :", pos_wj , "até", indice_token)
-                        embeddings_tokens_palavra = embedding_texto[pos_wj:indice_token]
+                        embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra)
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra.shape)
                   
@@ -503,24 +499,24 @@ class Transformer(nn.Module):
         # Verificação se as listas estão com o mesmo tamanho
         #if (len(lista_tokens) != len(texto_token)) or (len(lista_embeddings_MEAN) != len(texto_token)):
         if (len(lista_tokens) !=  len(lista_embeddings_MEAN)):
-            logger.info("texto                      :{}.".format(texto))
-            logger.info("texto_pos                  :{}.".format(texto_pos))
-            logger.info("texto_token                :{}.".format(texto_token))
-            logger.info("texto_tokenizado_MCL       :{}.".format(texto_tokenizado_MCL))
+            logger.info("texto                      :{}.".format(tokens_texto_concatenado))
+            logger.info("texto_pos                  :{}.".format(texto_pos_pln))
+            logger.info("texto_token                :{}.".format(texto_token_pln))
+            logger.info("texto_tokenizado_MCL       :{}.".format(tokens_texto_mcl))
             logger.info("lista_tokens               :{}.".format(lista_tokens))
             logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logger.info("texto_token                :{}.".format(texto_token))            
+            logger.info("texto_token                :{}.".format(texto_token_pln))            
             logger.info("lista_embeddings_MEAN      :{}.".format(lista_embeddings_MEAN))
             logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
             logger.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
             logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
        
-        del embedding_texto
-        del token_MCL_documento
-        del texto_tokenizado_MCL
-        del texto_token
+        del embeddings_texto
+        del tokens_texto_mcl
+        del tokens_texto_mcl
+        del texto_token_pln
 
-        return lista_tokens, texto_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
+        return lista_tokens, texto_pos_pln, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
 
     # ============================   
     def get_dimensao_embedding(self) -> int:
