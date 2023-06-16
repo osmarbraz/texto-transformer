@@ -180,7 +180,7 @@ class Transformer(nn.Module):
                 to_tokenize = [texto]
             else:
                 # Se for uma lista de listas de strings, não faz nada
-                to_tokenize = texto                          
+                to_tokenize = texto
                 
         # Remove os espaços em branco antes e depois de cada texto usando strip
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
@@ -310,7 +310,7 @@ class Transformer(nn.Module):
     
     def _getExcecaoDicMenor(self, token):   
         
-        valor = self.dic_excecao_menor.get(token)
+        valor = self._dic_excecao_menor.get(token)
         if valor != None:
             return valor
         else:
@@ -514,20 +514,6 @@ class Transformer(nn.Module):
         del sentenca_token
 
         return lista_tokens, sentenca_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
-
-    # ============================   
-    def getEmbeddingsPalavras(self, 
-                              texto,
-                              pln):
-        
-        texto_embeddings = self.getEmbeddings(texto)            
-
-
-        return self.getTokensEmbeddingsPOSSentenca(texto_embeddings['token_embeddings'],
-                                                   texto_embeddings['tokens_texto'],
-                                                   texto,
-                                                   pln)
-    
 
     # ============================   
     def get_dimensao_embedding(self) -> int:

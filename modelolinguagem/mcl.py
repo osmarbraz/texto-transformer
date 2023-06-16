@@ -220,8 +220,30 @@ class ModeloLinguagem:
     def getEmbeddingsPalavras(self, 
                               texto):
         
-        return self.get_transformer_model().getEmbeddingsPalavras(texto,
-                                                                  self.get_pln())
+        # Se o texto for uma string coloca em uma lista de listas para tokenizar
+        if isinstance(texto, str):
+            to_tokenize = [[texto]]
+        else:
+            # Se for uma lista de strings coloca em uma lista para tokenizar
+            if isinstance(texto[0], str):
+                to_tokenize = [texto]
+            else:
+                # Se for uma lista de listas de strings, não faz nada
+                to_tokenize = texto
+        
+        texto_embeddings = self.get_transformer_model().getEmbeddings(texto)
+
+        saida = {}
+        
+        for i, sentenca in enumerate(*to_tokenize):
+             saida[i] = self.get_transformer_model().getTokensEmbeddingsPOSSentenca(
+                                                    texto_embeddings['token_embeddings'][i],
+                                                    texto_embeddings['tokens_texto'][i],
+                                                    sentenca,
+                                                    self.get_pln())
+
+        
+        return saida
 
     # ============================
     def get_model(self):
