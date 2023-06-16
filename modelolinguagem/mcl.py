@@ -220,4 +220,3 @@ class ModeloLinguagem:
     def get_pln(self):
         return self.pln          
         
-        
