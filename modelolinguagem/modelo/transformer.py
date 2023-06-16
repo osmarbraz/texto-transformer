@@ -513,7 +513,6 @@ class Transformer(nn.Module):
        
         del embeddings_texto
         del tokens_texto_mcl
-        del tokens_texto_mcl
         del texto_token_pln
 
         return lista_tokens, texto_pos_pln, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
