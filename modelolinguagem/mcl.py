@@ -220,29 +220,48 @@ class ModeloLinguagem:
     def getEmbeddingsPalavras(self, 
                               texto):
         
-        # Se o texto for uma string coloca em uma lista de listas para tokenizar
-        if isinstance(texto, str):
-            to_tokenize = [[texto]]
-        else:
-            # Se for uma lista de strings coloca em uma lista para tokenizar
-            if isinstance(texto[0], str):
-                to_tokenize = [texto]
-            else:
-                # Se for uma lista de listas de strings, não faz nada
-                to_tokenize = texto
-        
+        # Tokeniza o texto
         texto_embeddings = self.get_transformer_model().getEmbeddings(texto)
 
+        # Acumula a saída do método
         saida = {}
-        
-        for i, sentenca in enumerate(*to_tokenize):
-             saida[i] = self.get_transformer_model().getTokensEmbeddingsPOSSentenca(
-                                                    texto_embeddings['token_embeddings'][i],
-                                                    texto_embeddings['tokens_texto'][i],
-                                                    sentenca,
+        saida.update({'tokens_texto': [], 
+                      'tokens_texto_pln' : [],
+                      'tokens_pos': [],
+                      'tokens_oov': [],                      
+                      'embeddings_MEAN': [],        
+                      'embeddings_MAX': []
+                     }
+        )
+
+        # Percorre os textos da lista.
+        for i, sentenca in enumerate(texto_embeddings['tokens_texto']):
+            # Recupera o texto tokenizado pelo PLN
+            lista_tokens_texto_pln = self.get_pln().getTokensSentenca(texto[i])
+
+            # Recupera os embeddings do texto  
+            embeddings = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto'][i])]
+            #print(len(embeddings))
+            # Recupera a lista de tokens do tokenizado sem CLS e SEP
+            tokens_texto = texto_embeddings['tokens_texto'][i][1:-1]
+            #print(tokens_texto)
+            # Concatena os tokens 
+            tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
+            #print(tokens_texto_concatenado)
+            lista_tokens_texto, lista_tokens_texto_pos, lista_tokens_oov, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer_model().getTokensEmbeddingsPOSSentenca(
+                                                    embeddings,
+                                                    tokens_texto,
+                                                    tokens_texto_concatenado,
                                                     self.get_pln())
 
-        
+            #Acumula a saída do método 
+            saida['tokens_texto'].append(lista_tokens_texto)
+            saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
+            saida['tokens_pos'].append(lista_tokens_texto_pos)
+            saida['tokens_oov'].append(lista_tokens_oov)            
+            saida['embeddings_MEAN'].append(lista_embeddings_MEAN)
+            saida['embeddings_MAX'].append(lista_embeddings_MAX)
+
         return saida
 
     # ============================

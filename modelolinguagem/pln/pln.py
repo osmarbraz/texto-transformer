@@ -197,7 +197,7 @@ class PLN():
                         {"POS": "AUX", "OP": "?"}  #Verbos auxiliar 
                        ] 
 
-        matcherv = Matcher(model_pln.vocab)
+        matcherv = Matcher(self.model_pln.vocab)
                  
         matcherv.add("frase verbal", [gramaticav1])
         matcherv.add("frase verbal", [gramaticav2])
@@ -205,10 +205,10 @@ class PLN():
 
         #Processa o período        
         if isinstance(texto, str):            
-            doc1 = model_pln(texto)
+            doc1 = self.model_pln(texto)
         else:
             #Processa o período
-            doc1 = model_pln(texto.text)
+            doc1 = self.model_pln(texto.text)
           
         # Chama o mather para encontrar o padrão
         matches = matcherv(doc1)
@@ -306,7 +306,7 @@ class PLN():
         return conjunto
 
     # ============================
-    def getTokensSentenca(self, texto):
+    def getTokensTexto(self, texto):
         '''
         Retorna a lista de tokens da sentenca.
         
@@ -332,7 +332,7 @@ class PLN():
         return lista
     
     # ============================
-    def getPOSTokensSentenca(self, texto):
+    def getPOSTokensTexto(self, texto):
         '''
         Retorna a lista das POS-Tagging dos tokens da sentenca.
         
@@ -358,7 +358,7 @@ class PLN():
         return lista
 
     # ============================
-    def getListaTokensPOSSentenca(self, texto):
+    def getListaTokensPOSTexto(self, texto):
         '''
         Retorna duas listas uma com os tokens e a outra com a POS-Tagging dos tokens da sentenca.
         

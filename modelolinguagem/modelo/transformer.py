@@ -154,12 +154,15 @@ class Transformer(nn.Module):
         textoTokenizado = self.tokenizer.tokenize(textoMarcado)
 
         return textoTokenizado
-        
+
     # ============================       
     def tokenize(self, texto):
         '''        
-        Tokeniza um texto para submeter ao modelo de linguagem.
-        
+        Tokeniza um texto para submeter ao modelo de linguagem. 
+        Retorna um dicionário listas de mesmo tamanho para garantir o processamento em lote.
+        Use a quantidade de tokens para saber até onde deve ser recuperado em uma lista de saída.
+        Ou use attention_mask diferente de 1 para saber que posições devem ser utilizadas na lista.
+
         :param texto: Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário com:
@@ -202,14 +205,17 @@ class Transformer(nn.Module):
                         
         # Gera o texto tokenizado        
         saida['tokens_texto'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
+
+        # Guarda o texto original        
+        saida['texto_original'] = [[s for s in col] for col in to_tokenize][0]
         
         # Verifica se existe algum texto maior que o limite de tokenização
-        for tokens in  saida['tokens_texto']:
+        for tokens in saida['tokens_texto']:
             if len(tokens) >= 512:
                 logger.info("Utilizando embeddings do modelo de: {}.".format(LISTATIPOCAMADA_CAMADA[self.modelo_args.camadas_embeddings]))   
                         
         return saida
-        
+    
     # ============================           
     def getEmbeddings(self, texto):
         '''
@@ -269,7 +275,8 @@ class Transformer(nn.Module):
                       'input_ids': texto['input_ids'],
                       'attention_mask': texto['attention_mask'],
                       'token_type_ids': texto['token_type_ids'],        
-                      'tokens_texto': texto['tokens_texto']
+                      'tokens_texto': texto['tokens_texto'],
+                      'texto_original': texto['texto_original']
                       }
                      )
 
@@ -287,8 +294,8 @@ class Transformer(nn.Module):
         return saida
 
     # ============================  
-    # getTokensEmbeddingsPOSSentenca
-    # Gera os tokens, POS e embeddings de cada sentença.
+    # getTokensEmbeddingsPOStexto
+    # Gera os tokens, POS e embeddings de cada texto.
     
     # Dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do BERT em relação ao spaCy
     # A tokenização do BERT gera mais tokens que a tokenização das palavras do spaCy
@@ -316,11 +323,11 @@ class Transformer(nn.Module):
         else:
             return -1
 
-    def getTokensEmbeddingsPOSSentenca(self, 
-                                       embedding_documento, 
-                                       token_MCL_documento,                                       
-                                       sentenca,
-                                       model_pln):
+    def getTokensEmbeddingsPOSTexto(self, 
+                                   embedding_documento, 
+                                   token_MCL_documento,                                       
+                                   texto,
+                                   model_pln):
         '''    
           Retorna os tokens, as postagging e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
           Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
@@ -335,22 +342,22 @@ class Transformer(nn.Module):
         lista_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        sentenca_token, sentenca_pos = model_pln.getListaTokensPOSSentenca(sentenca)
+        texto_token, texto_pos = model_pln.getListaTokensPOSTexto(texto)
 
-        # print("\nsentenca          :",sentenca)    
-        # print("sentenca_token      :",sentenca_token)
-        # print("len(sentenca_token) :",len(sentenca_token))    
-        # print("sentenca_pos        :",sentenca_pos)
-        # print("len(sentenca_pos)   :",len(sentenca_pos))
+        # print("\texto          :",texto)    
+        # print("texto_token      :",texto_token)
+        # print("len(stexto_token) :",len(texto_token))    
+        # print("texto_pos        :",texto_pos)
+        # print("len(texto_pos)   :",len(texto_pos))
         
         # Recupera os embeddings da sentença dos embeddings do documento    
-        embedding_sentenca = embedding_documento    
-        sentenca_tokenizada_MCL = token_MCL_documento
+        embedding_texto = embedding_documento    
+        texto_tokenizado_MCL = token_MCL_documento
         
         # embedding <qtde_tokens x 4096>        
-        # print("embedding_sentenca          :",embedding_sentenca.shape)
-        # print("sentenca_tokenizada_MCL     :",sentenca_tokenizada_MCL)
-        # print("len(sentenca_tokenizada_MCL):",len(sentenca_tokenizada_MCL))
+        # print("embedding_texto          :",embedding_texto.shape)
+        # print("texto_tokenizada_MCL     :",stexto_tokenizado_MCL)
+        # print("len(texto_tokenizada_MCL):",len(texto_tokenizado_MCL))
 
         # Seleciona os pares de palavra a serem avaliadas
         pos_wi = 0 # Posição do token da palavra gerado pelo spaCy
@@ -358,20 +365,20 @@ class Transformer(nn.Module):
         pos2 = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
-        while pos_wj < len(sentenca_tokenizada_MCL):  
+        while pos_wj < len(texto_tokenizado_MCL):  
 
             # Seleciona os tokens da sentença
-            wi = sentenca_token[pos_wi] # Recupera o token da palavra gerado pelo spaCy
+            wi = texto_token[pos_wi] # Recupera o token da palavra gerado pelo spaCy
             wi1 = ""
             pos2 = -1
-            if pos_wi+1 < len(sentenca_token):
-                wi1 = sentenca_token[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
+            if pos_wi+1 < len(texto_token):
+                wi1 = texto_token[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
                 pos2 = self._getExcecaoDicMenor(wi+wi1)  
                 #print("Exceção pos2:", pos2)
 
-            wj = sentenca_tokenizada_MCL[pos_wj] # Recupera o token da palavra gerado pelo MCL
+            wj = texto_tokenizado_MCL[pos_wj] # Recupera o token da palavra gerado pelo MCL
             # print("wi[",pos_wi,"]=", wi)
             # print("wj[",pos_wj,"]=", wj)
 
@@ -390,7 +397,7 @@ class Transformer(nn.Module):
                     if pos != 1:
                         indice_token = pos_wj + pos
                         #print("Calcula a média de :", pos_wj , "até", indice_token)
-                        embeddings_tokens_palavra = embedding_sentenca[pos_wj:indice_token]
+                        embeddings_tokens_palavra = embedding_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra:",embeddings_tokens_palavra.shape)
                         # calcular a média dos embeddings dos tokens do MCL da palavra
                         embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
@@ -403,15 +410,15 @@ class Transformer(nn.Module):
                         lista_embeddings_MAX.append(embedding_estrategia_MAX)
                     else:
                         # Adiciona o embedding do token a lista de embeddings
-                        lista_embeddings_MEAN.append(embedding_sentenca[pos_wj])            
-                        lista_embeddings_MAX.append(embedding_sentenca[pos_wj])
+                        lista_embeddings_MEAN.append(embedding_texto[pos_wj])            
+                        lista_embeddings_MAX.append(embedding_texto[pos_wj])
              
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
                     pos_wj = pos_wj + pos
                     #print("Proxima:")            
-                    #print("wi[",pos_wi,"]=", sentenca_token[pos_wi])
-                    #print("wj[",pos_wj,"]=", sentenca_tokenizada_MCL[pos_wj])
+                    #print("wi[",pos_wi,"]=", texto_token[pos_wi])
+                    #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
                 else:
                     if pos2 != -1:
                         #print("Adiciona 1 Exceção palavra == wi or palavra = [UNK]:",wi)
@@ -421,15 +428,15 @@ class Transformer(nn.Module):
                         # Verifica se tem mais de um token
                         if pos2 == 1: 
                             # Adiciona o embedding do token a lista de embeddings
-                            lista_embeddings_MEAN.append(embedding_sentenca[pos_wj])
-                            lista_embeddings_MAX.append(embedding_sentenca[pos_wj])
+                            lista_embeddings_MEAN.append(embedding_texto[pos_wj])
+                            lista_embeddings_MAX.append(embedding_texto[pos_wj])
               
                         # Avança para a próxima palavra e token do MCL
                         pos_wi = pos_wi + 2
                         pos_wj = pos_wj + pos2
                         #print("Proxima:")            
-                        #print("wi[",pos_wi,"]=", sentenca_token[pos_wi])
-                        #print("wj[",pos_wj,"]=", sentenca_tokenizada_MCL[pos_wj])
+                        #print("wi[",pos_wi,"]=", texto_token[pos_wi])
+                        #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
             else:  
                 # Tokens iguais adiciona a lista, o token não possui subtoken
                 if (wi == wj or wj=="[UNK]"):
@@ -439,9 +446,9 @@ class Transformer(nn.Module):
                     # Marca como dentro do vocabulário do MCL
                     lista_tokens_OOV.append(0)
                     # Adiciona o embedding do token a lista de embeddings
-                    lista_embeddings_MEAN.append(embedding_sentenca[pos_wj])
-                    lista_embeddings_MAX.append(embedding_sentenca[pos_wj])
-                    #print("embedding1[pos_wj]:", embedding_sentenca[pos_wj].shape)
+                    lista_embeddings_MEAN.append(embedding_texto[pos_wj])
+                    lista_embeddings_MAX.append(embedding_texto[pos_wj])
+                    #print("embedding1[pos_wj]:", embedding_texto[pos_wj].shape)
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
                     pos_wj = pos_wj + 1   
@@ -451,12 +458,12 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     palavra_POS = wj
                     indice_token = pos_wj + 1                 
-                    while  ((palavra_POS != wi) and indice_token < len(sentenca_tokenizada_MCL)):
-                        if "##" in sentenca_tokenizada_MCL[indice_token]:
+                    while  ((palavra_POS != wi) and indice_token < len(texto_tokenizado_MCL)):
+                        if "##" in texto_tokenizado_MCL[indice_token]:
                             # Remove os caracteres "##" do token
-                            parte = sentenca_tokenizada_MCL[indice_token][2:]
+                            parte = texto_tokenizado_MCL[indice_token][2:]
                         else:                
-                            parte = sentenca_tokenizada_MCL[indice_token]
+                            parte = texto_tokenizado_MCL[indice_token]
                   
                         palavra_POS = palavra_POS + parte
                         #print("palavra_POS:",palavra_POS)
@@ -472,7 +479,7 @@ class Transformer(nn.Module):
                         lista_tokens_OOV.append(1)
                         # Calcula a média dos tokens da palavra
                         #print("Calcula o máximo :", pos_wj , "até", indice_token)
-                        embeddings_tokens_palavra = embedding_sentenca[pos_wj:indice_token]
+                        embeddings_tokens_palavra = embedding_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra)
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra.shape)
                   
@@ -494,26 +501,26 @@ class Transformer(nn.Module):
                     pos_wj = indice_token
         
         # Verificação se as listas estão com o mesmo tamanho
-        #if (len(lista_tokens) != len(sentenca_token)) or (len(lista_embeddings_MEAN) != len(sentenca_token)):
+        #if (len(lista_tokens) != len(texto_token)) or (len(lista_embeddings_MEAN) != len(texto_token)):
         if (len(lista_tokens) !=  len(lista_embeddings_MEAN)):
-            logger.info("sentenca                   :{}.".format(sentenca))
-            logger.info("sentenca_pos               :{}.".format(sentenca_pos))
-            logger.info("sentenca_token             :{}.".format(sentenca_token))
-            logger.info("sentenca_tokenizada_MCL    :{}.".format(sentenca_tokenizada_MCL))
+            logger.info("texto                      :{}.".format(texto))
+            logger.info("texto_pos                  :{}.".format(texto_pos))
+            logger.info("texto_token                :{}.".format(texto_token))
+            logger.info("texto_tokenizado_MCL       :{}.".format(texto_tokenizado_MCL))
             logger.info("lista_tokens               :{}.".format(lista_tokens))
             logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logger.info("sentenca_token             :{}.".format(sentenca_token))            
+            logger.info("texto_token                :{}.".format(texto_token))            
             logger.info("lista_embeddings_MEAN      :{}.".format(lista_embeddings_MEAN))
             logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
             logger.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
             logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
        
-        del embedding_sentenca
+        del embedding_texto
         del token_MCL_documento
-        del sentenca_tokenizada_MCL
-        del sentenca_token
+        del texto_tokenizado_MCL
+        del texto_token
 
-        return lista_tokens, sentenca_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
+        return lista_tokens, texto_pos, lista_tokens_OOV, lista_embeddings_MEAN, lista_embeddings_MAX
 
     # ============================   
     def get_dimensao_embedding(self) -> int:
