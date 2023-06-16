@@ -518,7 +518,7 @@ class Transformer(nn.Module):
     # ============================   
     def getEmbeddingsPalavras(self, 
                               texto,
-                              model_pln):
+                              pln):
         
         texto_embeddings = self.getEmbeddings(texto)            
 
@@ -526,7 +526,7 @@ class Transformer(nn.Module):
         return self.getTokensEmbeddingsPOSSentenca(texto_embeddings['token_embeddings'],
                                                    texto_embeddings['tokens_texto'],
                                                    texto,
-                                                   model_pln)
+                                                   pln)
     
 
     # ============================   
