@@ -2,12 +2,12 @@
 import logging  # Biblioteca de logging
 
 # Biblioteca dos modelos de linguagem
-from modelo.modeloarguments import ModeloArgumentos
-from nlp.nlpmodulo import *
-from util.utilconstantes import *
-from mensurador.mensuradorenum import *
-from mensurador.mensurador import Mensurador
-from modelo.transformer import *
+from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
+from modelolinguagem.nlp.nlpmodulo import NLP
+from modelolinguagem.util.utilconstantes import *
+from modelolinguagem.mensurador.mensuradorenum import *
+from modelolinguagem.mensurador.mensurador import Mensurador
+from modelolinguagem.modelo.transformer import Transformer
 
 logger = logging.getLogger(__name__)
 

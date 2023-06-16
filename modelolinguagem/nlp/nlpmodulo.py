@@ -417,5 +417,3 @@ class NLP():
         return self.model_nlp
         
    
-          
-         
