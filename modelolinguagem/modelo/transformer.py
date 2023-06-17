@@ -14,7 +14,7 @@ import os
 
 # Biblioteca dos modelos de linguagem
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_CAMADA
+from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_CAMADA
 
 logger = logging.getLogger(__name__)
 
