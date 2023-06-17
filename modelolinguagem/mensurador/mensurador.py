@@ -3,12 +3,11 @@ import logging # Biblioteca de logging
 import torch # Biblioteca de aprendizado de máquina
 
 # Import de bibliotecas próprias
-from modelolinguagem.modelo.modeloenum import EmbeddingsCamadas, EstrategiasPooling 
 from modelolinguagem.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
-from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_NOME, PalavrasRelevantes
+from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes
+from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 
 from modelolinguagem.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
 from modelolinguagem.util.utiltexto import encontrarIndiceSubLista  
-
 
 logger = logging.getLogger(__name__)
 
