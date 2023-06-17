@@ -1,10 +1,13 @@
 [project]
 name = "modelolinguagem"
-version = {attr = "modelolinguagem.__version__"}
+dynamic = ["version"]
 description = "Framework Multilingual para processamento de textos utilizando modelos de linguagem"
 readme = "README.md"
 requires-python = ">=3.6.0"
 license = { file = "LICENSE" }
+
+[tool.setuptools.dynamic]
+version = {attr = "modelolinguagem.__version__"}
 
 authors = [
     { name = "Osmar de Oliveira Braz Junior", email = "osmar.braz@udesc.br" }
