@@ -254,9 +254,9 @@ class ModeloLinguagem:
         Retorna um dicionário com:    
             tokens_texto uma lista com os tokens(palavras) realizados pelo método.
             tokens_texto_mcl uma lista com os tokens e tokens especiais realizados pelo mcl.
-            tokens_oov_texto_mcl uma lista com os tokens OOV.
-            tokens_texto_pln uma lista com os tokens realizados pela ferramenta de pln.
-            pos_texto_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln.            
+            tokens_oov_texto_mcl uma lista com os tokens OOV(com ##) do mcl.
+            tokens_texto_pln uma lista com os tokens realizados pela ferramenta de pln(spaCy).
+            pos_texto_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln(spaCy).            
             embeddings_MEAN uma lista com os embeddings com a estratégia MEAN
             embeddings_MAX uma lista com os embeddings com a estratégia MAX
         '''

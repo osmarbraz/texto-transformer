@@ -342,11 +342,11 @@ class Transformer(nn.Module):
         `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
     
         Retorna 5 lista:            
-            lista_tokens  uma lista com os tokens do texto.
-            texto_pos_pln uma lista com as postagging dos tokens.
-            lista_tokens_OOV_mcl uma lista com os tokens OOV.
-            lista_embeddings_MEAN uma lista com os embeddings com a estratégia MEAN
-            lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX
+            lista_tokens  uma lista com os tokens do texto gerados pelo método.
+            texto_pos_pln uma lista com as postagging dos tokens gerados pela ferramenta de pln.
+            lista_tokens_OOV_mcl uma lista com os tokens OOV do mcl.
+            lista_embeddings_MEAN uma lista com os embeddings com a estratégia MEAN.
+            lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX.
         '''
        
         #Guarda os tokens e embeddings de retorno
