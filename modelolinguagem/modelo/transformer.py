@@ -1,5 +1,7 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+
+# Biblioteca de logging
+import logging  
 # Biblioteca de aprendizado de máquina
 from torch import nn 
 import torch 
@@ -12,7 +14,7 @@ from typing import List, Dict, Optional, Union, Tuple
 # Biblioteca de manipulação sistema
 import os
 
-# Biblioteca dos modelos de linguagem
+# Bibliotecas próprias
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
 from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_CAMADA
 

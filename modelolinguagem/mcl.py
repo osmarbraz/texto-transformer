@@ -1,13 +1,15 @@
 # Import das bibliotecas.
-import logging # Biblioteca de logging
 
-# Biblioteca dos modelos de linguagem
+# Biblioteca de logging
+import logging 
+
+# Biblioteca próprias
 from modelolinguagem.pln.pln import PLN
 from modelolinguagem.mensurador.mensurador import Mensurador
 from modelolinguagem.modelo.transformer import Transformer
-from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_CAMADA, PalavrasRelevantes  
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
 from modelolinguagem.modelo.modeloenum import EstrategiasPooling
+from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes 
 
 logger = logging.getLogger(__name__)
 

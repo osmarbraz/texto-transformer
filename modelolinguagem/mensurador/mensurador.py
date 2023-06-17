@@ -1,8 +1,12 @@
 # Import das bibliotecas.
-import logging # Biblioteca de logging
-import torch # Biblioteca de aprendizado de máquina
 
-# Import de bibliotecas próprias
+# Biblioteca de logging
+import logging 
+
+# Biblioteca de aprendizado de máquina
+import torch 
+
+# Bibliotecas próprias
 from modelolinguagem.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
 from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes
 from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 

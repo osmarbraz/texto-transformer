@@ -1,6 +1,10 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
-from enum import Enum # Biblioteca de Enum
+
+# Biblioteca de logging
+import logging  
+
+# Biblioteca de Enum
+from enum import Enum 
 
 logger = logging.getLogger(__name__)
 

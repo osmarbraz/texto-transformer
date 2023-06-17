@@ -1,8 +1,12 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+
+# Biblioteca de logging
+import logging  
+# Biblioteca 
 from cmath import rect, phase
 from math import radians, degrees
-import datetime # Biblioteca de data e tempo
+# Biblioteca de data e tempo
+import datetime 
  
 logger = logging.getLogger(__name__)
  

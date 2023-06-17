@@ -1,5 +1,8 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+# Biblioteca de logging
+import logging  
+
+# Biblioteca de cálculos de distância
 from scipy.spatial.distance import cosine
 from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cityblock

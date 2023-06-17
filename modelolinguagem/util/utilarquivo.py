@@ -1,11 +1,16 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
-import requests # Biblioteca de download
-from tqdm.notebook import tqdm as tqdm_notebook # Biblioteca para barra de progresso
-import os # Biblioteca para manipular arquivos
+
+# Biblioteca de logging
+import logging  
+# Biblioteca de download
+import requests 
+# Biblioteca para barra de progresso
+from tqdm.notebook import tqdm as tqdm_notebook 
+# Biblioteca para manipular arquivos
+import os 
 import sys
 
-# Import de bibliotecas próprias
+# Bibliotecas próprias
 from modelolinguagem.util.utilconstantes import DIRETORIO_MODELO_LINGUAGEM
 from modelolinguagem.util.utiltexto import remove_tags
 

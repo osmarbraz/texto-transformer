@@ -1,5 +1,7 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+
+# Biblioteca de logging
+import logging  
 import subprocess
 
 logger = logging.getLogger(__name__)

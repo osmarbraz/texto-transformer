@@ -1,7 +1,11 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
-import re # Biblioteca de expressão regular
-import unicodedata # Biblioteca de codificação de caracteres
+
+# Biblioteca de logging
+import logging  
+# Biblioteca de expressão regular
+import re 
+# Biblioteca de codificação de caracteres
+import unicodedata 
 from collections import Counter
 from functools import reduce
 
