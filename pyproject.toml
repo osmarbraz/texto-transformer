@@ -1,13 +1,13 @@
 [project]
 name = "modelolinguagem"
-dynamic = ["version"]
+version = "1.0.6"
 description = "Framework Multilingual para processamento de textos utilizando modelos de linguagem"
 readme = "README.md"
 requires-python = ">=3.6.0"
 license = { file = "LICENSE" }
 
-[tool.setuptools.dynamic]
-version = {attr = "modelolinguagem.__version__"}
+[tools.setuptools]
+packages = ["modelolinguagem"]
 
 authors = [
     { name = "Osmar de Oliveira Braz Junior", email = "osmar.braz@udesc.br" }
@@ -24,8 +24,6 @@ keywords = ["Framework", "Transformer","embedding","texto sentença","palavra","
 
 dependencies = ["transformers==4.26.1", 
 			    "spacy==3.5.2"]
-[tools.setuptools]
-packages = ["modelolinguagem"]
 
 [project.urls]
 repository = "https://github.com/osmarbraz/modelolinguagem/"
