@@ -8,7 +8,8 @@ from modelolinguagem.pln.pln import PLN
 from modelolinguagem.mensurador.mensurador import Mensurador
 from modelolinguagem.modelo.transformer import Transformer
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_CAMADA, EstrategiasPooling
+from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_NOME, EstrategiasPooling, listaTipoCamadas
+from modelolinguagem.modelo.modeloenum import EstrategiasPooling
 from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ class ModeloLinguagem:
         self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Especifica de qual camada utilizar os embeddings        
-        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(LISTATIPOCAMADA_CAMADA[modelo_argumentos.camadas_embeddings][3]))
+        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings

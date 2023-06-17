@@ -16,7 +16,7 @@ import os
 
 # Bibliotecas próprias
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_CAMADA
+from modelolinguagem.modelo.modeloenum import listaTipoCamadas
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +214,7 @@ class Transformer(nn.Module):
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in saida['tokens_texto']:
             if len(tokens) >= 512:
-                logger.info("Utilizando embeddings do modelo de: {}.".format(LISTATIPOCAMADA_CAMADA[self.modelo_args.camadas_embeddings]))   
+                logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[self.modelo_args.camadas_embeddings]))   
                         
         return saida
     
