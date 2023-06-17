@@ -6,9 +6,6 @@ readme = "README.md"
 requires-python = ">=3.6.0"
 license = { file = "LICENSE" }
 
-[tools.setuptools]
-packages = ["modelolinguagem"]
-
 authors = [
     { name = "Osmar de Oliveira Braz Junior", email = "osmar.braz@udesc.br" }
 ]
