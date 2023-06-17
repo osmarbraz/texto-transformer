@@ -1,16 +1,13 @@
 # Import das bibliotecas.
 import logging  # Biblioteca de logging
 import os # Biblioteca de manipulação de arquivos
+
 import spacy # Biblioteca do spaCy
 from spacy.util import filter_spans
 from spacy.matcher import Matcher
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utiltexto import *
-from modelolinguagem.util.utiltempo import *
-from modelolinguagem.util.utilarquivo import *
-from modelolinguagem.util.utilambiente import *
-from modelolinguagem.mensurador.mensuradorenum import *
+from modelolinguagem.util.utilambiente import InstaladorModelo 
 
 logger = logging.getLogger(__name__)
 

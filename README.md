@@ -6,7 +6,7 @@ Gera embeddings de textos, sentenças, palavras e tokens utilizando modelos cont
 
 Para instalar o pacote, basta executar o comando abaixo:
 
-<pre><code>pip install modelolinguagem</code></pre>
+<pre><code>$ pip install modelolinguagem</code></pre>
 
 ## Dependências
 - transformers==4.26.1

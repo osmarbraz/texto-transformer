@@ -1,13 +1,13 @@
 # Import das bibliotecas.
-import logging  # Biblioteca de logging
+import logging # Biblioteca de logging
 
 # Biblioteca dos modelos de linguagem
-from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
 from modelolinguagem.pln.pln import PLN
-from modelolinguagem.util.utilconstantes import *
-from modelolinguagem.mensurador.mensuradorenum import *
 from modelolinguagem.mensurador.mensurador import Mensurador
 from modelolinguagem.modelo.transformer import Transformer
+from modelolinguagem.mensurador.mensuradorenum import LISTATIPOCAMADA_CAMADA, PalavrasRelevantes  
+from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
+from modelolinguagem.modelo.modeloenum import EstrategiasPooling
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class ModeloLinguagem:
         self.tokenizer = self.transformer_model.get_tokenizer()
         
         # Especifica de qual camada utilizar os embeddings        
-        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][3]))
+        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(LISTATIPOCAMADA_CAMADA[modelo_argumentos.camadas_embeddings][3]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
@@ -214,11 +214,49 @@ class ModeloLinguagem:
     
     # ============================
     def getEmbeddings(self, texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna token_embeddings, input_ids, attention_mask, token_type_ids, 
+        tokens_texto, texto_original  e all_layer_embeddings em um dicionário.
+        
+        Facilita acesso a classe Transformer.
+    
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna um dicionário com:            
+            token_embeddings uma lista com os embeddings da última camada
+            input_ids uma lista com os textos indexados.            
+            attention_mask uma lista com os as máscaras de atenção
+            token_type_ids uma lista com os tipos dos tokens.            
+            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
+            texto_original uma lista com os textos originais.
+            all_layer_embeddings uma lista com os embeddings de todas as camadas.
+        '''
         return self.get_transformer_model().getEmbeddings(texto)
 
     # ============================
     def getEmbeddingsPalavras(self, 
                               texto):
+        
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
+        Retorna um dicionário 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+    
+        Retorna um dicionário com:    
+            tokens_texto uma lista com os tokens(palavras) realizados pelo método.
+            tokens_texto_mcl uma lista com os tokens e tokens especiais realizados pelo mcl.
+            tokens_texto_pln uma lista com os tokens realizados pela ferramenta de pln.
+            tokens_pos_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln.            
+            tokens_OOV uma lista com os tokens OOV.
+            embeddings_MEAN uma lista com os embeddings com a estratégia MEAN
+            embeddings_MAX uma lista com os embeddings com a estratégia MAX
+        '''
         
         # Tokeniza o texto
         texto_embeddings = self.get_transformer_model().getEmbeddings(texto)
@@ -228,7 +266,7 @@ class ModeloLinguagem:
         saida.update({'tokens_texto': [], 
                       'tokens_texto_mcl' : [],
                       'tokens_texto_pln' : [],
-                      'tokens_pos': [],
+                      'tokens_pos_pln': [],
                       'tokens_oov': [],                      
                       'embeddings_MEAN': [],        
                       'embeddings_MAX': []

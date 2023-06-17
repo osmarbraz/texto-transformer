@@ -6,9 +6,8 @@ import os # Biblioteca para manipular arquivos
 import sys
 
 # Import de bibliotecas próprias
-from modelolinguagem.util.utiltexto import *
-from modelolinguagem.util.utiltempo import *
-from modelolinguagem.util.utilconstantes import *
+from modelolinguagem.util.utilconstantes import DIRETORIO_MODELO_LINGUAGEM
+from modelolinguagem.util.utiltexto import remove_tags
 
 logger = logging.getLogger(__name__)
 

@@ -219,21 +219,22 @@ class Transformer(nn.Module):
     # ============================           
     def getEmbeddings(self, texto):
         '''
-        De um texto preparado(tokenizado) retorna tokens_texto, input_ids, token_type_ids, attention_mask, token_embeddings e all_layer_embeddings em um dicionário.
-        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto. 
+        O retorno é um dicionário com token_embeddings, input_ids, attention_mask, token_type_ids, 
+        tokens_texto, texto_original  e all_layer_embeddings.
         
-        '''   
         Retorna os embeddings de todas as camadas de um texto.
     
         Parâmetros:
         `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
     
-        Retorna um dicionário com:
-            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
-            input_ids uma lista com os textos indexados.
-            token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção
+        Retorna um dicionário com:            
             token_embeddings uma lista com os embeddings da última camada
+            input_ids uma lista com os textos indexados.            
+            attention_mask uma lista com os as máscaras de atenção
+            token_type_ids uma lista com os tipos dos tokens.            
+            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
+            texto_original uma lista com os textos originais.
             all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
 
@@ -328,11 +329,22 @@ class Transformer(nn.Module):
                                    tokens_texto_mcl,                                       
                                    tokens_texto_concatenado,
                                    model_pln):
-        '''    
-          Retorna os tokens, as postagging e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
-          Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
+        Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
             - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+    
+        Retorna 5 lista:            
+            lista_tokens  uma lista com os tokens do texto.
+            texto_pos_pln uma lista com as postagging dos tokens.
+            lista_tokens_OOV uma lista com os tokens OOV.
+            lista_embeddings_MEAN uma lista com os embeddings com a estratégia MEAN
+            lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX
         '''
        
         #Guarda os tokens e embeddings de retorno
