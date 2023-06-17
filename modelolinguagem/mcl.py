@@ -277,14 +277,14 @@ class ModeloLinguagem:
         )
 
         # Percorre os textos da lista.
-        for i, sentenca in enumerate(texto_embeddings['tokens_texto']):
+        for i, sentenca in enumerate(texto_embeddings['tokens_texto_mcl']):
             # Recupera o texto tokenizado pela ferramenta de pln
             lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto[i])
             # Recupera os embeddings do texto  
-            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto'][i])]
+            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
             #print(len(embeddings))
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto'][i][1:-1]
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
             #print(tokens_texto)
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
