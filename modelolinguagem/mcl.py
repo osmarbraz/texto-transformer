@@ -254,9 +254,9 @@ class ModeloLinguagem:
         Retorna um dicionário com:    
             tokens_texto uma lista com os tokens(palavras) realizados pelo método.
             tokens_texto_mcl uma lista com os tokens e tokens especiais realizados pelo mcl.
+            tokens_oov_texto_mcl uma lista com os tokens OOV.
             tokens_texto_pln uma lista com os tokens realizados pela ferramenta de pln.
-            tokens_pos_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln.            
-            tokens_OOV uma lista com os tokens OOV.
+            pos_texto_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln.            
             embeddings_MEAN uma lista com os embeddings com a estratégia MEAN
             embeddings_MAX uma lista com os embeddings com a estratégia MAX
         '''
@@ -268,9 +268,9 @@ class ModeloLinguagem:
         saida = {}
         saida.update({'tokens_texto': [], 
                       'tokens_texto_mcl' : [],
+                      'tokens_oov_texto_mcl': [],                      
                       'tokens_texto_pln' : [],
-                      'tokens_pos_pln': [],
-                      'tokens_oov': [],                      
+                      'pos_texto_pln': [],
                       'embeddings_MEAN': [],        
                       'embeddings_MAX': []
                      }
@@ -289,7 +289,7 @@ class ModeloLinguagem:
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
             #print(tokens_texto_concatenado)
-            lista_tokens_texto, lista_tokens_texto_pos, lista_tokens_oov, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer_model().getTokensEmbeddingsPOSTexto(
+            lista_tokens_texto, lista_pos_texto_pln, lista_tokens_oov_texto_mcl, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer_model().getTokensEmbeddingsPOSTexto(
                                                     embeddings_texto,
                                                     tokens_texto_mcl,
                                                     tokens_texto_concatenado,
@@ -298,9 +298,9 @@ class ModeloLinguagem:
             #Acumula a saída do método 
             saida['tokens_texto'].append(lista_tokens_texto)
             saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+            saida['tokens_oov_texto_mcl'].append(lista_tokens_oov_texto_mcl)            
             saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
-            saida['tokens_pos'].append(lista_tokens_texto_pos)
-            saida['tokens_oov'].append(lista_tokens_oov)            
+            saida['pos_texto_pln'].append(lista_pos_texto_pln)            
             saida['embeddings_MEAN'].append(lista_embeddings_MEAN)
             saida['embeddings_MAX'].append(lista_embeddings_MAX)
 
