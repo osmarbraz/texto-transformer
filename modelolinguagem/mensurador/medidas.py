@@ -1,4 +1,5 @@
 # Import das bibliotecas.
+
 # Biblioteca de logging
 import logging  
 

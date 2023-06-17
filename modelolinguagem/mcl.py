@@ -8,7 +8,7 @@ from modelolinguagem.pln.pln import PLN
 from modelolinguagem.mensurador.mensurador import Mensurador
 from modelolinguagem.modelo.transformer import Transformer
 from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.modelo.modeloenum import EstrategiasPooling
+from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_CAMADA, EstrategiasPooling
 from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes 
 
 logger = logging.getLogger(__name__)
