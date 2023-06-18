@@ -10,7 +10,7 @@ from spacy.util import filter_spans
 from spacy.matcher import Matcher
 
 # Bibliotecas próprias
-from modelolinguagem.util.utilambiente import InstaladorModelo 
+from textotransformer.util.utilambiente import InstaladorModelo 
 
 logger = logging.getLogger(__name__)
 

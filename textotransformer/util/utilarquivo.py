@@ -11,8 +11,8 @@ import os
 import sys
 
 # Bibliotecas próprias
-from modelolinguagem.util.utilconstantes import DIRETORIO_MODELO_LINGUAGEM
-from modelolinguagem.util.utiltexto import remove_tags
+from textotransformer.util.utilconstantes import DIRETORIO_MODELO_LINGUAGEM
+from textotransformer.util.utiltexto import remove_tags
 
 logger = logging.getLogger(__name__)
 

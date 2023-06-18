@@ -7,11 +7,11 @@ import logging
 import torch 
 
 # Bibliotecas próprias
-from modelolinguagem.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
-from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes
-from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 
-from modelolinguagem.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
-from modelolinguagem.util.utiltexto import encontrarIndiceSubLista  
+from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
+from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
+from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 
+from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
+from textotransformer.util.utiltexto import encontrarIndiceSubLista  
 
 logger = logging.getLogger(__name__)
 

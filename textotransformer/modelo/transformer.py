@@ -15,8 +15,8 @@ from typing import List, Dict, Optional, Union, Tuple
 import os
 
 # Bibliotecas próprias
-from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.modelo.modeloenum import listaTipoCamadas
+from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloenum import listaTipoCamadas
 
 logger = logging.getLogger(__name__)
 

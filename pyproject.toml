@@ -1,7 +1,7 @@
 [project]
-name = "modelolinguagem"
+name = "texto-transformer"
 version = "0.0.3"
-description = "Framework Multilingual para processamento de textos utilizando modelos de linguagem"
+description = "Texto Transformer: Framework multilingual para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer"
 readme = "README.md"
 requires-python = ">=3.6.0"
 license = { file = "LICENSE" }
@@ -17,13 +17,13 @@ classifiers = [
     "Programming Language :: Python :: 3.6",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
-keywords = ["Framework", "Transformer","embedding","texto sentença","palavra","token"]
+keywords = ["Framework", "Transformer","embedding","texto", "sentença", "palavra", "token"]
 
 dependencies = ["transformers==4.26.1", 
 			    "spacy==3.5.2"]
 
 [project.urls]
-repository = "https://github.com/osmarbraz/modelolinguagem/"
+repository = "https://github.com/osmarbraz/textotransformer/"
 
 [build-system]
 requires = ["hatchling"]

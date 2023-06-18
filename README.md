@@ -1,12 +1,12 @@
-# Framework Multilingual para processamento de textos utilizando modelos de linguagem.
+# Texto Transformer: Framework multilingual para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer
 
-Gera embeddings de textos, sentenças, palavras e tokens utilizando modelos contextualizados de linguagem multilingual.
+Gera embeddings de textos, sentenças, palavras e tokens utilizando modelos contextualizados de linguagem multilingual baseados em Transformer.
 
 ## Instalação
 
 Para instalar o pacote, basta executar o comando abaixo:
 
-<pre><code>$ pip install modelolinguagem</code></pre>
+<pre><code>$ pip install modelo_linguagem</code></pre>
 
 ## Dependências
 - transformers==4.26.1

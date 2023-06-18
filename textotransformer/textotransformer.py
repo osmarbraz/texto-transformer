@@ -4,13 +4,13 @@
 import logging 
 
 # Biblioteca próprias
-from modelolinguagem.pln.pln import PLN
-from modelolinguagem.mensurador.mensurador import Mensurador
-from modelolinguagem.modelo.transformer import Transformer
-from modelolinguagem.modelo.modeloarguments import ModeloArgumentos
-from modelolinguagem.modelo.modeloenum import LISTATIPOCAMADA_NOME, EstrategiasPooling, listaTipoCamadas
-from modelolinguagem.modelo.modeloenum import EstrategiasPooling
-from modelolinguagem.mensurador.mensuradorenum import PalavrasRelevantes 
+from textotransformer.pln.pln import PLN
+from textotransformer.mensurador.mensurador import Mensurador
+from textotransformer.modelo.transformer import Transformer
+from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EstrategiasPooling, listaTipoCamadas
+from textotransformer.modelo.modeloenum import EstrategiasPooling
+from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes 
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ modelo_argumentos = ModeloArgumentos(
         palavra_relevante=0             # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
         )
 
-class ModeloLinguagem:
+class TextoTransformer:
     
     ''' 
     Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e textos.
