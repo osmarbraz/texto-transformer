@@ -26,7 +26,7 @@ def verificaDiretorioModeloLinguagem():
     if not os.path.exists(DIRETORIO_MODELO_LINGUAGEM):  
         # Cria o diretório
         os.makedirs(DIRETORIO_MODELO_LINGUAGEM)
-        logger.info("Diretório Cohebert criado: {}".format(DIRETORIO_MODELO_LINGUAGEM))
+        logger.info("Diretório modelo de linguagem criado: {}".format(DIRETORIO_MODELO_LINGUAGEM))
     
     return DIRETORIO_MODELO_LINGUAGEM
 

@@ -30,7 +30,8 @@ modelo_argumentos = ModeloArgumentos(
 class TextoTransformer:
     
     ''' 
-    Carrega e cria um modelo de Linguagem, que pode ser usado para gerar embeddings de tokens, palavras, sentenças e textos.
+    Carrega e cria um objeto da classe TextoTransformer para manipular um modelo de linguagem baseado e transformer.
+    Manipula embeddings de tokens, palavras, sentenças e textos.
      
     Parâmetros:
     `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
@@ -72,7 +73,7 @@ class TextoTransformer:
                                      transformer_model=self.transformer_model, 
                                      pln=self.pln)        
     
-        logger.info("Classe ModeloLinguagem carregada: {}.".format(modelo_argumentos))
+        logger.info("Classe TextoTransformer carregada: {}.".format(modelo_argumentos))
     
     # ============================
     def defineEstrategiaPooling(self, estrategiaPooling):
