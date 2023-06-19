@@ -453,7 +453,7 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, sentenca in enumerate(texto_embeddings['tokens_texto_mcl']):
             # Recupera o texto tokenizado pela ferramenta de pln do texto original
-            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'])
+            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
             # Recupera os embeddings do texto  
             embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
             #print(len(embeddings))
