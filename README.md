@@ -8,6 +8,16 @@ Para instalar o pacote, basta executar o comando abaixo:
 
 <pre><code>$ pip install texto-transformer</code></pre>
 
+## Uso
+
+Exemplo simples de uso do pacote:
+
+````python
+from textotransformer import TextoTransformer
+
+modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased")
+````
+
 ## Dependências
 - transformers==4.26.1
 - spacy==3.5.2

@@ -5,6 +5,7 @@ import logging
 # Biblioteca de aprendizado de máquina
 from torch import nn 
 import torch 
+from torch import Tensor, device
 # Biblioteca do transformer
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 # Biblioteca de manipulação json
@@ -218,6 +219,81 @@ class Transformer(nn.Module):
                         
         return saida
     
+    # ============================           
+    def forward(self, texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto. 
+        O retorno é um dicionário com token_embeddings, input_ids, attention_mask, token_type_ids, 
+        tokens_texto_mcl, texto_original  e all_layer_embeddings.
+        
+        Retorna os embeddings de todas as camadas de um texto.
+    
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna um dicionário com:            
+            token_embeddings uma lista com os embeddings da última camada
+            input_ids uma lista com os textos indexados.            
+            attention_mask uma lista com os as máscaras de atenção
+            token_type_ids uma lista com os tipos dos tokens.            
+            tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
+            texto_original uma lista com os textos originais.
+            all_layer_embeddings uma lista com os embeddings de todas as camadas.
+        '''
+
+        # Se o texto não estiver tokenizado, tokeniza
+        if not isinstance(texto, dict):
+            texto = self.tokenize(texto)
+    
+        # Recupera o texto preparado pelo tokenizador para envio ao modelo
+        dic_texto_tokenizado = {'input_ids': texto['input_ids'],                                 
+                                'attention_mask': texto['attention_mask']}
+        
+        # Se token_type_ids estiver no texto preparado copia para dicionário
+        if 'token_type_ids' in texto:
+            dic_texto_tokenizado['token_type_ids'] = texto['token_type_ids']
+
+        # Roda o texto através do modelo, e coleta todos os estados ocultos produzidos.
+        outputs = self.auto_model(**dic_texto_tokenizado, 
+                                  return_dict=False)
+        
+        # A avaliação do modelo retorna um número de diferentes objetos com base em
+        # como é configurado na chamada do método `from_pretrained` anterior. Nesse caso,
+        # porque definimos `output_hidden_states = True`, o terceiro item será o
+        # estados ocultos(hidden_states) de todas as camadas. Veja a documentação para mais detalhes:
+        # https://huggingface.co/transformers/model_doc/bert.html#bertmodel
+
+        # Retorno de model quando ´output_hidden_states=True´ é setado:    
+        # outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
+        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.        
+        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
+        
+        last_hidden_state = outputs[0]
+
+        # Adiciona os embeddings da última camada e os dados do texto preparado na saída
+        saida = {}
+        saida.update({'token_embeddings': last_hidden_state,  # Embeddings da última camada
+                      'input_ids': texto['input_ids'],
+                      'attention_mask': texto['attention_mask'],
+                      'token_type_ids': texto['token_type_ids'],        
+                      'tokens_texto_mcl': texto['tokens_texto_mcl'],
+                      'texto_original': texto['texto_original']
+                      }
+                     )
+
+        # output_hidden_states == True existem embeddings nas camadas ocultas
+        if self.auto_model.config.output_hidden_states:
+            # 2 é o índice da saída com todos os embeddings em outputs
+            all_layer_idx = 2
+            if len(outputs) < 3: #Alguns modelos apenas geram last_hidden_states e all_hidden_states
+                all_layer_idx = 1
+
+            hidden_states = outputs[all_layer_idx]
+            # Adiciona os embeddings de todas as camadas na saída
+            saida.update({'all_layer_embeddings': hidden_states})
+
+        return saida
+
     # ============================           
     def getEmbeddings(self, texto):
         '''
@@ -569,4 +645,12 @@ class Transformer(nn.Module):
         '''
         return self.tokenizer
 
-
+    # ============================   
+    def batch_to_device(self, lote, target_device: device):
+        '''
+        Envia lote pytorch batch para um dispositivo (CPU/GPU)
+        '''
+        for key in lote:
+            if isinstance(lote[key], Tensor):
+                lote[key] = lote[key].to(target_device)
+        return lote

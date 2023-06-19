@@ -157,8 +157,12 @@ class PLN():
                  
         '''
 
-        # Aplica sentenciação do spacy no texto
-        doc = self.model_pln(texto) 
+        # Verifica se o texto não foi processado pelo spaCy  
+        if type(texto) is not spacy.tokens.doc.Doc:
+            # Realiza o parsing no spacy
+            doc = self.model_pln(texto)
+        else:
+            doc = texto
 
         # Lista para as sentenças
         lista = []
@@ -168,7 +172,33 @@ class PLN():
             lista.append(str(sentenca))
 
         return lista       
+
+    # ============================
+    def getListaSentencasTokensTexto(self, texto):
+        '''
+        Retorna duas listas, uma com as sentenças de um texto e outra com a lista de lista de tokens de cada sentença.
         
+        Parâmetros:
+        `texto` - Um texto a ser processado em uma lista de sentenças e tokens.           
+
+        Retorno:
+        `lista_sentencas` - Lista com as sentenças do texto.
+        `lista_tokens` - Lista com os tokens de cada sentença do texto.
+                 
+        '''
+
+        # Retorna uma lista com as sentenlas do texto        
+        lista_sentencas = self.getListaSentencasTexto(texto)
+
+        # Lista para os tokens
+        lista_tokens = []
+        # Percorre as sentenças
+        for sentenca in lista_sentencas:
+            # Adiciona os tokens a lista
+            lista_tokens.append(self.getListaTokensSentenca(sentenca))
+
+        return lista_sentencas, lista_tokens
+
     # ============================
     def getVerbosTexto(self, texto):
         
