@@ -8,7 +8,7 @@ from typing import List, Union
 import torch 
 import numpy as np
 # Biblioteca barra de progresso
-from tqdm.autonotebook import trange
+from tqdm import trange
 
 # Biblioteca próprias
 from textotransformer.pln.pln import PLN
@@ -257,7 +257,7 @@ class TextoTransformer:
     # ============================
     def codificador(self, texto: Union[str, List[str]],
                     tamanho_lote: int = 32, 
-                    mostra_barra_progresso: bool = None,                     
+                    mostra_barra_progresso: bool = False,                     
                     tipo_saida: str = 'texto_embedding',
                     convert_to_numpy: bool = True,
                     convert_to_tensor: bool = False,
@@ -307,7 +307,11 @@ class TextoTransformer:
         # Ordena o texto pelo comprimento decrescente
         textos_ordenados = [texto[idx] for idx in length_sorted_idx]
 
-        for start_index in trange(0, len(texto), tamanho_lote, desc="Lotes", disable=not mostra_barra_progresso):
+        for start_index in trange(0, 
+                                  len(texto), 
+                                  tamanho_lote, 
+                                  desc="Lotes", 
+                                  disable=not mostra_barra_progresso):
             # Recupera um lote
             lote_textos = textos_ordenados[start_index:start_index+tamanho_lote]
 
@@ -403,8 +407,9 @@ class TextoTransformer:
     
         Retorna uma lista com os embeddings com a estratégia MEAN.
         '''
+        saida = self.getEmbeddingsPalavras(texto)
         
-        return self.getEmbeddingsPalavras(texto)['embeddings_MEAN']
+        return saida
         
     # ============================
     def getEmbeddingsPalavras(self, 
