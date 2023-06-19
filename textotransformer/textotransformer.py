@@ -407,10 +407,25 @@ class TextoTransformer:
     
         Retorna uma lista com os embeddings com a estratégia MEAN.
         '''
-        saida = self.getEmbeddingsPalavras(texto)
+        saida = self.getEmbeddingsPalavras(texto)['embeddings_MEAN']
         
         return saida
+
+    # ============================
+    def getEmbeddingsPalavrasMAX(self, 
+                                  texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto utilizando estratégia pooling MAX.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+    
+        Retorna uma lista com os embeddings com a estratégia MAX.
+        '''
+        saida = self.getEmbeddingsPalavras(texto)['embeddings_MAX']
         
+        return saida
+            
     # ============================
     def getEmbeddingsPalavras(self, 
                               texto):
@@ -435,6 +450,11 @@ class TextoTransformer:
             embeddings_MAX uma lista com os embeddings com a estratégia MAX.
         '''
         
+        # Se o texto é uma string, coloca em uma lista de comprimento 1
+        if isinstance(texto, str) or not hasattr(texto, '__len__'):             
+            texto = [texto]
+            entrada_eh_string = True
+
         # Tokeniza o texto
         texto_embeddings = self.get_transformer().getEmbeddings(texto)
 
@@ -470,13 +490,23 @@ class TextoTransformer:
                                                     self.get_pln())
 
             #Acumula a saída do método 
-            saida['tokens_texto'].append(lista_tokens_texto)
-            saida['tokens_texto_mcl'].append(tokens_texto_mcl)
-            saida['tokens_oov_texto_mcl'].append(lista_tokens_oov_texto_mcl)            
-            saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
-            saida['pos_texto_pln'].append(lista_pos_texto_pln)            
-            saida['embeddings_MEAN'].append(lista_embeddings_MEAN)
-            saida['embeddings_MAX'].append(lista_embeddings_MAX)
+            #Se é uma string uma lista com comprimento 1
+            if entrada_eh_string:
+                saida['tokens_texto'] = lista_tokens_texto
+                saida['tokens_texto_mcl'] = tokens_texto_mcl
+                saida['tokens_oov_texto_mcl'] = lista_tokens_oov_texto_mcl
+                saida['tokens_texto_pln'] = lista_tokens_texto_pln
+                saida['pos_texto_pln'] = lista_pos_texto_pln
+                saida['embeddings_MEAN'] = lista_embeddings_MEAN
+                saida['embeddings_MAX'] = lista_embeddings_MAX
+            else:
+                saida['tokens_texto'].append(lista_tokens_texto)
+                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+                saida['tokens_oov_texto_mcl'].append(lista_tokens_oov_texto_mcl)            
+                saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
+                saida['pos_texto_pln'].append(lista_pos_texto_pln)            
+                saida['embeddings_MEAN'].append(lista_embeddings_MEAN)
+                saida['embeddings_MAX'].append(lista_embeddings_MAX)
 
         return saida
 
