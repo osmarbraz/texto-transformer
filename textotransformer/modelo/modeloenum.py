@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 # ============================
 class EstrategiasPooling(Enum):
-    MEAN = 0 # Média
-    MAX = 1 # Máximo
+    MEAN = 0 # Média / Use a média em cada dimensão sobre todos os tokens.
+    MAX = 1 # Máximo / Use o máximo em cada dimensão sobre todos os tokens.
 
 # ============================
 # EmbeddingsCamadas
