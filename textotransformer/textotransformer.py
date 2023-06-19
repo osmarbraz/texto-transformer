@@ -403,11 +403,11 @@ class TextoTransformer:
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto utilizando estratégia pooling MEAN.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
     
         Retorna uma lista com os embeddings com a estratégia MEAN.
         '''
-        saida = self.getEmbeddingsPalavras(texto)['embeddings_MEAN']
+        saida = self.getCodificacaoPalavras(texto)['embeddings_MEAN']
         
         return saida
 
@@ -418,17 +418,17 @@ class TextoTransformer:
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto utilizando estratégia pooling MAX.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
     
         Retorna uma lista com os embeddings com a estratégia MAX.
         '''
-        saida = self.getEmbeddingsPalavras(texto)['embeddings_MAX']
+        saida = self.getCodificacaoPalavras(texto)['embeddings_MAX']
         
         return saida
             
     # ============================
-    def getEmbeddingsPalavras(self, 
-                              texto):
+    def getCodificacaoPalavras(self, 
+                               texto):
         
         '''
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
@@ -451,6 +451,7 @@ class TextoTransformer:
         '''
         
         # Se o texto é uma string, coloca em uma lista de comprimento 1
+        entrada_eh_string = False
         if isinstance(texto, str) or not hasattr(texto, '__len__'):             
             texto = [texto]
             entrada_eh_string = True
@@ -460,7 +461,8 @@ class TextoTransformer:
 
         # Acumula a saída do método
         saida = {}
-        saida.update({'tokens_texto': [], 
+        saida.update({'texto_original' : [],
+                      'tokens_texto': [], 
                       'tokens_texto_mcl' : [],
                       'tokens_oov_texto_mcl': [],                      
                       'tokens_texto_pln' : [],
@@ -475,14 +477,12 @@ class TextoTransformer:
             # Recupera o texto tokenizado pela ferramenta de pln do texto original
             lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
             # Recupera os embeddings do texto  
-            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
-            #print(len(embeddings))
+            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
-            #print(tokens_texto)
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
-            #print(tokens_texto_concatenado)
+            # Recupera os embeddings e tokens de palavra            
             lista_tokens_texto, lista_pos_texto_pln, lista_tokens_oov_texto_mcl, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer().getTokensEmbeddingsPOSTexto(
                                                     embeddings_texto,
                                                     tokens_texto_mcl,
@@ -492,6 +492,7 @@ class TextoTransformer:
             #Acumula a saída do método 
             #Se é uma string uma lista com comprimento 1
             if entrada_eh_string:
+                saida['texto_original'] = texto_embeddings['texto_original'][i]
                 saida['tokens_texto'] = lista_tokens_texto
                 saida['tokens_texto_mcl'] = tokens_texto_mcl
                 saida['tokens_oov_texto_mcl'] = lista_tokens_oov_texto_mcl
@@ -500,6 +501,7 @@ class TextoTransformer:
                 saida['embeddings_MEAN'] = lista_embeddings_MEAN
                 saida['embeddings_MAX'] = lista_embeddings_MAX
             else:
+                saida['texto_original'].append(texto_embeddings['texto_original'][i])
                 saida['tokens_texto'].append(lista_tokens_texto)
                 saida['tokens_texto_mcl'].append(tokens_texto_mcl)
                 saida['tokens_oov_texto_mcl'].append(lista_tokens_oov_texto_mcl)            
@@ -509,9 +511,22 @@ class TextoTransformer:
                 saida['embeddings_MAX'].append(lista_embeddings_MAX)
 
         return saida
+    
+    def getEmbeddingsTokens(self, texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+    
+        Retorna uma lista com os embeddings dos tokens.
+        '''
+        saida = self.getCodificaoTokens(texto)['token_embeddings']
+        
+        return saida
 
     # ============================
-    def getEmbeddingsTokens(self, texto):
+    def getCodificaoTokens(self, texto):
         '''        
         De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto utilizando estratégia pooling MEAN.
     
@@ -521,7 +536,50 @@ class TextoTransformer:
         Retorna uma lista com os embeddings da última camada.
         '''
 
-        return self.getEmbeddings(texto)['token_embeddings']
+        # Se o texto é uma string, coloca em uma lista de comprimento 1
+        entrada_eh_string = False
+        if isinstance(texto, str) or not hasattr(texto, '__len__'):             
+            texto = [texto]
+            entrada_eh_string = True
+
+        # Recupera os embeddings do texto
+        texto_embeddings = self.getEmbeddings(texto)
+
+        # Acumula a saída do método
+        saida = {}
+        saida.update({'texto_original' : [],
+                      'tokens_texto_mcl' : [],                      
+                      'pos_texto_pln': [],
+                      'token_embeddings': [],        
+                      'all_layer_embeddings': []
+                     }
+        )
+
+        # Percorre os textos da lista.
+        for i, sentenca in enumerate(texto_embeddings['tokens_texto_mcl']):            
+            # Recupera os embeddings do texto  
+            lista_token_embeddings = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
+
+            # Recupera os embeddings do texto  
+            lista_all_layer_embeddings = texto_embeddings['all_layer_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
+            
+            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+
+            #Acumula a saída do método 
+            #Se é uma string uma lista com comprimento 1
+            if entrada_eh_string:
+                saida['texto_original'] = texto_embeddings['texto_original'][i]
+                saida['tokens_texto_mcl'] = tokens_texto_mcl
+                saida['token_embeddings'] = lista_token_embeddings
+                saida['all_layer_embeddings'] = lista_all_layer_embeddings
+            else:
+                saida['texto_original'].append(texto_embeddings['texto_original'][i])
+                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+                saida['token_embeddings'].append(lista_token_embeddings)
+                saida['all_layer_embeddings'].append(lista_all_layer_embeddings)
+
+        return saida
 
     # ============================
     def get_model(self):
