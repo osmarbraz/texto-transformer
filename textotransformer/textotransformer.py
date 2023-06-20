@@ -681,8 +681,15 @@ class TextoTransformer:
             embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
+            
             # Concatena os tokens gerandos pela ferramenta de pln
-            tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
+            if entrada_eh_string:
+                tokens_texto_concatenado = " ".join(lista_tokens_texto_pln[0])
+            else:
+                tokens_texto_concatenado = ""
+                for lista_tokens_pln in lista_tokens_texto_pln:
+                 tokens_texto_concatenado = tokens_texto_concatenado + " ".join(lista_tokens_pln)
+
             # Recupera os embeddings e tokens de palavra            
             lista_tokens_texto, lista_pos_texto_pln, lista_tokens_oov_texto_mcl, lista_embeddings_MEAN, lista_embeddings_MAX = self.get_transformer().getTokensEmbeddingsPOSTexto(
                                                     embeddings_texto,
