@@ -671,9 +671,12 @@ class TextoTransformer:
         )
 
         # Percorre os textos da lista.
-        for i, sentenca in enumerate(texto_embeddings['texto_original']):
-            # Recupera o texto tokenizado pela ferramenta de pln do texto original
-            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
+        for i, texto in enumerate(texto_embeddings['texto_original']):
+            lista_tokens_texto_pln = []
+            for j, sentenca in enumerate(texto):
+                # Recupera o texto tokenizado pela ferramenta de pln do texto original
+                lista_tokens_texto_pln.append(self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i][j]))
+            
             # Recupera os embeddings do texto  
             embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
@@ -753,7 +756,7 @@ class TextoTransformer:
         )
 
         # Percorre os textos da lista.
-        for i, sentenca in enumerate(texto_embeddings['tokens_texto_mcl']):            
+        for i, sentenca in enumerate(texto_embeddings['texto_original']):            
             # Recupera os embeddings do texto  
             lista_token_embeddings = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
 
