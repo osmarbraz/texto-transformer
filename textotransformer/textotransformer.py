@@ -388,14 +388,84 @@ class TextoTransformer:
         return self.get_transformer().getEmbeddings(texto)
 
     # ============================
-    def getEmbeddingsTextos(self, texto):
-        
-        return None
+    def getEmbeddingsTextosMEAN(self, texto):
+
+        return self.getCodificacaoTextos(texto)['texto_embeddings_MEAN']
     
     # ============================
-    def getEmbeddingsSentencas(self, texto):    
+    def getEmbeddingsTextosMAx(self, texto):
+
+        return self.getCodificacaoTextos(texto)['texto_embeddings_MAx']    
+
+    # ============================
+    def getCodificacaoTextos(self, texto):
+        '''        
+        De um texto preparado(tokenizado) ou não, retorna os embeddings do textos utilizando estratégia pooling MEAN.
+    
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna uma lista com os embeddings da última camada.
+        '''
+
+        # Se o texto é uma string, coloca em uma lista de comprimento 1
+        entrada_eh_string = False
+        if isinstance(texto, str) or not hasattr(texto, '__len__'):             
+            texto = [texto]
+            entrada_eh_string = True
+
+        # Recupera os embeddings do texto
+        texto_embeddings = self.getEmbeddings(texto)
+
+        # Acumula a saída do método
+        saida = {}
+        saida.update({'texto_original' : [],            # Lista com os textos originais
+                      'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
+                      'texto_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens que da sentença.
+                      'texto_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens que da sentença.
+                      #'all_layer_embeddings': []
+                     }
+        )
+
+        # Percorre os textos da lista.
+        for i, texto in enumerate(texto_embeddings['texto_original']):       
+
+            # Recupera os embeddings do texto  
+            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
+           
+            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
+            
+            # Calcula a média dos embeddings dos tokens das sentenças do texto
+            embedding_documento_media = torch.mean(embeddings_texto, dim=0)
+
+            # Calcula a média dos embeddings dos tokens das sentenças do texto
+            embedding_documento_maximo, linha = torch.max(embeddings_texto, dim=0)
+            
+            #Acumula a saída do método 
+            #Se é uma string uma lista com comprimento 1
+            if entrada_eh_string:
+                saida['texto_original'] = texto_embeddings['texto_original'][i]
+                saida['tokens_texto_mcl'] =  tokens_texto_mcl
+                saida['texto_embeddings_MEAN'] = embedding_documento_media
+                saida['texto_embeddings_MAX'] = embedding_documento_maximo
+            else:
+                saida['texto_original'].append(texto_embeddings['texto_original'][i])
+                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+                saida['texto_embeddings_MEAN'].append(embedding_documento_media)
+                saida['texto_embeddings_MAX'].append(embedding_documento_maximo)
+
+        return saida
+    
+    # ============================
+    def getEmbeddingsSentencasMEAN(self, texto):    
         
-        return None
+        return self.getCodificacaoSentencas(texto)['sentenca_embeddings_MEAN']
+
+    # ============================
+    def getEmbeddingsSentencasMAX(self, texto):    
+        
+        return self.getCodificacaoSentencas(texto)['sentenca_embeddings_MAX']
 
     # ============================
     def getCodificacaoSentencas(self, texto):    
@@ -422,8 +492,8 @@ class TextoTransformer:
         saida.update({'texto_original' : [],            # Lista com os textos originais
                       'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
                       'sentencas_texto' : [],           # Lista com as sentenças do texto
-                      'tokens_sentenca_texto_mcl' : [], # Lista de lista com os tokens das sentenças do texto
-                      'token_embeddings': [],           # Lista de lista com os embeddings dos tokens das sentenças do texto
+                      'sentenca_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens que da sentença.
+                      'sentenca_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens que da sentença.
                       #'all_layer_embeddings': []
                      }
         )
@@ -439,9 +509,9 @@ class TextoTransformer:
             
             # Recupera as sentenças do texto
             lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
-
-            lista_tokens_sentenca_texto = []            
-            lista_embeddings_tokens_sentencas_texto = []
+                 
+            lista_embeddings_tokens_sentencas_texto_media = []
+            lista_embeddings_tokens_sentencas_texto_maximo = []
             
             # Percorre as sentenças do texto
             for j, sentenca in enumerate(lista_sentencas_texto):
@@ -460,23 +530,31 @@ class TextoTransformer:
                 # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
                 embedding_sentenca = embeddings_texto[inicio:fim + 1]
 
-                lista_tokens_sentenca_texto.append(sentenca_tokenizada)
-                lista_embeddings_tokens_sentencas_texto.append(embedding_sentenca)
+                # Calcula a média dos embeddings dos tokens das sentenças do texto
+                embedding_sentenca_media = torch.mean(embedding_sentenca, dim=0)
 
+                # Calcula a média dos embeddings dos tokens das sentenças do texto
+                embedding_sentenca_maximo, linha = torch.max(embedding_sentenca, dim=0)
+
+                # Guarda os tokens e os embeddings das sentenças do texto da média e do máximo
+                lista_embeddings_tokens_sentencas_texto_media.append(embedding_sentenca_media)
+                lista_embeddings_tokens_sentencas_texto_maximo.append(embedding_sentenca_maximo)
+
+            
             #Acumula a saída do método 
             #Se é uma string uma lista com comprimento 1
             if entrada_eh_string:
                 saida['texto_original'] = texto_embeddings['texto_original'][i]
                 saida['tokens_texto_mcl'] =  tokens_texto_mcl
                 saida['sentencas_texto'] = lista_sentencas_texto
-                saida['tokens_sentenca_texto_mcl'] =  lista_tokens_sentenca_texto
-                saida['token_embeddings'] = lista_embeddings_tokens_sentencas_texto
+                saida['sentenca_embeddings_MEAN'] = lista_embeddings_tokens_sentencas_texto_media
+                saida['sentenca_embeddings_MAX'] = lista_embeddings_tokens_sentencas_texto_maximo
             else:
                 saida['texto_original'].append(texto_embeddings['texto_original'][i])
                 saida['tokens_texto_mcl'].append(tokens_texto_mcl)
                 saida['sentencas_texto'].append(lista_sentencas_texto)
-                saida['tokens_sentenca_texto_mcl'].append(tokens_texto_mcl)
-                saida['token_embeddings'].append(lista_embeddings_tokens_sentencas_texto)
+                saida['sentenca_embeddings_MEAN'].append(lista_embeddings_tokens_sentencas_texto_media)
+                saida['sentenca_embeddings_MAX'].append(lista_embeddings_tokens_sentencas_texto_maximo)
 
         return saida
    
