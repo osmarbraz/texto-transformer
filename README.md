@@ -21,6 +21,7 @@ modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased")
 ## Dependências
 - transformers==4.26.1
 - spacy==3.5.2
+- tqdm==4.65.0
 
 ## Licença
 
