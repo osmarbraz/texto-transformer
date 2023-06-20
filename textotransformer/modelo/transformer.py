@@ -206,8 +206,8 @@ class Transformer(nn.Module):
                                     ) 
                     )
                         
-        # Gera o texto tokenizado        
-        saida['tokens_texto_mcl'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize]
+        # Gera o texto tokenizado convertendo os ids para os respectivos tokens           
+        saida['tokens_texto_mcl'] = [[self.tokenizer.convert_ids_to_tokens(s.item()) for s in col] for col in saida['input_ids']]
 
         # Guarda o texto original        
         saida['texto_original'] = [[s for s in col] for col in to_tokenize]
