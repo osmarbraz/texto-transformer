@@ -94,9 +94,13 @@ class TextoTransformer:
                 device = "cpu"
                 logging.info("Sem GPU disponível, usando CPU.")
             
-         # Diz ao PyTorch para usar o dispositvo (GPU ou CPU)
-        self._target_device = torch.device(device)
+            # Diz ao PyTorch para usar o dispositvo (GPU ou CPU)
+            self._target_device = torch.device(device)
+        else:
+            # Usa o device informado
+            self._target_device = torch.device(device)
 
+        # Mensagem de carregamento da classe
         logger.info("Classe TextoTransformer carregada: {}.".format(modelo_argumentos))
     
     # ============================
@@ -743,7 +747,6 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [],
                       'tokens_texto_mcl' : [],                      
-                      'pos_texto_pln': [],
                       'token_embeddings': [],        
                       'all_layer_embeddings': []
                      }

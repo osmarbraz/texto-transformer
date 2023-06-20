@@ -207,16 +207,16 @@ class Transformer(nn.Module):
                     )
                         
         # Gera o texto tokenizado        
-        saida['tokens_texto_mcl'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize][0]
+        saida['tokens_texto_mcl'] = [[self.getTextoTokenizado(s) for s in col] for col in to_tokenize]
 
         # Guarda o texto original        
-        saida['texto_original'] = [[s for s in col] for col in to_tokenize][0]
+        saida['texto_original'] = [[s for s in col] for col in to_tokenize]
         
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in saida['tokens_texto_mcl']:
             if len(tokens) >= 512:
                 logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[self.modelo_args.camadas_embeddings]))   
-                        
+  
         return saida
     
     # ============================           
