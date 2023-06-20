@@ -421,10 +421,10 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [],            # Lista com os textos originais
                       'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
-                      'sentencas_texto' : [],           # Lista ncom as sentenças do texto
-                      'tokens_sentenca_texto_mcl' : [], # Lista com os tokens das sentenças do texto
-                      'token_embeddings': [],        
-                      'all_layer_embeddings': []
+                      'sentencas_texto' : [],           # Lista com as sentenças do texto
+                      'tokens_sentenca_texto_mcl' : [], # Lista de lista com os tokens das sentenças do texto
+                      'token_embeddings': [],           # Lista de lista com os embeddings dos tokens das sentenças do texto
+                      #'all_layer_embeddings': []
                      }
         )
 
@@ -461,7 +461,7 @@ class TextoTransformer:
                 embedding_sentenca = embeddings_texto[inicio:fim + 1]
 
                 lista_tokens_sentenca_texto.append(sentenca_tokenizada)
-                lista_embeddings_tokens_sentencas_texto.append(sentenca_tokenizada)
+                lista_embeddings_tokens_sentencas_texto.append(embedding_sentenca)
 
             #Acumula a saída do método 
             #Se é uma string uma lista com comprimento 1
