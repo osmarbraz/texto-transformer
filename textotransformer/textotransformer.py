@@ -256,7 +256,7 @@ class TextoTransformer:
         return self.get_transformer().tokenize(texto)
     
     # ============================
-    def codificador(self, texto: Union[str, List[str]],
+    def getCodificacao(self, texto: Union[str, List[str]],
                     tamanho_lote: int = 32, 
                     mostra_barra_progresso: bool = False,                     
                     tipo_saida: str = 'texto_embedding',
@@ -371,7 +371,7 @@ class TextoTransformer:
         De um texto preparado(tokenizado) ou não, retorna token_embeddings, input_ids, attention_mask, token_type_ids, 
         tokens_texto, texto_original  e all_layer_embeddings em um dicionário.
         
-        Facilita acesso a classe Transformer.
+        Facilita acesso ao método "getEmbeddings" da classe Transformer.
     
         Parâmetros:
         `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
@@ -420,6 +420,7 @@ class TextoTransformer:
         # Acumula a saída do método
         saida = {}
         saida.update({'texto_original' : [], # Lista com os textos originais
+                      'tokens_texto_mcl' : [] # Lista com os tokens dos textos originais
                       'sentencas_texto' : [],   # Lista ncom as sentenças do texto
                       'tokens_sentenca_texto_mcl' : [], # Lista com os tokens das sentenças do texto
                       'token_embeddings': [],        
