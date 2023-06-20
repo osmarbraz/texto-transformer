@@ -763,6 +763,7 @@ class TextoTransformer:
         )
 
         logger.info("getCodificaoTokens texto_embeddings['texto_original']: {}.".format(len(texto_embeddings['texto_original'])))
+        logger.info("getCodificaoTokens texto_embeddings['tokens_texto_mcl']: {}.".format(len(texto_embeddings['tokens_texto_mcl'])))
         # Percorre os textos da lista.
         for i, sentenca in enumerate(texto_embeddings['texto_original']):            
             # Recupera os embeddings do texto  

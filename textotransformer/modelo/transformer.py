@@ -179,7 +179,7 @@ class Transformer(nn.Module):
         
         # Se o texto for uma string coloca em uma lista de listas para tokenizar
         if isinstance(texto, str):
-            to_tokenize = [texto]
+            to_tokenize = [[texto]]
         else:
             # Se for uma lista de strings coloca em uma lista para tokenizar
             if isinstance(texto[0], str):
