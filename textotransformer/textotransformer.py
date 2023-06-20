@@ -389,23 +389,39 @@ class TextoTransformer:
 
     # ============================
     def getEmbeddingsTextosMEAN(self, texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings dos textos consolidados dos tokens do texto utilizando estratégia pooling MEAN.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN utilizando o modelo de linguagem.
+    
+        Retorna uma lista com os embeddings dos textos consolidados dos tokens com a estratégia MEAN.
+        '''
 
         return self.getCodificacaoTextos(texto)['texto_embeddings_MEAN']
     
     # ============================
-    def getEmbeddingsTextosMAx(self, texto):
+    def getEmbeddingsTextosMAX(self, texto):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings dos textos consolidados dos tokens do texto utilizando estratégia pooling MAX.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MAX utilizando o modelo de linguagem.
+    
+        Retorna uma lista com os embeddings dos textos consolidados dos tokens com a estratégia MAX.
+        '''
 
         return self.getCodificacaoTextos(texto)['texto_embeddings_MAx']    
 
     # ============================
     def getCodificacaoTextos(self, texto):
         '''        
-        De um texto preparado(tokenizado) ou não, retorna os embeddings do textos utilizando estratégia pooling MEAN.
+        De um texto preparado(tokenizado) ou não, retorna a codificação dos textos consolidados dos tokens do textos utilizando estratégia pooling MEAN e MAX.
     
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+        `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
     
-        Retorna uma lista com os embeddings da última camada.
+        Retorna uma lista com os embeddings consolidados dos textos utilizando embeddings da última camada do transformer.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -459,23 +475,39 @@ class TextoTransformer:
     
     # ============================
     def getEmbeddingsSentencasMEAN(self, texto):    
-        
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das sentenças consolidados dos tokens do texto utilizando estratégia pooling MEAN.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN utilizando o modelo de linguagem.
+    
+        Retorna uma lista com os embeddings das sentenças consolidados dos tokens com a estratégia MEAN.
+        '''
+
         return self.getCodificacaoSentencas(texto)['sentenca_embeddings_MEAN']
 
     # ============================
     def getEmbeddingsSentencasMAX(self, texto):    
-        
+        '''
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das sentenças consolidados dos tokens do texto utilizando estratégia pooling MAX.
+            
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MAX utilizando o modelo de linguagem.
+    
+        Retorna uma lista com os embeddings das sentenças consolidados dos tokens com a estratégia MAX.
+        '''
+
         return self.getCodificacaoSentencas(texto)['sentenca_embeddings_MAX']
 
     # ============================
     def getCodificacaoSentencas(self, texto):    
         '''        
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das sentenças do texto utilizando estratégia pooling MEAN.
+        De um texto preparado(tokenizado) ou não, retorna a codificação das sentenças consolidados dos tokens do textos utilizando estratégia pooling MEAN e MAX.
     
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+        `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
     
-        Retorna uma lista com os embeddings da última camada.
+        Retorna uma lista com os embeddings consolidados das sentenças utilizando embeddings da última camada do transformer.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -562,12 +594,12 @@ class TextoTransformer:
     def getEmbeddingsPalavrasMEAN(self, 
                                   texto):
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto utilizando estratégia pooling MEAN.
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras consolidados dos tokens do texto utilizando estratégia pooling MEAN.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+        `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN utilizando o modelo de linguagem.
     
-        Retorna uma lista com os embeddings com a estratégia MEAN.
+        Retorna uma lista com os embeddings das palavras consolidados dos tokens com a estratégia MEAN.
         '''
         saida = self.getCodificacaoPalavras(texto)['embeddings_MEAN']
         
@@ -577,12 +609,12 @@ class TextoTransformer:
     def getEmbeddingsPalavrasMAX(self, 
                                   texto):
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto utilizando estratégia pooling MAX.
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras consolidados dos tokens do texto utilizando estratégia pooling MAX.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+        `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MAX utilizando o modelo de linguagem.
     
-        Retorna uma lista com os embeddings com a estratégia MAX.
+        Retorna uma lista com os embeddings das palavras consolidados dos tokens com a estratégia MAX.
         '''
         saida = self.getCodificacaoPalavras(texto)['embeddings_MAX']
         
