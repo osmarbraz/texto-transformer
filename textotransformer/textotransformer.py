@@ -63,7 +63,7 @@ class TextoTransformer:
         # Carrega o modelo de linguagem da classe transformador
         self.transformer = Transformer(modelo_args=modelo_argumentos)
     
-        # Recupera o modelo.
+        # Recupera o modelo de linguagem.
         self.model = self.transformer.get_auto_model()
     
         # Recupera o tokenizador.     
@@ -300,10 +300,11 @@ class TextoTransformer:
             texto = [texto]
             entrada_eh_string = True
 
+        # Se não foi especificado um dispositivo, use-o defaul
         if device is None:
             device = self._target_device
 
-        self.to(device)
+        self.model.to(device)
 
         # Lista com embeddings de saída
         all_embeddings = []
@@ -326,7 +327,7 @@ class TextoTransformer:
 
             # Recupera os embeddings do modelo
             with torch.no_grad():
-                out_features = self.get_transformer().forward(features)
+                out_features = self.get_transformer().getSaidaRede(features)
 
                 # Retorno embeddings de tokens
                 if tipo_saida == 'token_embeddings':
@@ -389,7 +390,7 @@ class TextoTransformer:
             texto_original uma lista com os textos originais.
             all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
-        return self.get_transformer().getEmbeddings(texto)
+        return self.get_transformer().getSaidaRede(texto)
 
     # ============================
     def getEmbeddingsTextosMEAN(self, texto):
@@ -655,7 +656,7 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Tokeniza o texto
-        texto_embeddings = self.get_transformer().getEmbeddings(texto)
+        texto_embeddings = self.get_transformer().getSaidaRede(texto)
 
         # Acumula a saída do método
         saida = {}
@@ -765,7 +766,7 @@ class TextoTransformer:
         logger.info("getCodificaoTokens texto_embeddings['texto_original']: {}.".format(len(texto_embeddings['texto_original'])))
         logger.info("getCodificaoTokens texto_embeddings['tokens_texto_mcl']: {}.".format(len(texto_embeddings['tokens_texto_mcl'])))
         # Percorre os textos da lista.
-        for i, sentenca in enumerate(texto_embeddings['texto_original']):            
+        for i, texto in enumerate(texto_embeddings['texto_original']):            
             # Recupera os embeddings do texto  
             lista_token_embeddings = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
 
@@ -827,4 +828,4 @@ class TextoTransformer:
             token_embeddings uma lista com os embeddings da última camada.
            
         '''
-        return self.get_transformer().getEmbeddings(texto)['token_embeddings']
+        return self.get_transformer().getSaidaRede(texto)['token_embeddings']
