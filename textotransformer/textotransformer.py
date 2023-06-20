@@ -419,9 +419,9 @@ class TextoTransformer:
 
         # Acumula a saída do método
         saida = {}
-        saida.update({'texto_original' : [], # Lista com os textos originais
-                      'tokens_texto_mcl' : [] # Lista com os tokens dos textos originais
-                      'sentencas_texto' : [],   # Lista ncom as sentenças do texto
+        saida.update({'texto_original' : [],            # Lista com os textos originais
+                      'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
+                      'sentencas_texto' : [],           # Lista ncom as sentenças do texto
                       'tokens_sentenca_texto_mcl' : [], # Lista com os tokens das sentenças do texto
                       'token_embeddings': [],        
                       'all_layer_embeddings': []
