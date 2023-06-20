@@ -421,6 +421,7 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [], # Lista com os textos originais
                       'sentencas_texto' : [],   # Lista ncom as sentenças do texto
+                      'tokens_sentenca_texto_mcl' : [], # Lista com os tokens das sentenças do texto
                       'token_embeddings': [],        
                       'all_layer_embeddings': []
                      }
@@ -429,19 +430,12 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
-            # Recupera o texto tokenizado pela ferramenta de pln do texto original
-            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
-
             # Recupera os embeddings do texto  
             embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
             
-            # Concatena os tokens gerandos pela ferramenta de pln
-            tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
-            # Recupera os embeddings e tokens de palavra            
-
             # Recupera as sentenças do texto
             lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'])
 
@@ -472,15 +466,15 @@ class TextoTransformer:
             #Se é uma string uma lista com comprimento 1
             if entrada_eh_string:
                 saida['texto_original'] = texto_embeddings['texto_original'][i]
-                saida['sentencas_texto'] = 
-                saida['tokens_texto_mcl'] =  lista_tokens_sentenca_texto  
-
+                saida['tokens_texto_mcl'] =  tokens_texto_mcl
+                saida['sentencas_texto'] = lista_sentencas_texto
+                saida['tokens_sentenca_texto_mcl'] =  lista_tokens_sentenca_texto
                 saida['token_embeddings'] = lista_embeddings_tokens_sentencas_texto
             else:
                 saida['texto_original'].append(texto_embeddings['texto_original'][i])
-                saida['sentencas_texto'].append(lista_sentencas_texto)
                 saida['tokens_texto_mcl'].append(tokens_texto_mcl)
-
+                saida['sentencas_texto'].append(lista_sentencas_texto)
+                saida['tokens_sentenca_texto_mcl'].append(tokens_texto_mcl)
                 saida['token_embeddings'].append(lista_embeddings_tokens_sentencas_texto)
 
         return saida
