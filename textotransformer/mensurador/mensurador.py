@@ -22,24 +22,24 @@ class Mensurador:
      
     Parâmetros:
     `modelo_args` - Parâmetros do modelo de linguagem.
-    `transformer_model` - Modelo de linguagem carregado.
+    `transformer` - Modelo de linguagem carregado.
     `pln` - Processador de linguagem natural.
     ''' 
 
     # Construtor da classe
-    def __init__(self, modelo_args, transformer_model, pln):
+    def __init__(self, modelo_args, transformer, pln):
     
         # Parâmetros do modelo
         self.model_args = modelo_args
     
         # Recupera o objeto do transformer.
-        self.transformer_model = transformer_model
+        self.transformer = transformer
     
         # Recupera o modelo.
-        self.model = transformer_model.get_auto_model()
+        self.model = transformer.get_auto_model()
     
         # Recupera o tokenizador.     
-        self.tokenizer = transformer_model.get_tokenizer()
+        self.tokenizer = transformer.get_tokenizer()
         
         # Recupera a classe PLN
         self.pln = pln
@@ -63,7 +63,7 @@ class Mensurador:
         '''
 
         # Texto tokenizado
-        textoTokenizado =  self.transformer_model.getTextoTokenizado(texto)
+        textoTokenizado =  self.transformer.getTextoTokenizado(texto)
 
         #print('O texto (', texto, ') tem tamanho = ', len(textoTokenizado), ' = ', textoTokenizado)
 
@@ -483,11 +483,11 @@ class Mensurador:
         '''
             
         # Tokeniza o texto
-        textoTokenizado =  self.transformer_model.getTextoTokenizado(texto)
+        textoTokenizado =  self.transformer.getTextoTokenizado(texto)
         #print(textoTokenizado)
 
         # Tokeniza a sentença
-        sentencaTokenizada =  self.transformer_model.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.transformer.getTextoTokenizado(sentenca)
         #print(sentencaTokenizada)
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -515,14 +515,14 @@ class Mensurador:
         '''
           
         # Tokeniza o texto
-        textoTokenizado =  self.transformer_model.getTextoTokenizado(texto)  
+        textoTokenizado =  self.transformer.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Remove as stopword da sentença
         sentencaSemStopWord = self.pln.removeStopWord(sentenca)
 
         # Tokeniza a sentença sem stopword
-        sentencaTokenizadaSemStopWord =  self.transformer_model.getTextoTokenizado(sentencaSemStopWord)
+        sentencaTokenizadaSemStopWord =  self.transformer.getTextoTokenizado(sentencaSemStopWord)
         #print(sentencaTokenizadaSemStopWord)
 
         # Remove os tokens de início e fim da sentença
@@ -531,7 +531,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSemStopWord))
 
         # Tokeniza a sentença
-        sentencaTokenizada =  self.transformer_model.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.transformer.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')
@@ -577,14 +577,14 @@ class Mensurador:
         '''
 
         # Tokeniza o texto
-        textoTokenizado =  self.transformer_model.getTextoTokenizado(texto)  
+        textoTokenizado =  self.transformer.getTextoTokenizado(texto)  
         #print(textoTokenizado)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
         sentencaSomenteRelevante = self.pln.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
-        sentencaTokenizadaSomenteRelevante =  self.transformer_model.getTextoTokenizado(sentencaSomenteRelevante)
+        sentencaTokenizadaSomenteRelevante =  self.transformer.getTextoTokenizado(sentencaSomenteRelevante)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizadaSomenteRelevante.remove('[CLS]')
@@ -593,7 +593,7 @@ class Mensurador:
         #print(len(sentencaTokenizadaSomenteRelevante))
 
         # Tokeniza a sentença
-        sentencaTokenizada =  self.transformer_model.getTextoTokenizado(sentenca)
+        sentencaTokenizada =  self.transformer.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
         sentencaTokenizada.remove('[CLS]')

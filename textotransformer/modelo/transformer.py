@@ -406,7 +406,7 @@ class Transformer(nn.Module):
                                    embeddings_texto, 
                                    tokens_texto_mcl,                                       
                                    tokens_texto_concatenado,
-                                   model_pln):
+                                   pln):
         '''
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
         Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -432,7 +432,7 @@ class Transformer(nn.Module):
         lista_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        lista_tokens_texto_pln, lista_pos_texto_pln = model_pln.getListaTokensPOSTexto(tokens_texto_concatenado)
+        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(tokens_texto_concatenado)
 
         # print("\tokens_texto_concatenado    :",tokens_texto_concatenado)    
         # print("lista_tokens_texto_pln       :",lista_tokens_texto_pln)

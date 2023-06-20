@@ -18,6 +18,7 @@ from textotransformer.modelo.modeloarguments import ModeloArgumentos
 from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EstrategiasPooling, listaTipoCamadas
 from textotransformer.modelo.modeloenum import EstrategiasPooling
 from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes 
+from textotransformer.util.utiltexto import encontrarIndiceSubLista
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class TextoTransformer:
                         
         # Constroi um mensurador
         self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
-                                     transformer_model=self.transformer, 
+                                     transformer=self.transformer, 
                                      pln=self.pln)        
     
         # Verifica se é possível usar GPU
@@ -392,9 +393,97 @@ class TextoTransformer:
         return None
     
     # ============================
-    def getEmbeddingsSentencas(self, texto):
-    
+    def getEmbeddingsSentencas(self, texto):    
+        
         return None
+
+    # ============================
+    def getCodificacaoSentencas(self, texto):    
+        '''        
+        De um texto preparado(tokenizado) ou não, retorna os embeddings das sentenças do texto utilizando estratégia pooling MEAN.
+    
+        Parâmetros:
+        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna uma lista com os embeddings da última camada.
+        '''
+
+        # Se o texto é uma string, coloca em uma lista de comprimento 1
+        entrada_eh_string = False
+        if isinstance(texto, str) or not hasattr(texto, '__len__'):             
+            texto = [texto]
+            entrada_eh_string = True
+
+        # Recupera os embeddings do texto
+        texto_embeddings = self.getEmbeddings(texto)
+
+        # Acumula a saída do método
+        saida = {}
+        saida.update({'texto_original' : [], # Lista com os textos originais
+                      'sentencas_texto' : [],   # Lista ncom as sentenças do texto
+                      'token_embeddings': [],        
+                      'all_layer_embeddings': []
+                     }
+        )
+
+        # Percorre os textos da lista.
+        for i, texto in enumerate(texto_embeddings['texto_original']):       
+
+            # Recupera o texto tokenizado pela ferramenta de pln do texto original
+            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
+
+            # Recupera os embeddings do texto  
+            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
+           
+            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
+            
+            # Concatena os tokens gerandos pela ferramenta de pln
+            tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
+            # Recupera os embeddings e tokens de palavra            
+
+            # Recupera as sentenças do texto
+            lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'])
+
+            lista_tokens_sentenca_texto = []            
+            lista_embeddings_tokens_sentencas_texto = []
+            
+            # Percorre as sentenças do texto
+            for j, sentenca in enumerate(lista_sentencas_texto):
+
+                # Tokeniza a sentença
+                sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
+                
+                # Remove os tokens de início e fim da sentença
+                sentenca_tokenizada.remove('[CLS]')
+                sentenca_tokenizada.remove('[SEP]')    
+                #print(len(sentencaTokenizada))
+
+                # Localiza os índices dos tokens da sentença no texto
+                inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
+
+                # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
+                embedding_sentenca = embeddings_texto[inicio:fim + 1]
+
+                lista_tokens_sentenca_texto.append(sentenca_tokenizada)
+                lista_embeddings_tokens_sentencas_texto.append(sentenca_tokenizada)
+
+            #Acumula a saída do método 
+            #Se é uma string uma lista com comprimento 1
+            if entrada_eh_string:
+                saida['texto_original'] = texto_embeddings['texto_original'][i]
+                saida['sentencas_texto'] = 
+                saida['tokens_texto_mcl'] =  lista_tokens_sentenca_texto  
+
+                saida['token_embeddings'] = lista_embeddings_tokens_sentencas_texto
+            else:
+                saida['texto_original'].append(texto_embeddings['texto_original'][i])
+                saida['sentencas_texto'].append(lista_sentencas_texto)
+                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+
+                saida['token_embeddings'].append(lista_embeddings_tokens_sentencas_texto)
+
+        return saida
    
     # ============================
     def getEmbeddingsPalavrasMEAN(self, 
