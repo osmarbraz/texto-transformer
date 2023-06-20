@@ -437,7 +437,7 @@ class TextoTransformer:
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
             
             # Recupera as sentenças do texto
-            lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'])
+            lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
 
             lista_tokens_sentenca_texto = []            
             lista_embeddings_tokens_sentencas_texto = []
