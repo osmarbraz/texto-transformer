@@ -110,8 +110,8 @@ class TextoTransformer:
         Retorna uma string com descrição do objeto
         '''
         return "Classe ({}) com modelo Transformer: {} e NLP: {} ".format(self.__class__.__name__, 
-                                                                                   self.get_transformer().auto_model.__class__.__name__,
-                                                                                   self.get_pln().model_pln.__class__.__name__)
+                                                                          self.get_transformer().auto_model.__class__.__name__,
+                                                                          self.get_pln().model_pln.__class__.__name__)
     
     # ============================
     def _defineEstrategiaPooling(self, estrategiaPooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
@@ -133,7 +133,8 @@ class TextoTransformer:
               estrategiaPooling = None
               logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
         
-        if estrategiaPooling == PalavrasRelevantes.ALL:
+        # Atribui para os parâmetros do modelo
+        if estrategiaPooling == EstrategiasPooling.MEAN:
             modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
         else:
             if estrategiaPooling == EstrategiasPooling.MAX:
@@ -150,6 +151,7 @@ class TextoTransformer:
         `palavraRelevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
         ''' 
         
+        # Verifica o tipo de dado do parâmetro 'palavraRelevante'
         if isinstance(palavraRelevante, int):
           if palavraRelevante == 0:
             palavraRelevante = PalavrasRelevantes.ALL
@@ -157,19 +159,18 @@ class TextoTransformer:
             if palavraRelevante == 1:
               palavraRelevante = PalavrasRelevantes.CLEAN
             else:
-                if palavraRelevante == 1:
+                if palavraRelevante == 2:
                     palavraRelevante = PalavrasRelevantes.NOUN
                 else:
                     palavraRelevante = None
                     logger.info("Não foi especificado um valor inteiro para a estratégia de relevância de palavra.") 
         
+        # Atribui para os parâmetros do modelo
         if palavraRelevante == PalavrasRelevantes.ALL:
-            modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value
-            
+            modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value            
         else:
             if palavraRelevante == PalavrasRelevantes.CLEAN:
-                modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value
-                
+                modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value                
             else:
                 if palavraRelevante == PalavrasRelevantes.NOUN:
                     modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value                    
