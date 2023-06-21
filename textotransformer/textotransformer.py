@@ -15,9 +15,10 @@ from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
-from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EstrategiasPooling, listaTipoCamadas
+from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_CAMADA
+from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME
 from textotransformer.modelo.modeloenum import EstrategiasPooling
-from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes 
+from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
 from textotransformer.util.utiltexto import encontrarIndiceSubLista
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,7 @@ class TextoTransformer:
         self.tokenizer = self.transformer.get_tokenizer()
         
         # Especifica de qual camada utilizar os embeddings        
-        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
+        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(LISTATIPOCAMADA_CAMADA[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
@@ -132,7 +133,7 @@ class TextoTransformer:
               estrategiaPooling = None
               logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
         
-        if estrategiaPooling == EstrategiasPooling.MEAN:
+        if estrategiaPooling == PalavrasRelevantes.ALL:
             modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
         else:
             if estrategiaPooling == EstrategiasPooling.MAX:
@@ -141,7 +142,7 @@ class TextoTransformer:
                 logger.info("Não foi especificado uma estratégia de pooling válida.") 
     
     # ============================
-    def _definePalavraRelevante(self, palavraRelevante=0):
+    def _definePalavraRelevante(self, palavraRelevante: Union[int, PalavrasRelevantes] = PalavrasRelevantes.ALL):
         ''' 
         Define a estratégia de palavra relavante para os parâmetros do modelo.
         
@@ -149,33 +150,36 @@ class TextoTransformer:
         `palavraRelevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
         ''' 
         
-        if isinstance(estrategiaPooling, int):
-          if estrategiaPooling == 0:
-            estrategiaPooling = EstrategiasPooling.MEAN
+        if isinstance(palavraRelevante, int):
+          if palavraRelevante == 0:
+            palavraRelevante = PalavrasRelevantes.ALL
           else:
-            if estrategiaPooling == 1:
-              estrategiaPooling = EstrategiasPooling.MAX
+            if palavraRelevante == 1:
+              palavraRelevante = PalavrasRelevantes.CLEAN
             else:
-              estrategiaPooling = None
-              logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
+                if palavraRelevante == 1:
+                    palavraRelevante = PalavrasRelevantes.NOUN
+                else:
+                    palavraRelevante = None
+                    logger.info("Não foi especificado um valor inteiro para a estratégia de relevância de palavra.") 
         
-        if palavraRelevante == PalavrasRelevantes.CLEAN.name:
-            modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value
+        if palavraRelevante == PalavrasRelevantes.ALL:
+            modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value
             
         else:
-            if palavraRelevante == PalavrasRelevantes.NOUN.name:
-                modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value
+            if palavraRelevante == PalavrasRelevantes.CLEAN:
+                modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value
                 
             else:
-                if palavraRelevante == PalavrasRelevantes.ALL.name:
-                    modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value                    
+                if palavraRelevante == PalavrasRelevantes.NOUN:
+                    modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value                    
                 else:
                     logger.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
     # ============================
     def getMedidasTexto(self, texto: str, 
-                        estrategiaPooling='MEAN', 
-                        palavraRelevante='ALL'):
+                        estrategiaPooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
+                        palavraRelevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
@@ -201,8 +205,8 @@ class TextoTransformer:
     
     # ============================
     def getMedidasTextoCosseno(self, texto: str, 
-                               estrategiaPooling='MEAN', 
-                               palavraRelevante='ALL'):
+                               estrategiaPooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
+                               palavraRelevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de similaridade de cosseno.
         
@@ -226,8 +230,8 @@ class TextoTransformer:
     
     # ============================
     def getMedidasTextoEuclediana(self, texto: str, 
-                                  estrategiaPooling='MEAN', 
-                                  palavraRelevante='ALL'):
+                                  estrategiaPooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
+                                  palavraRelevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Euclidiana.
                  
@@ -251,8 +255,8 @@ class TextoTransformer:
        
     # ============================
     def getMedidasTextoManhattan(self, texto: str, 
-                                 estrategiaPooling='MEAN', 
-                                 palavraRelevante='ALL'):
+                                 estrategiaPooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
+                                 palavraRelevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Manhattan.
                  
@@ -660,10 +664,10 @@ class TextoTransformer:
               logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
 
         # Retorna os embeddings de acordo com a estratégia
-        if estrategiaPooling == EstrategiasPooling.MEAN.name:
+        if estrategiaPooling == EstrategiasPooling.MEAN:
             return self.getCodificacaoSentenca(texto)['sentenca_embeddings_MEAN']
         else:
-            if estrategiaPooling == EstrategiasPooling.MAX.name:
+            if estrategiaPooling == EstrategiasPooling.MAX:
                 return self.getCodificacaoSentenca(texto)['sentenca_embeddings_MAX']
             else:              
                 logger.info("Não foi especificado uma estratégia de pooling válida.") 
