@@ -539,7 +539,7 @@ class Transformer(nn.Module):
         return saida
 
     # ============================   
-    def get_dimensao_embedding(self) -> int:
+    def getDimensaoEmbedding(self) -> int:
         '''
         Retorna a dimensão do embedding
         '''

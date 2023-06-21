@@ -147,13 +147,13 @@ class PLN():
         doc = self.model_pln(texto)
 
         # Retorna a lista das palavras relevantes de um tipo
-        textoComRelevantes = [token.text for token in doc if token.pos_ == tipo_palavra_relevante]
+        texto_com_palavras_relevantes = [token.text for token in doc if token.pos_ == tipo_palavra_relevante]
 
         # Concatena o texto com as palavras relevantes
-        textoComRelevantesConcatenado = ' '.join(textoComRelevantes)
+        texto_com_palavras_relevantes_concatenado = ' '.join(texto_com_palavras_relevantes)
 
         # Retorna o texto
-        return textoComRelevantesConcatenado       
+        return texto_com_palavras_relevantes_concatenado       
        
     # ============================
     def getListaSentencasTexto(self, texto):
