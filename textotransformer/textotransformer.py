@@ -225,7 +225,7 @@ class TextoTransformer:
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
                                                           camada=modelo_argumentos.camadas_embeddings, 
-                                                          tipoTexto='o')
+                                                          tipo_texto='o')
           
         return saida['cos']
     
