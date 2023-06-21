@@ -54,8 +54,9 @@ class Mensurador:
     # ============================   
     def __repr__(self):
         '''
-        Retorna uma string com descrição do objeto
+        Retorna uma string com descrição do objeto.
         '''
+        
         return "Classe ({}) com modelo Transformer: {}, tokenizador: {} e NLP: {} ".format(self.__class__.__name__, 
                                                                           self.auto_model.__class__.__name__,
                                                                           self.tokenizer.__class__.__name__,

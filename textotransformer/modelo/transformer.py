@@ -32,6 +32,7 @@ class Transformer(nn.Module):
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
     
     '''
+    
     def __init__(self, 
                 modelo_args : ModeloArgumentos,                
                 cache_dir: Optional[str] = None,
@@ -79,8 +80,9 @@ class Transformer(nn.Module):
     # ============================   
     def __repr__(self):
         '''
-        Retorna uma string com descrição do objeto
+        Retorna uma string com descrição do objeto.
         '''
+
         return "Classe ({}) com AutoConfig: {}, modelo Transformer: {} e tokenizador: {}.".format(self.__class__.__name__, 
                                                                                                              self.config.__class__.__name__,
                                                                                                              self.auto_model.__class__.__name__,
@@ -93,6 +95,7 @@ class Transformer(nn.Module):
         '''
         Carrega o modelo transformer
         '''
+
         # Carregamento T5
         if isinstance(config, T5Config):
             self._load_t5_model(model_name_or_path, 
@@ -118,6 +121,7 @@ class Transformer(nn.Module):
         '''
         Carrega codificador do modelo¨T5
         '''
+
         from transformers import T5EncoderModel
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
@@ -131,6 +135,7 @@ class Transformer(nn.Module):
         '''
         Carrega codificador do modelo MT5
         '''
+
         from transformers import MT5EncoderModel
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
@@ -175,6 +180,7 @@ class Transformer(nn.Module):
             attention_mask uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         
+        # Dicionário com a saída do tokenizador
         saida = {}
         
         # Se o texto for uma string coloca em uma lista de listas para tokenizar
@@ -543,6 +549,7 @@ class Transformer(nn.Module):
         '''
         Retorna a dimensão do embedding
         '''
+
         return self.auto_model.config.hidden_size        
         
     # ============================   
@@ -550,6 +557,7 @@ class Transformer(nn.Module):
         '''
         Salva o modelo.
         '''
+
         self.auto_model.save_pretrained(output_path)
         self.tokenizer.save_pretrained(output_path)
 
@@ -561,6 +569,7 @@ class Transformer(nn.Module):
         '''
         Recupera o modelo.
         '''
+
         return self.auto_model
 
     # ============================   
@@ -568,6 +577,7 @@ class Transformer(nn.Module):
         '''
         Recupera o tokenizador.
         '''
+
         return self.tokenizer
 
     # ============================   
@@ -575,6 +585,7 @@ class Transformer(nn.Module):
         '''
         Envia lote pytorch batch para um dispositivo (CPU/GPU)
         '''
+
         for key in lote:
             if isinstance(lote[key], Tensor):
                 lote[key] = lote[key].to(target_device)

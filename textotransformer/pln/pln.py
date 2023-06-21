@@ -24,7 +24,7 @@ class PLN():
     ''' 
 
     # Construtor da classe
-    def __init__(self, modelo_args):
+    def __init__(self, modelo_args):        
     
         # Parâmetros do modelo
         self.modelo_args = modelo_args
@@ -42,14 +42,14 @@ class PLN():
         '''
         Retorna uma string com descrição do objeto
         '''
+
         return "Classe ({}) com modelo: {}".format(self.__class__.__name__,
                                                    self.model_pln.__class__.__name__)            
     
     # ============================    
     def carrega(self):
         '''
-        Realiza o carregamento da ferramenta de PLN.
-     
+        Realiza o carregamento da ferramenta de PLN.     
         '''
        
         # Carrega o modelo spacy            
@@ -102,7 +102,9 @@ class PLN():
     def getStopwords(self):
         '''
         Recupera as stop words do model_pln(Spacy).
-                
+
+        Retorno:
+        Uma lista com as stopwords.                
         '''
         
         spacy_stopwords = self.model_pln.Defaults.stop_words
@@ -116,6 +118,9 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto com stopwords.
+
+        Retorno:
+        Uma string com o texto sem as stopwords.
         '''
 
         # Recupera as stopwords
@@ -161,8 +166,7 @@ class PLN():
         Retorna uma lista com as sentenças de um texto. Utiliza o spacy para dividir o texto em sentenças.
         
         Parâmetros:
-        `texto` - Um texto a ser convertido em uma lista de sentenças.           
-                 
+        `texto` - Um texto a ser convertido em uma lista de sentenças.
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -191,8 +195,7 @@ class PLN():
 
         Retorno:
         `lista_sentencas` - Lista com as sentenças do texto.
-        `lista_tokens` - Lista com os tokens de cada sentença do texto.
-                 
+        `lista_tokens` - Lista com os tokens de cada sentença do texto.                 
         '''
 
         # Retorna uma lista com as sentenlas do texto        
@@ -271,7 +274,9 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto a ser convertido em uma lista de sentenças.           
-                 
+
+        Retorno:
+        Um dicionário com as POS-Tagging e suas quantidades.                 
         '''
         
         # Verifica se o texto não foi processado pelo spaCy  
@@ -300,8 +305,11 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto a ser convertido em uma lista de sentenças.           
-                 
+
+        Retorno:
+        Um dicionário com as classes POS-Tagging e suas quantidades.                 
         '''
+
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
@@ -327,8 +335,10 @@ class PLN():
         Retorna a quantidade de cada POS Tagging de uma lista. Considera um conjunto fixo de POS-Tagging.
         
         Parâmetros:
-        `lista` - Uma lista com as POS-Tagging.           
-                 
+        `lista` - Uma lista com as POS-Tagging.
+
+        Retorno:
+        Um dicionário com as POS-Tagging e suas quantidades.
         '''
 
         # Dicionário com as tags e quantidades
@@ -350,7 +360,9 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto a ser recuperado os tokens.
-                 
+
+        Retorno:
+        Uma lista com os tokens do texto.                 
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -377,6 +389,8 @@ class PLN():
         Parâmetros:
         `texto` - Um texto a ser recuperado as POS-Tagging.
                  
+        Retorno:
+        Uma lista com as POS-Tagging dos tokens do texto.
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -402,8 +416,11 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto a ser recuperado as listas de tokens e POS-Tagging.
-                 
+
+        Retorno:
+        Duas listas com os tokens e a POS-Tagging do texto.                 
         '''
+
         # Verifica se o texto não foi processado pelo spaCy  
         if type(texto) is not spacy.tokens.doc.Doc:
             # Realiza o parsing no spacy
@@ -428,9 +445,12 @@ class PLN():
         Retorna uma lista com tokens de um texto excluindo as stopwords.
         
         Parâmetros:
-        `listaTokens` - Uma lista com os tokens de um texto.
-                 
+        `listaTokens` - Uma lista com os tokens de um texto.    
+
+        Retorno:
+        Uma lista com os tokens sem as stopwords.             
         '''
+
         # Recupera as stopwords do modelo
         stopwords = self.getStopwords()
         
@@ -452,6 +472,7 @@ class PLN():
         '''
         Recupera o modelo de PLN.
         '''
+
         return self.model_pln
         
    
