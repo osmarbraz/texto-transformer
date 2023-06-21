@@ -58,23 +58,23 @@ for texto, embedding in zip(texto, embeddings_texto):
 
 Métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os embeddings de textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
-- `getEmbeddingTexto(texto: Union[str, List[str]], estrategiaPooling)`
+- `getEmbeddingTexto(texto: Union[str, List[str]], estrategia_pooling)`
     - Retorna uma lista dos embeddings consolidados dos textos.
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
-        - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
+        - `estrategia_pooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
-- `getEmbeddingSentenca(texto: Union[str, List[str]], estrategiaPooling)` 
+- `getEmbeddingSentenca(texto: Union[str, List[str]], estrategia_pooling)` 
     - Retorna uma lista dos embeddings consolidados das sentenças dos textos.    
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
-        - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
+        - `estrategia_pooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
-- `getEmbeddingPalavra(texto: Union[str, List[str]], estrategiaPooling)` 
+- `getEmbeddingPalavra(texto: Union[str, List[str]], estrategia_pooling)` 
     - Retorna uma lista dos embeddings consolidados das palavras dos textos.
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
-        - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
+        - `estrategia_pooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
 - `getEmbeddingToken(texto: Union[str, List[str]])` 
     - Retorna uma lista dos embeddings dos tokens dos textos.
