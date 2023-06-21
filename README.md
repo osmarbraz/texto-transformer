@@ -54,7 +54,7 @@ for texto, embedding in zip(textos, embeddings_texto):
 #Embedding: tensor([ 3.7160e-02, -7.3645e-02,  3.3942e-01,  8.0847e-02,  3.8259e-01,...
 ````
 
-O exemplo pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://colab.research.google.com/github/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
+O exemplo pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
 
 ## Métodos principais:
 
