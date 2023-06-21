@@ -15,9 +15,9 @@ from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
-from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_CAMADA
 from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME
 from textotransformer.modelo.modeloenum import EstrategiasPooling
+from textotransformer.modelo.modeloenum import listaTipoCamadas
 from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
 from textotransformer.util.utiltexto import encontrarIndiceSubLista
 
@@ -31,7 +31,7 @@ modelo_argumentos = ModeloArgumentos(
         do_lower_case=False,            # default True
         output_attentions=False,        # default False
         output_hidden_states=True,      # default False  /Retornar os embeddings das camadas ocultas  
-        camadas_embeddings = 2,         # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
+        camadas_embeddings=2,           # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
         estrategia_pooling=0,           # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
         palavra_relevante=0             # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
         )
@@ -70,8 +70,8 @@ class TextoTransformer:
         # Recupera o tokenizador.     
         self.tokenizer = self.transformer.get_tokenizer()
         
-        # Especifica de qual camada utilizar os embeddings        
-        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(LISTATIPOCAMADA_CAMADA[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
+        # Especifica de qual camada utilizar os embeddings                
+        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
                     
         # Especifica camadas para recuperar os embeddings
         modelo_argumentos.camadas_embeddings = camadas_embeddings
