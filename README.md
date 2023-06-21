@@ -44,6 +44,7 @@ for texto, embedding in zip(textos, embeddings_texto):
     print("Embedding:", embedding)
     print("")
 
+#Resultado
 #Texto: Bom Dia, professor.
 #Embedding: tensor([ 1.3736e-01,  6.1996e-02,  3.2554e-01, -3.1146e-02,  3.5892e-01,...
 #Texto: Qual o conteúdo da prova?
@@ -60,19 +61,19 @@ O exemplo pode ser executado no notebook do GoogleColab [ExemplosTextoTransforme
 
 Métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os embeddings de textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
-- `getEmbeddingTexto(texto: Union[str, List[str]], estrategia_pooling)`
+- `getEmbeddingTexto(texto: Union[str, List[str]], estrategia_pooling: int)`
     - Retorna uma lista dos embeddings consolidados dos textos.
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
         - `estrategia_pooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
-- `getEmbeddingSentenca(texto: Union[str, List[str]], estrategia_pooling)` 
+- `getEmbeddingSentenca(texto: Union[str, List[str]], estrategia_pooling: int)` 
     - Retorna uma lista dos embeddings consolidados das sentenças dos textos.    
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
         - `estrategia_pooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
-- `getEmbeddingPalavra(texto: Union[str, List[str]], estrategia_pooling)` 
+- `getEmbeddingPalavra(texto: Union[str, List[str]], estrategia_pooling: int)` 
     - Retorna uma lista dos embeddings consolidados das palavras dos textos.
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.
