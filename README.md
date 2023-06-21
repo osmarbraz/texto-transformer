@@ -4,7 +4,7 @@ Gera embeddings de textos, sentenças, palavras e tokens utilizando modelos cont
 
 ## Instalação
 
-Recomendamos **Python 3.6**, **[PyTorch 1.6.0](https://pytorch.org/get-started/locally/)** e **[transformers 4.26.1](https://github.com/huggingface/transformers)** e *[spaCy 3.5.2](https://spacy.io)**. 
+Recomendamos **Python 3.6**, **[PyTorch 1.6.0](https://pytorch.org/get-started/locally/)** e **[transformers 4.26.1](https://github.com/huggingface/transformers)** e **[spaCy 3.5.2](https://spacy.io)**. 
 
 **Instalação com pip**
 
@@ -12,13 +12,13 @@ Para instalar o pacote utilizando o **pip**, basta executar o comando abaixo:
 
 <pre><code>$ pip install texto-transformer</code></pre>
 
-
 **Instalação dos fontes**
 
-Para instalar o pacote utilizando o **pip**, basta executar o comando abaixo:
 Você também pode clonar a versão mais recente do [repositório](https://github.com/osmarbraz/texto-transformer.git) e instalá-la diretamente do código-fonte:
 
 <pre><code>$ pip install -e .</code></pre>
+
+O comando deve ser executado no diretório onde foi realizado o download do repositório.
 
 ## Exemplo simples de uso
 
@@ -44,40 +44,49 @@ for texto, embedding in zip(texto, embeddings_texto):
     print("Embedding:", embedding)
     print("")
 
+#Texto: Bom Dia, professor.
+#Embedding: tensor([ 1.3736e-01,  6.1996e-02,  3.2554e-01, -3.1146e-02,  3.5892e-01,...
+#Texto: Qual o conteúdo da prova?
+#Embedding: tensor([ 8.3348e-02, -1.8269e-01,  5.9241e-01, -9.5235e-02,  5.0978e-01,...
+#Texto: Vai cair tudo na prova?
+#Embedding: tensor([ 1.3447e-01,  1.1854e-01,  6.0201e-02,  1.0271e-01,  2.6321e-01,...
+#Texto: Aguardo uma resposta, João.
+#Embedding: tensor([ 3.7160e-02, -7.3645e-02,  3.3942e-01,  8.0847e-02,  3.8259e-01,...
 ````
 
 ## Métodos principais:
 
-Métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os embeddings de textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seys tokens.
+Métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os embeddings de textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
 - `getEmbeddingTexto(texto: Union[str, List[str]], estrategiaPooling)`
     - Retorna uma lista dos embeddings consolidados dos textos.
     - Parâmetros:
-        - `texto`: Um texto ou uma lista de textos para obter os embedings.
+        - `texto`: Um texto ou uma lista de textos para obter os embeddings.
         - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
 - `getEmbeddingSentenca(texto: Union[str, List[str]], estrategiaPooling)` 
     - Retorna uma lista dos embeddings consolidados das sentenças dos textos.    
     - Parâmetros:
-        - `texto`: Um texto ou uma lista de textos para obter os embedings.
+        - `texto`: Um texto ou uma lista de textos para obter os embeddings.
         - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
 - `getEmbeddingPalavra(texto: Union[str, List[str]], estrategiaPooling)` 
     - Retorna uma lista dos embeddings consolidados das palavras dos textos.
     - Parâmetros:
-        - `texto`: Um texto ou uma lista de textos para obter os embedings.
+        - `texto`: Um texto ou uma lista de textos para obter os embeddings.
         - `estrategiaPooling`: Especifica a estratégia de pooling dos tokens do texto. Valores possívels 0 - MEAN ou 1 - MAX. Valor default 0(MEAN).
 
 - `getEmbeddingToken(texto: Union[str, List[str]])` 
     - Retorna uma lista dos embeddings dos tokens dos textos.
     - Parâmetros:
-        - `texto`: Um texto ou uma lista de textos para obter os embedings.        
+        - `texto`: Um texto ou uma lista de textos para obter os embeddings.        
 
 ## Modelos Pré-treinados
 
-- [Lista dos modelos pré-treinados](https://huggingface.co/models)
+A lista completa dos modelos de linguagem pré-treiandos podem ser consultados no site da [Huggingface](https://huggingface.co/models).
 
 ## Dependências
+
 - transformers==4.26.1
 - spacy==3.5.2
 - tqdm==4.65.0
