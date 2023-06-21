@@ -88,12 +88,12 @@ class TextoTransformer:
         if device is None:
             if torch.cuda.is_available():    
                 device = "cuda"
-                logging.info("Existem {} GPU(s) disponíveis.".format(torch.cuda.device_count()))
-                logging.info("Iremos usar a GPU: {}.".format(torch.cuda.get_device_name(0)))
+                logger.info("Existem {} GPU(s) disponíveis.".format(torch.cuda.device_count()))
+                logger.info("Iremos usar a GPU: {}.".format(torch.cuda.get_device_name(0)))
 
             else:                
                 device = "cpu"
-                logging.info("Sem GPU disponível, usando CPU.")
+                logger.info("Sem GPU disponível, usando CPU.")
             
             # Diz ao PyTorch para usar o dispositvo (GPU ou CPU)
             self._target_device = torch.device(device)
