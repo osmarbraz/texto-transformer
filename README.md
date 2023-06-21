@@ -31,9 +31,9 @@ modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased")
 
 # Alguns textos a serem codificados
 textos = ["Bom Dia, professor.",
-      "Qual o conteúdo da prova?",
-      "Vai cair tudo na prova?",
-      "Aguardo uma resposta, João."]
+          "Qual o conteúdo da prova?",
+          "Vai cair tudo na prova?",
+          "Aguardo uma resposta, João."]
 
 # Recupera os embeddings consolidados dos textos
 embeddings_texto = modelo.getEmbeddingTexto(textos)      
