@@ -8,11 +8,13 @@ import re
 import unicodedata 
 from collections import Counter
 from functools import reduce
+# Biblioteca de tipos
+from typing import List
 
 logger = logging.getLogger(__name__)
 
 # ============================  
-def convertTextoUtf8(texto):   
+def convertTextoUtf8(texto: str):   
     '''    
     Converte um texto para utf-8.
     
@@ -29,8 +31,9 @@ def convertTextoUtf8(texto):
         pass
 
     return texto
+
 # ============================  
-def removeAcentos(texto):   
+def removeAcentos(texto: str):   
     '''    
     Remove acentos de um texto.
     
@@ -49,7 +52,7 @@ def removeAcentos(texto):
     return str(texto)
 
 # ============================  
-def limpaTexto(texto):    
+def limpaTexto(texto: str):    
     '''    
     Remove acentos e espaços e outros caracteres de um texto.
     
@@ -66,7 +69,7 @@ def limpaTexto(texto):
     return texto
     
 # ============================  
-def remove_tags(texto):
+def remove_tags(texto: str):
     '''
     Remove tags de um texto.
      
@@ -79,7 +82,7 @@ def remove_tags(texto):
     return re.sub(textoLimpo, '', texto)
 
 # ============================
-def encontrarIndiceSubLista(lista, sublista):
+def encontrarIndiceSubLista(lista: List, sublista: List):
     '''
     Localiza os índices de início e fim de uma sublista em uma lista.
     
@@ -106,7 +109,7 @@ def encontrarIndiceSubLista(lista, sublista):
     return -1, -1
     
 # ============================
-def getTextoLista(listaSentencas):
+def getTextoLista(listaSentencas: List):
     '''
     Recebe uma lista de sentenças e faz a concatenação em uma string.
     
@@ -125,7 +128,7 @@ def atualizaValor(a,b):
     return a
 
 # ============================   
-def getSomaDic(lista):
+def getSomaDic(lista: List):
     '''
     Soma os valores de dicionários com as mesmas chaves.
     
@@ -138,7 +141,7 @@ def getSomaDic(lista):
  
     return novodic
 
-def limpeza(texto):
+def limpeza(texto: str):
     '''
     Realiza limpeza dos dados.
         

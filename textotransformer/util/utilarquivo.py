@@ -31,7 +31,7 @@ def verificaDiretorioModeloLinguagem():
     return DIRETORIO_MODELO_LINGUAGEM
 
 # ============================  
-def downloadArquivo(url_arquivo, nome_arquivo_destino):
+def downloadArquivo(url_arquivo: str, nome_arquivo_destino: str):
     '''    
     Realiza o download de um arquivo de uma url em salva em nome_arquivo_destino.
     
@@ -79,7 +79,7 @@ def downloadArquivo(url_arquivo, nome_arquivo_destino):
     progresso_bar.close()
 
 # ============================      
-def carregar(nome_arquivo):
+def carregar(nome_arquivo: str):
     '''
     Carrega um arquivo texto e retorna as linhas como um único parágrafo(texto).
     
@@ -106,7 +106,7 @@ def carregar(nome_arquivo):
     return paragrafo.strip()
 
 # ============================  
-def carregarLista(nome_arquivo):
+def carregarLista(nome_arquivo: str):
     '''
     Carrega um arquivo texto e retorna as linhas como uma lista de sentenças(texto).
     
@@ -131,7 +131,7 @@ def carregarLista(nome_arquivo):
     return sentencas    
 
 # ============================      
-def salvar(nome_arquivo, texto):                       
+def salvar(nome_arquivo: str, texto: str):                       
     '''
     Salva um texto em um arquivo.
      
@@ -142,4 +142,4 @@ def salvar(nome_arquivo, texto):
 
     arquivo = open(nome_arquivo, 'w')
     arquivo.write(str(texto))
-    arquivo.close()     
+    arquivo.close() 

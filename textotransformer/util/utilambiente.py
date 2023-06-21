@@ -4,6 +4,9 @@
 import logging  
 import subprocess
 
+# Bibliotecas próprias
+from textotransformer.modelo.modeloarguments import ModeloArgumentos
+
 logger = logging.getLogger(__name__)
 
 class InstaladorModelo:
@@ -11,14 +14,22 @@ class InstaladorModelo:
     Realiza a instalação do modelo spaCy.
      
     Parâmetros:
-    `nome_pln` - argumentos passados para o instalador.
+    `modelo_args` - Um objeto com os parâmetros do modelo.
     ''' 
-    def __init__(self, modelo_args):
+    def __init__(self, modelo_args: ModeloArgumentos):
         #Atualiza os parâmetros
         self.modelo_args = modelo_args
         
         # Executa o processo de atualização e instalação do spaCy
         self.install_model_spacy()
+
+    # ============================
+    def __repr__(self):
+        '''
+        Retorna uma string com descrição do objeto
+        '''
+        return "Classe ({}) de instalação do modelo {}.".format(self.__class__.__name__, 
+                                                       self.modelo_args.modelo_spacy.__class__.__name__)
 
     # ============================
     def install_model_spacy(self):

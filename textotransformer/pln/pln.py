@@ -29,7 +29,7 @@ class PLN():
         # Parâmetros do modelo
         self.modelo_args = modelo_args
         
-        #Instala o spaCy
+        #Instala a ferramenta pln spaCy
         InstaladorModelo(modelo_args=modelo_args)
         
         #Carrega o modelo do spacy
@@ -37,6 +37,14 @@ class PLN():
             
         logger.info("Classe PLN carregada: {}.".format(modelo_args))    
             
+    # ============================   
+    def __repr__(self):
+        '''
+        Retorna uma string com descrição do objeto
+        '''
+        return "Classe ({}) com modelo: {}".format(self.__class__.__name__,
+                                                   self.model_pln.__class__.__name__)            
+    
     # ============================    
     def carrega(self):
         '''

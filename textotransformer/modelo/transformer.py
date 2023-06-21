@@ -11,7 +11,7 @@ from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Conf
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
-from typing import List, Dict, Optional, Union, Tuple
+from typing import List, Dict, Optional, Union
 # Biblioteca de manipulação sistema
 import os
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Transformer(nn.Module):
     '''
-    Huggingface AutoModel para gerar embeddings de token, palavra, sentença ou texto.
+    Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
      :param modelo_args: Argumentos passados para o modelo Huggingface Transformers          
@@ -33,8 +33,7 @@ class Transformer(nn.Module):
     
     '''
     def __init__(self, 
-                modelo_args : ModeloArgumentos,
-                max_seq_length: Optional[int] = None,                
+                modelo_args : ModeloArgumentos,                
                 cache_dir: Optional[str] = None,
                 tokenizer_args: Dict = {}, 
                 tokenizer_name_or_path : str = None):
@@ -47,38 +46,29 @@ class Transformer(nn.Module):
 
         # Recupera o nome do modelo dos argumentos
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
-        # Recupera o tamanho máximo de um texto
-        max_seq_length = modelo_args.max_seq_len
-        
-        # Parâmetros do modelo
-        self.config_keys = ['max_seq_length', 'do_lower_case']
-        self.do_lower_case = modelo_args.do_lower_case
-
+      
         # Recupera parâmetros do transformador dos argumentos
         model_args = {"output_attentions": modelo_args.output_attentions, 
                       "output_hidden_states": modelo_args.output_hidden_states}
     
         # Configuração do modelo        
-        config = AutoConfig.from_pretrained(model_name_or_path, 
+        self.config = AutoConfig.from_pretrained(model_name_or_path, 
                                             **model_args, 
                                             cache_dir=cache_dir)
         
         # Carrega o modelo
         self._load_model(model_name_or_path, 
-                         config, 
+                         self.config, 
                          cache_dir)
 
         # Carrega o tokenizador
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
 
         #Se max_seq_length não foi especificado, tenta inferir do modelo
-        if max_seq_length is None:
+        if self.modelo_args.max_seq_len is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
-                max_seq_length = min(self.auto_model.config.max_position_embeddings,
+                self.modelo_args.max_seq_len = min(self.auto_model.config.max_position_embeddings,
                                      self.tokenizer.model_max_length)
-
-        # Define o máximo de tokens
-        self.max_seq_length = max_seq_length
 
         # Define a classe do tokenizador
         if tokenizer_name_or_path is not None:
@@ -87,7 +77,19 @@ class Transformer(nn.Module):
         logger.info("Classe Transformer carregada: {}.".format(modelo_args))            
 
     # ============================   
-    def _load_model(self, model_name_or_path, config, cache_dir):
+    def __repr__(self):
+        '''
+        Retorna uma string com descrição do objeto
+        '''
+        return "Classe ({}) com AutoConfig: {}, modelo Transformer: {} e tokenizador: {}.".format(self.__class__.__name__, 
+                                                                                                             self.config.__class__.__name__,
+                                                                                                             self.auto_model.__class__.__name__,
+                                                                                                             self.tokenizer.__class__.__name__)
+
+    # ============================   
+    def _load_model(self, 
+                    model_name_or_path: str, 
+                    config, cache_dir):
         '''
         Carrega o modelo transformer
         '''
@@ -110,7 +112,9 @@ class Transformer(nn.Module):
                                                             cache_dir=cache_dir)
 
     # ============================   
-    def _load_t5_model(self, model_name_or_path, config, cache_dir):
+    def _load_t5_model(self, model_name_or_path: str, 
+                       config, 
+                       cache_dir):
         '''
         Carrega codificador do modelo¨T5
         '''
@@ -121,7 +125,9 @@ class Transformer(nn.Module):
                                                          cache_dir=cache_dir)
 
     # ============================   
-    def _load_mt5_model(self, model_name_or_path, config, cache_dir):
+    def _load_mt5_model(self, model_name_or_path: str, 
+                        config, 
+                        cache_dir):
         '''
         Carrega codificador do modelo MT5
         '''
@@ -130,16 +136,9 @@ class Transformer(nn.Module):
         self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
                                                           config=config, 
                                                           cache_dir=cache_dir)
-    
-    # ============================   
-    def __repr__(self):
-        '''
-        Retorna uma string com descrição do objeto
-        '''
-        return "Transformer({}) com modelo Transformer: {} ".format(self.get_config_dict(), 
-                                                                    self.auto_model.__class__.__name__)
+   
     # ============================      
-    def getTextoTokenizado(self, texto: str):
+    def getTextoTokenizado(self, texto : str):
         '''
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
         
@@ -158,15 +157,16 @@ class Transformer(nn.Module):
 
         return textoTokenizado
 
-    # ============================       
-    def tokenize(self, texto):
+    # ============================    
+
+    def tokenize(self, texto: Union[str, List[str]]):
         '''        
         Tokeniza um texto para submeter ao modelo de linguagem. 
         Retorna um dicionário listas de mesmo tamanho para garantir o processamento em lote.
         Use a quantidade de tokens para saber até onde deve ser recuperado em uma lista de saída.
         Ou use attention_mask diferente de 1 para saber que posições devem ser utilizadas na lista.
 
-        :param texto: Texto a ser tokenizado para o modelo de linguagem.
+        :param texto: Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
          
         Retorna um dicionário com:
             tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
@@ -192,7 +192,7 @@ class Transformer(nn.Module):
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
 
         # Se for para colocar para minúsculo usa Lowercase nos textos
-        if self.do_lower_case:
+        if self.modelo_args.do_lower_case:
            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
         # Tokeniza o texto
@@ -202,7 +202,7 @@ class Transformer(nn.Module):
                                      padding=True, # Preenche o texto até max_length
                                      truncation='longest_first',  # Trunca o texto no maior texto
                                      return_tensors="pt",  # Retorna os dados como tensores pytorch.
-                                     max_length=self.max_seq_length # Define o tamanho máximo para preencheer ou truncar.
+                                     max_length=self.modelo_args.max_seq_len # Define o tamanho máximo para preencheer ou truncar.
                                     ) 
                     )
                         
@@ -210,7 +210,7 @@ class Transformer(nn.Module):
         saida['tokens_texto_mcl'] = [[self.tokenizer.convert_ids_to_tokens(s.item()) for s in col] for col in saida['input_ids']]
 
         # Guarda o texto original        
-        saida['texto_original'] = [[s for s in col] for col in to_tokenize]
+        saida['texto_original'] = [[s for s in col] for col in to_tokenize][0]     
         
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in saida['tokens_texto_mcl']:
@@ -218,9 +218,9 @@ class Transformer(nn.Module):
                 logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[self.modelo_args.camadas_embeddings]))   
   
         return saida
-    
+        
     # ============================           
-    def getSaidaRede(self, texto):
+    def getSaidaRede(self, texto: Union[str, dict]):
         '''
         De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto. 
         O retorno é um dicionário com token_embeddings, input_ids, attention_mask, token_type_ids, 
@@ -304,7 +304,7 @@ class Transformer(nn.Module):
     _dic_excecao_maior = {"":-1,
                          }
                              
-    def _getExcecaoDicMaior(self, token):   
+    def _getExcecaoDicMaior(self, token: str):   
     
         valor = self._dic_excecao_maior.get(token)
         if valor != None:
@@ -317,7 +317,7 @@ class Transformer(nn.Module):
     _dic_excecao_menor = {"1°":1,
                           }
     
-    def _getExcecaoDicMenor(self, token):   
+    def _getExcecaoDicMenor(self, token: str):   
         
         valor = self._dic_excecao_menor.get(token)
         if valor != None:
@@ -340,7 +340,7 @@ class Transformer(nn.Module):
         Parâmetros:
         `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
     
-        Retorna 5 lista:            
+        Retorna um dicionário com 5 lista:            
             lista_tokens  uma lista com os tokens do texto gerados pelo método.
             texto_pos_pln uma lista com as postagging dos tokens gerados pela ferramenta de pln.
             lista_tokens_OOV_mcl uma lista com os tokens OOV do mcl.
@@ -350,7 +350,7 @@ class Transformer(nn.Module):
        
         #Guarda os tokens e embeddings de retorno
         lista_tokens = []
-        lista_tokens_OOV_mcl = []
+        lista_tokens_oov_mcl = []
         lista_embeddings_MEAN = []
         lista_embeddings_MAX = []
         
@@ -401,7 +401,7 @@ class Transformer(nn.Module):
                     #print("Adiciona 1 Exceção palavra == wi or palavra = [UNK]:",wi)
                     lista_tokens.append(wi)
                     # Marca como fora do vocabulário do MCL
-                    lista_tokens_OOV_mcl.append(1)
+                    lista_tokens_oov_mcl.append(1)
                     # Verifica se tem mais de um token
                     if pos != 1:
                         indice_token = pos_wj + pos
@@ -433,7 +433,7 @@ class Transformer(nn.Module):
                         #print("Adiciona 1 Exceção palavra == wi or palavra = [UNK]:",wi)
                         lista_tokens.append(wi+wi1)
                         # Marca como fora do vocabulário do MCL
-                        lista_tokens_OOV_mcl.append(1)
+                        lista_tokens_oov_mcl.append(1)
                         # Verifica se tem mais de um token
                         if pos2 == 1: 
                             # Adiciona o embedding do token a lista de embeddings
@@ -453,7 +453,7 @@ class Transformer(nn.Module):
                     #print("Adiciona 2 wi==wj or wj==[UNK]:", wi )
                     lista_tokens.append(wi)    
                     # Marca como dentro do vocabulário do MCL
-                    lista_tokens_OOV_mcl.append(0)
+                    lista_tokens_oov_mcl.append(0)
                     # Adiciona o embedding do token a lista de embeddings
                     lista_embeddings_MEAN.append(embeddings_texto[pos_wj])
                     lista_embeddings_MAX.append(embeddings_texto[pos_wj])
@@ -485,7 +485,7 @@ class Transformer(nn.Module):
                         #print("Adiciona 3 palavra == wi or palavra_POS = [UNK]:",wi)
                         lista_tokens.append(wi)
                         # Marca como fora do vocabulário do MCL
-                        lista_tokens_OOV_mcl.append(1)
+                        lista_tokens_oov_mcl.append(1)
                         # Calcula a média dos tokens da palavra
                         #print("Calcula o máximo :", pos_wj , "até", indice_token)
                         embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
@@ -527,7 +527,16 @@ class Transformer(nn.Module):
         del tokens_texto_mcl
         del lista_tokens_texto_pln
 
-        return lista_tokens, lista_pos_texto_pln, lista_tokens_OOV_mcl, lista_embeddings_MEAN, lista_embeddings_MAX
+        # Retorna as medidas em um dicionário
+        saida = {}
+        saida.update({'tokens_texto' : lista_tokens,
+                      'pos_texto_pln' : lista_pos_texto_pln,
+                      'tokens_oov_texto_mcl' : lista_tokens_oov_mcl,
+                      'embeddings_MEAN' : lista_embeddings_MEAN,
+                      'embeddings_MAX' : lista_embeddings_MAX})
+
+        #return lista_tokens, lista_pos_texto_pln, lista_tokens_OOV_mcl, lista_embeddings_MEAN, lista_embeddings_MAX
+        return saida
 
     # ============================   
     def get_dimensao_embedding(self) -> int:
@@ -536,13 +545,6 @@ class Transformer(nn.Module):
         '''
         return self.auto_model.config.hidden_size        
         
-    # ============================           
-    def get_config_dict(self):
-        '''
-        Retorna as configurações com dicionário
-        '''
-        return {key: self.__dict__[key] for key in self.config_keys}
-
     # ============================   
     def save(self, output_path: str):
         '''

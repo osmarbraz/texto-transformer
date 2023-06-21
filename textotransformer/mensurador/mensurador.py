@@ -1,12 +1,15 @@
 # Import das bibliotecas.
 
 # Biblioteca de logging
-import logging 
+import logging
 
 # Biblioteca de aprendizado de máquina
 import torch 
 
 # Bibliotecas próprias
+from textotransformer.modelo.transformer import Transformer
+from textotransformer.modelo.modeloarguments import ModeloArgumentos 
+from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
 from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
 from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 
@@ -27,7 +30,9 @@ class Mensurador:
     ''' 
 
     # Construtor da classe
-    def __init__(self, modelo_args, transformer, pln):
+    def __init__(self, modelo_args: ModeloArgumentos,
+                 transformer: Transformer, 
+                 pln: PLN):
     
         # Parâmetros do modelo
         self.model_args = modelo_args
@@ -36,7 +41,7 @@ class Mensurador:
         self.transformer = transformer
     
         # Recupera o modelo.
-        self.model = transformer.get_auto_model()
+        self.auto_model = transformer.get_auto_model()
     
         # Recupera o tokenizador.     
         self.tokenizer = transformer.get_tokenizer()
@@ -45,7 +50,17 @@ class Mensurador:
         self.pln = pln
         
         logger.info("Classe Mensurador carregada: {}.".format(modelo_args))
-      
+
+    # ============================   
+    def __repr__(self):
+        '''
+        Retorna uma string com descrição do objeto
+        '''
+        return "Classe ({}) com modelo Transformer: {}, tokenizador: {} e NLP: {} ".format(self.__class__.__name__, 
+                                                                          self.auto_model.__class__.__name__,
+                                                                          self.tokenizer.__class__.__name__,
+                                                                          self.pln.__class__.__name__)
+
     # ============================
     def getEmbeddingsTodasCamadas(self, texto):    
         '''   
@@ -95,7 +110,7 @@ class Mensurador:
         with torch.no_grad():
 
             # Passe para a frente, calcule as previsões outputs.     
-            outputs = self.model(input_ids=input_ids, 
+            outputs = self.auto_model(input_ids=input_ids, 
                                  attention_mask=attention_mask)
 
             # A avaliação do modelo retorna um número de diferentes objetos com base em
@@ -471,6 +486,7 @@ class Mensurador:
                 return self.getMedidasSentencasEmbeddingMAX(embeddingSi, embeddingSj)
             else:
                 logger.info("Nenhuma seleção da estratégia de pooling foi especificada.")
+                return None
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoALL(self, 
@@ -654,10 +670,15 @@ class Mensurador:
                                   camada, 
                                   tipoTexto='p'):
         '''
-        Retorna as medidas de coerência do texto.
+        Retorna as medidas do texto.
         Considera somente sentenças com pelo menos uma palavra.
         Estratégia de pooling padrão é MEAN(0).
         Palavra relavante padrão é ALL(0).
+        
+        Retorno um dicionário com:
+        `cos` - Medida de cos do do texto.
+        `euc` - Medida de euc do do texto.
+        `man` - Medida de man do do texto.
         '''
 
         # Quantidade de sentenças no texto
@@ -750,18 +771,10 @@ class Mensurador:
             Ceuc = float(somaSeuc) / float(divisor)
             Cman = float(somaSman) / float(divisor)
 
-        return Ccos, Ceuc, Cman
-   
-    # ============================
-    def comparaMedidasCamadasSentencas(self, Si, Sj, camada):
-        '''
-        Facilita a exibição dos valores de comparação de duas orações.
-        '''
-      
-        # Recupera os embeddings da sentença Si e sentença Sj e suas medidas
-        embeddingSi, embeddingSj, Scos, Seuc, Sman = self.getMedidasCamadasSentencas(Si, Sj, camada)
+        # Retorna as medidas em um dicionário
+        saida = {}
+        saida.update({'cos' : Ccos,
+                      'euc' : Ceuc,
+                      'man' : Cman})
 
-        logger.info('  ->Mostra comparação da ' + camada[LISTATIPOCAMADA_NOME] + ' camada(s)')    
-        logger.info('   Cosseno(SixSj)     = %.8f' % Scos)
-        logger.info('   Euclidiana(SixSj)  = %.8f' % Seuc)
-        logger.info('   Manhattan(SixSj)   = %.8f' % Sman)
+        return saida   
