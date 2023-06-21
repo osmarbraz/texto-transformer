@@ -1,6 +1,6 @@
-# Texto Transformer: Framework para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer
+# Texto-Transformer: Framework para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer
 
-Gera embeddings de textos, sentenças, palavras e tokens utilizando modelos contextualizados de linguagem multilingual baseados em Transformer.
+Este framework realiza o processamento de textos utilizando modelos de linguagem baseados em transformer. Permite gerar embeddings de textos, sentenças, palavras e tokens utilizando modelos contextualizados de linguagem multilingual baseados em Transformer. Os embeddings de textos, sentenças e palavras podem ser consolidados utilizando as estratégias de pooling média e máximo.
 
 ## Instalação
 
