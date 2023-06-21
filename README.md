@@ -39,7 +39,7 @@ textos = ["Bom Dia, professor.",
 embeddings_texto = modelo.getEmbeddingTexto(textos)      
 
 # Mostra os textos e seus embeddings
-for texto, embedding in zip(texto, embeddings_texto):
+for texto, embedding in zip(textos, embeddings_texto):
     print("Texto:", texto)
     print("Embedding:", embedding)
     print("")
@@ -53,6 +53,8 @@ for texto, embedding in zip(texto, embeddings_texto):
 #Texto: Aguardo uma resposta, João.
 #Embedding: tensor([ 3.7160e-02, -7.3645e-02,  3.3942e-01,  8.0847e-02,  3.8259e-01,...
 ````
+
+O exemplo pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://colab.research.google.com/github/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
 
 ## Métodos principais:
 
