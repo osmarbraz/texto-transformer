@@ -102,7 +102,7 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 ## Métodos principais
 
-Aqui os métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os métodos para recuperar os embeddings dos tokens dos textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
+Aqui os métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os métodos para recuperar os embeddings de textos, sentenças e palavras consolidados podem utilizar as estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
 - `getEmbeddingTexto(texto: Union[str, List[str]], estrategia_pooling: int)`
     - Retorna uma lista dos embeddings consolidados dos textos.
