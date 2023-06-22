@@ -100,9 +100,9 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 **Os exemplos podem ser executados através deste notebook no GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).**
 
-## Métodos principais:
+## Métodos principais
 
-Métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os embeddings de textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
+Aqui os métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os métodos para recuperar os embeddings dos tokens dos textos, sentenças e palavras podem ser consolidados pelas estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
 - `getEmbeddingTexto(texto: Union[str, List[str]], estrategia_pooling: int)`
     - Retorna uma lista dos embeddings consolidados dos textos.
