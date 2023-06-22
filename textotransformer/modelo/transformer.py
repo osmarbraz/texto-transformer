@@ -26,11 +26,10 @@ class Transformer(nn.Module):
     Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
-     :param modelo_args: Argumentos passados para o modelo Huggingface Transformers          
-     :param cache_dir: Cache dir para Huggingface Transformers para armazenar/carregar modelos
-     :param tokenizer_args: Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
-     :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
-    
+     `modelo_args' - Argumentos passados para o modelo Huggingface Transformers          
+     'cache_dir' - Cache dir para Huggingface Transformers para armazenar/carregar modelos
+     'tokenizer_args' - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
+     'tokenizer_name_or_path' - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado    
     '''
 
     def __init__(self, 
@@ -65,7 +64,7 @@ class Transformer(nn.Module):
         # Carrega o tokenizador
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
 
-        #Se max_seq_length não foi especificado, tenta inferir do modelo
+        # Se max_seq_length não foi especificado, tenta inferir do modelo
         if self.modelo_args.max_seq_len is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
                 self.modelo_args.max_seq_len = min(self.auto_model.config.max_position_embeddings,
@@ -188,8 +187,9 @@ class Transformer(nn.Module):
         Use a quantidade de tokens para saber até onde deve ser recuperado em uma lista de saída.
         Ou use attention_mask diferente de 1 para saber que posições devem ser utilizadas na lista.
 
-        :param texto: Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
-         
+        Parâmetros:
+        `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
+                          
         Retorna um dicionário com:
             tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
             input_ids uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
@@ -392,7 +392,7 @@ class Transformer(nn.Module):
             lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX.
         '''
        
-        #Guarda os tokens e embeddings de retorno
+        # Guarda os tokens e embeddings de retorno
         lista_tokens = []
         lista_tokens_oov_mcl = []
         lista_embeddings_MEAN = []
@@ -597,7 +597,6 @@ class Transformer(nn.Module):
 
         Parâmetros:
         `output_path` - caminho para salvar o modelo
-
         '''
 
         self.auto_model.save_pretrained(output_path)

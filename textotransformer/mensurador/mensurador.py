@@ -131,18 +131,21 @@ class Mensurador:
     # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
     buffer_embeddings = {}
     
-    def getEmbeddingsTodasCamadasBuffer(self, S):
+    def getEmbeddingsTodasCamadasBuffer(self, embedding):
         '''
-        Retorna os embeddings de uma sentença de um buffer ou do modelo..
+        Retorna os embeddings de uma sentença de um buffer ou do modelo.
+
+        Parâmetros:
+        `embedding` - Uma sentença a ser recuperado os embeddings.
         '''
         
         # Se está no dicionário retorna o embedding
-        if S in self.buffer_embeddings:
-            return self.buffer_embeddings.get(S)
+        if embedding in self.buffer_embeddings:
+            return self.buffer_embeddings.get(embedding)
         else:
             # Gera o embedding
-            total_camada = self.getEmbeddingsTodasCamadas(S)
-            self.buffer_embeddings.update({S: total_camada})
+            total_camada = self.getEmbeddingsTodasCamadas(embedding)
+            self.buffer_embeddings.update({embedding: total_camada})
             return total_camada
 
     # ============================

@@ -20,7 +20,9 @@ Você também pode clonar a versão mais recente do [repositório](https://githu
 
 O comando deve ser executado no diretório onde foi realizado o download do repositório.
 
-## Exemplo simples de uso
+## Exemplos 
+
+### Uso simples
 
 ````python
 # Importa a classe
@@ -55,7 +57,47 @@ for texto, embedding in zip(textos, embeddings_texto):
 #Embedding: tensor([ 3.7160e-02, -7.3645e-02,  3.3942e-01,  8.0847e-02,  3.8259e-01,...
 ````
 
-O exemplo pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
+### Recuperando embeddings diversos
+
+````python
+# Importa a classe
+from textotransformer import TextoTransformer
+
+# Instância uma objeto e baixa o modelo de linguagem
+modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased")
+
+texto = "Você gosta de sorvete de manga? Sim, adoro muito."
+
+# Recupera os embeddings consolidados do texto
+embeddings_texto = modelo.getEmbeddingTexto(texto)
+print("Um texto de tamanho      :",len(embeddings_texto))
+
+# Recupera os embeddings consolidados das sentenças do texto
+embeddings_sentenca = modelo.getEmbeddingSentenca(texto)
+print("\nQuantidade de sentenças  :",len(embeddings_sentenca))
+print("Cada sentença de tamanho :",len(embeddings_sentenca[0]))
+
+# Recupera os embeddings consolidados das palavras do texto
+embeddings_palavra = modelo.getEmbeddingPalavra(texto)
+print("\nQuantidade de palavras   :",len(embeddings_palavra))
+print("Cada palavra de tamanho  :",len(embeddings_palavra[0]))
+
+# Recupera os embeddings dos tokens do texto
+embeddings_token = modelo.getEmbeddingToken(texto)
+print("\nQuantidade de tokens     :",len(embeddings_token))
+print("Cada token de tamanho    :",len(embeddings_token[0]))
+
+#Resultado
+#Um texto de tamanho      : 768
+#Quantidade de sentenças  : 2
+#Cada sentença de tamanho : 768
+#Quantidade de palavras   : 12
+#Cada palavra de tamanho  : 768
+#Quantidade de tokens     : 15
+#Cada token de tamanho    : 768
+````
+
+Os exemplos pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
 
 ## Métodos principais:
 

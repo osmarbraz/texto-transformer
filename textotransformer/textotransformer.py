@@ -292,7 +292,8 @@ class TextoTransformer:
 
         Facilita acesso a classe Transformer.    
 
-        :param texto: Texto a ser tokenizado para o modelo de linguagem.
+        Parâmetros:
+        `texto` - Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário com:
             tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
@@ -304,10 +305,10 @@ class TextoTransformer:
     
     # ============================
     def getCodificacaoCompleta(self, texto: Union[str, List[str]],
-                    tamanho_lote: int = 32, 
-                    mostra_barra_progresso: bool = False,                     
-                    convert_to_numpy: bool = False,         
-                    device: str = None):
+                               tamanho_lote: int = 32, 
+                               mostra_barra_progresso: bool = False,
+                               convert_to_numpy: bool = False,
+                               device: str = None):
 
         '''
         Retorna um dicionário com as informações completas da codificação do texto utilizando o modelo de linguagem.
@@ -534,6 +535,7 @@ class TextoTransformer:
             texto_original uma lista com os textos originais.
             all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
+        
         return self.getTransformer().getSaidaRede(texto)
 
    # ============================
@@ -573,10 +575,10 @@ class TextoTransformer:
 
     # ============================
     def getCodificacaoTexto(self, texto: Union[str, List[str]],
-                             tamanho_lote: int = 32, 
-                             mostra_barra_progresso: bool = False,                     
-                             convert_to_numpy: bool = False,         
-                             device: str = None):
+                            tamanho_lote: int = 32, 
+                            mostra_barra_progresso: bool = False,                     
+                            convert_to_numpy: bool = False,         
+                            device: str = None):
         '''        
         De um texto preparado(tokenizado) ou não, retorna a codificação dos textos consolidados dos tokens do textos utilizando estratégia pooling MEAN e MAX.
     
@@ -613,11 +615,11 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
-            # Recupera os embeddings do texto  
-            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
+            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
+            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
             
             # Calcula a média dos embeddings dos tokens das sentenças do texto
             embedding_documento_media = torch.mean(embeddings_texto, dim=0)
@@ -708,9 +710,9 @@ class TextoTransformer:
 
         # Acumula a saída do método
         saida = {}
-        saida.update({'texto_original' : [],            # Lista com os textos originais
-                      'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
-                      'sentencas_texto' : [],           # Lista com as sentenças do texto
+        saida.update({'texto_original' : [],               # Lista com os textos originais
+                      'tokens_texto_mcl' : [],             # Lista com os tokens dos textos originais
+                      'sentencas_texto' : [],              # Lista com as sentenças do texto
                       'sentenca_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens que da sentença.
                       'sentenca_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens que da sentença.
                      }
@@ -719,11 +721,11 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
-            # Recupera os embeddings do texto  
-            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
+            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
+            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
 
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
                         
             # Recupera as sentenças do texto
             lista_sentencas_texto = self.getPln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
@@ -741,7 +743,7 @@ class TextoTransformer:
                 # Remove os tokens de início e fim da sentença
                 sentenca_tokenizada.remove('[CLS]')
                 sentenca_tokenizada.remove('[SEP]')    
-                #print(len(sentencaTokenizada))
+                #print(len(sentenca_tokenizada))
 
                 # Localiza os índices dos tokens da sentença no texto
                 inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
@@ -759,14 +761,14 @@ class TextoTransformer:
                 lista_embeddings_tokens_sentencas_texto_media.append(embedding_sentenca_media)
                 lista_embeddings_tokens_sentencas_texto_maximo.append(embedding_sentenca_maximo)
             
-            #Acumula a saída do método             
+            # Acumula a saída do método             
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
             saida['tokens_texto_mcl'].append(tokens_texto_mcl)
             saida['sentencas_texto'].append(lista_sentencas_texto)
             saida['sentenca_embeddings_MEAN'].append(lista_embeddings_tokens_sentencas_texto_media)
             saida['sentenca_embeddings_MAX'].append(lista_embeddings_tokens_sentencas_texto_maximo)
 
-        #Se é uma string uma lista com comprimento 1
+        # Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
           saida['texto_original'] = saida['texto_original'][0]
           saida['tokens_texto_mcl'] =  saida['tokens_texto_mcl'][0]
@@ -847,10 +849,10 @@ class TextoTransformer:
 
         # Recupera os embeddings do texto
         texto_embeddings = self.getCodificacaoCompleta(texto,
-                                               tamanho_lote,
-                                               mostra_barra_progresso,
-                                               convert_to_numpy,
-                                               device)
+                                                       tamanho_lote,
+                                                       mostra_barra_progresso,
+                                                       convert_to_numpy,
+                                                       device)
         
         # Acumula a saída do método
         saida = {}
@@ -871,22 +873,22 @@ class TextoTransformer:
             # Recupera o texto tokenizado pela ferramenta de pln do texto original
             lista_tokens_texto_pln = self.getPln().getTokensTexto(texto_embeddings['texto_original'][i])
             
-            # Recupera os embeddings do texto  
-            embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
+            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
+            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
             
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]        
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
             
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
 
             # Recupera os embeddings e tokens de palavra            
             saidaEmbeddingPalavra = self.getTransformer().getTokensEmbeddingsPOSTexto(embeddings_texto,
-                                                                                       tokens_texto_mcl,
-                                                                                       tokens_texto_concatenado,
-                                                                                       self.getPln())
+                                                                                      tokens_texto_mcl,
+                                                                                      tokens_texto_concatenado,
+                                                                                      self.getPln())
 
-            #Acumula a saída do método 
+            # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
             saida['tokens_texto'].append(saidaEmbeddingPalavra['tokens_texto'])
             saida['tokens_texto_mcl'].append(tokens_texto_mcl)
@@ -896,7 +898,7 @@ class TextoTransformer:
             saida['embeddings_MEAN'].append(saidaEmbeddingPalavra['embeddings_MEAN'])
             saida['embeddings_MAX'].append(saidaEmbeddingPalavra['embeddings_MAX'])
         
-        #Se é uma string uma lista com comprimento 1
+         # Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
             saida['texto_original'] = saida['texto_original'][0]
             saida['tokens_texto'] = saida['tokens_texto'][0]
@@ -944,13 +946,11 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Recupera os embeddings do texto
-        #texto_embeddings = self.getEmbeddings(texto)
-          
         texto_embeddings = self.getCodificacaoCompleta(texto,
-                                               tamanho_lote,
-                                               mostra_barra_progresso,
-                                               convert_to_numpy,
-                                               device)
+                                                       tamanho_lote,
+                                                       mostra_barra_progresso,
+                                                       convert_to_numpy,
+                                                       device)
         
         # Acumula a saída do método
         saida = {}
@@ -962,17 +962,18 @@ class TextoTransformer:
         )
 
         # Percorre os textos da lista.
-        for i, texto in enumerate(texto_embeddings['texto_original']):            
-            # Recupera os embeddings do texto  
-            lista_token_embeddings = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
+        for i, texto in enumerate(texto_embeddings['texto_original']):    
+
+            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
+            lista_token_embeddings = texto_embeddings['token_embeddings'][i][1:-1]
 
             # Recupera os embeddings do texto  
-            #lista_all_layer_embeddings = texto_embeddings['all_layer_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]
+            #lista_all_layer_embeddings = texto_embeddings['all_layer_embeddings'][i][1:-1]
             
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
 
-            #Acumula a saída do método 
+            # Acumula a saída do método 
             #Se é uma string uma lista com comprimento 1
             if entrada_eh_string:
                 saida['texto_original'] = texto_embeddings['texto_original'][i]
@@ -998,6 +999,7 @@ class TextoTransformer:
         Retorno:
           Um inteiro com tamanho do texto.
         '''
+
         if isinstance(texto, dict):              # caso seja um dic de listas
             return len(next(iter(texto.values())))
         else:
