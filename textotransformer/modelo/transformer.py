@@ -32,7 +32,7 @@ class Transformer(nn.Module):
      :param tokenizer_name_or_path: Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado
     
     '''
-    
+
     def __init__(self, 
                 modelo_args : ModeloArgumentos,                
                 cache_dir: Optional[str] = None,
@@ -83,17 +83,24 @@ class Transformer(nn.Module):
         Retorna uma string com descrição do objeto.
         '''
 
-        return "Classe ({}) com AutoConfig: {}, modelo Transformer: {} e tokenizador: {}.".format(self.__class__.__name__, 
+        return "Classe ({}) carregada com o modelo {}, m AutoConfig {}, Transformer {} e tokenizador: {}.".format(self.__class__.__name__, 
+                                                                                                             self.modelo_args.pretrained_model_name_or_path,
                                                                                                              self.config.__class__.__name__,
-                                                                                                             self.auto_model.__class__.__name__,
+                                                                                                             self.auto_model.__class__.__name__,                                                                                                             
                                                                                                              self.tokenizer.__class__.__name__)
 
     # ============================   
     def _load_model(self, 
                     model_name_or_path: str, 
-                    config, cache_dir):
+                    config, 
+                    cache_dir):
         '''
         Carrega o modelo transformer
+
+        Parâmetros:
+        `model_name_or_path` - Nome ou caminho do modelo.
+        `config` - Configuração do modelo.
+        `cache_dir` - Diretório de cache.
         '''
 
         # Carregamento T5
@@ -120,6 +127,11 @@ class Transformer(nn.Module):
                        cache_dir):
         '''
         Carrega codificador do modelo¨T5
+
+        Parâmetros:
+        `model_name_or_path` - Nome ou caminho do modelo.
+        `config` - Configuração do modelo.
+        `cache_dir` - Diretório de cache.
         '''
 
         from transformers import T5EncoderModel
@@ -134,6 +146,11 @@ class Transformer(nn.Module):
                         cache_dir):
         '''
         Carrega codificador do modelo MT5
+
+        Parâmetros:
+        `model_name_or_path` - Nome ou caminho do modelo.
+        `config` - Configuração do modelo.
+        `cache_dir` - Diretório de cache.
         '''
 
         from transformers import MT5EncoderModel
@@ -151,16 +168,16 @@ class Transformer(nn.Module):
         `texto` - Um texto a ser tokenizado.
         
         Retorno:
-        `textoTokenizado` - Texto tokenizado.
+        `texto_tokenizado` - Texto tokenizado.
         '''
 
         # Adiciona os tokens especiais.
-        textoMarcado = '[CLS] ' + texto + ' [SEP]'
+        texto_marcado = '[CLS] ' + texto + ' [SEP]'
 
         # Tokeniza o texto
-        textoTokenizado = self.tokenizer.tokenize(textoMarcado)
+        texto_tokenizado = self.tokenizer.tokenize(texto_marcado)
 
-        return textoTokenizado
+        return texto_tokenizado
 
     # ============================    
 
@@ -285,8 +302,7 @@ class Transformer(nn.Module):
                       'token_type_ids': texto['token_type_ids'],        
                       'tokens_texto_mcl': texto['tokens_texto_mcl'],
                       'texto_original': texto['texto_original']
-                      }
-                     )
+                      })
 
         # output_hidden_states == True existem embeddings nas camadas ocultas
         if self.auto_model.config.output_hidden_states:
@@ -311,6 +327,15 @@ class Transformer(nn.Module):
                          }
                              
     def _getExcecaoDicMaior(self, token: str):   
+        '''
+        Retorna o deslocamento do token no texto para considerar mais tokens do BERT em relação ao spaCy.
+
+        Parâmetros:
+        `token` - Um token a ser verificado se é uma exceção.
+
+        Retorno:
+        O deslocamento do token no texto para considerar mais tokens do BERT em relação ao spaCy.
+        '''
     
         valor = self._dic_excecao_maior.get(token)
         if valor != None:
@@ -323,7 +348,16 @@ class Transformer(nn.Module):
     _dic_excecao_menor = {"1°":1,
                           }
     
-    def _getExcecaoDicMenor(self, token: str):   
+    def _getExcecaoDicMenor(self, token: str): 
+        '''
+        Retorna o deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
+
+        Parâmetros:
+        `token` - Um token a ser verificado se é uma exceção.
+
+        Retorno:
+        O deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
+        '''  
         
         valor = self._dic_excecao_menor.get(token)
         if valor != None:
@@ -345,11 +379,15 @@ class Transformer(nn.Module):
             
         Parâmetros:
         `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+        `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
+        `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
+        `tokens_texto_concatenado` - Os tokens do texto concatenado gerados pelo método getEmbeddingsTexto
+        `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
     
         Retorna um dicionário com 5 lista:            
             lista_tokens  uma lista com os tokens do texto gerados pelo método.
             texto_pos_pln uma lista com as postagging dos tokens gerados pela ferramenta de pln.
-            lista_tokens_OOV_mcl uma lista com os tokens OOV do mcl.
+            lista_tokens_oov_mcl uma lista com os tokens OOV do mcl.
             lista_embeddings_MEAN uma lista com os embeddings com a estratégia MEAN.
             lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX.
         '''
@@ -556,6 +594,10 @@ class Transformer(nn.Module):
     def save(self, output_path: str):
         '''
         Salva o modelo.
+
+        Parâmetros:
+        `output_path` - caminho para salvar o modelo
+
         '''
 
         self.auto_model.save_pretrained(output_path)
@@ -565,7 +607,7 @@ class Transformer(nn.Module):
             json.dump(self.get_config_dict(), fOut, indent=2)
 
     # ============================   
-    def get_auto_model(self):
+    def getAutoMmodel(self):
         '''
         Recupera o modelo.
         '''
@@ -573,7 +615,7 @@ class Transformer(nn.Module):
         return self.auto_model
 
     # ============================   
-    def get_tokenizer(self):
+    def getTokenizer(self):
         '''
         Recupera o tokenizador.
         '''
@@ -581,9 +623,16 @@ class Transformer(nn.Module):
         return self.tokenizer
 
     # ============================   
-    def batch_to_device(self, lote, target_device: device):
+    def batchToDevice(self, lote, target_device: device):
         '''
         Envia lote pytorch batch para um dispositivo (CPU/GPU)
+
+        Parâmetros:
+         `lote` - lote pytorch
+         `target_device` - dispositivo de destino (CPU/GPU)
+        
+        Retorno:
+         lote enviado para o dispositivo        
         '''
 
         for key in lote:

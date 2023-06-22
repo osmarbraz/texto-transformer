@@ -65,10 +65,10 @@ class TextoTransformer:
         self.transformer = Transformer(modelo_args=modelo_argumentos)
     
         # Recupera o modelo de linguagem.
-        self.model = self.transformer.get_auto_model()
+        self.model = self.transformer.getAutoMmodel()
     
         # Recupera o tokenizador.     
-        self.tokenizer = self.transformer.get_tokenizer()
+        self.tokenizer = self.transformer.getTokenizer()
         
         # Especifica de qual camada utilizar os embeddings                
         logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
@@ -107,11 +107,14 @@ class TextoTransformer:
     # ============================   
     def __repr__(self):
         '''
-        Retorna uma string com descrição do objeto
+        Retorna uma string com descrição do objeto.
         '''
-        return "Classe ({}) com modelo Transformer: {} e NLP: {} ".format(self.__class__.__name__, 
-                                                                          self.get_transformer().auto_model.__class__.__name__,
-                                                                          self.get_pln().model_pln.__class__.__name__)
+        
+        return "Classe ({}) com Transformer {} carregada com o modelo {} e NLP {} carregado com o modelo {} ".format(self.__class__.__name__, 
+                                                                                                            self.getTransformer().auto_model.__class__.__name__,
+                                                                                                            modelo_argumentos.pretrained_model_name_or_path,
+                                                                                                            self.getPln().model_pln.__class__.__name__,
+                                                                                                            modelo_argumentos.modelo_spacy)
     
     # ============================
     def _defineEstrategiaPooling(self, estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
@@ -297,7 +300,7 @@ class TextoTransformer:
             token_type_ids uma lista com os tipos dos tokens.
             attention_mask uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
-        return self.get_transformer().tokenize(texto)
+        return self.getTransformer().tokenize(texto)
     
     # ============================
     def getCodificacaoCompleta(self, texto: Union[str, List[str]],
@@ -364,16 +367,16 @@ class TextoTransformer:
             lote_textos = texto[start_index:start_index+tamanho_lote]
 
             # Tokeniza o lote usando o modelo
-            lote_textos_tokenizados = self.get_transformer().tokenize(lote_textos)
+            lote_textos_tokenizados = self.getTransformer().tokenize(lote_textos)
 
             # Adiciona ao device gpu ou cpu
-            lote_textos_tokenizados = self.get_transformer().batch_to_device(lote_textos_tokenizados, device)
+            lote_textos_tokenizados = self.getTransformer().batchToDevice(lote_textos_tokenizados, device)
             
             # Recupera os embeddings do modelo
             with torch.no_grad():
 
                 # Recupera a saída da rede
-                output_rede = self.get_transformer().getSaidaRede(lote_textos_tokenizados)
+                output_rede = self.getTransformer().getSaidaRede(lote_textos_tokenizados)
 
                 # Lista para os embeddings do texto
                 embeddings = []
@@ -474,15 +477,15 @@ class TextoTransformer:
             lote_textos = textos_ordenados[start_index:start_index+tamanho_lote]
 
             # Tokeniza o lote
-            lote_textos_tokenizados = self.get_transformer().tokenize(lote_textos)
+            lote_textos_tokenizados = self.getTransformer().tokenize(lote_textos)
             # Adiciona ao device gpu ou cpu
-            lote_textos_tokenizados = self.get_transformer().batch_to_device(lote_textos_tokenizados, device)
+            lote_textos_tokenizados = self.getTransformer().batchToDevice(lote_textos_tokenizados, device)
             
             # Recupera os embeddings do modelo
             with torch.no_grad():
 
                 # Recupera a saída da rede
-                output_rede = self.get_transformer().getSaidaRede(lote_textos_tokenizados)
+                output_rede = self.getTransformer().getSaidaRede(lote_textos_tokenizados)
 
                 embeddings = []
                 # Percorre todas as saídas(textos) do lote
@@ -531,7 +534,7 @@ class TextoTransformer:
             texto_original uma lista com os textos originais.
             all_layer_embeddings uma lista com os embeddings de todas as camadas.
         '''
-        return self.get_transformer().getSaidaRede(texto)
+        return self.getTransformer().getSaidaRede(texto)
 
    # ============================
     def getEmbeddingTexto(self, texto: Union[str, List[str]], 
@@ -723,7 +726,7 @@ class TextoTransformer:
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]            
                         
             # Recupera as sentenças do texto
-            lista_sentencas_texto = self.get_pln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
+            lista_sentencas_texto = self.getPln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
 
             # Lista de embeddings das sentenças do texto    
             lista_embeddings_tokens_sentencas_texto_media = []
@@ -866,7 +869,7 @@ class TextoTransformer:
         for i, texto in enumerate(texto_embeddings['texto_original']):
             
             # Recupera o texto tokenizado pela ferramenta de pln do texto original
-            lista_tokens_texto_pln = self.get_pln().getTokensTexto(texto_embeddings['texto_original'][i])
+            lista_tokens_texto_pln = self.getPln().getTokensTexto(texto_embeddings['texto_original'][i])
             
             # Recupera os embeddings do texto  
             embeddings_texto = texto_embeddings['token_embeddings'][i][0:len(texto_embeddings['tokens_texto_mcl'][i])]            
@@ -878,10 +881,10 @@ class TextoTransformer:
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
 
             # Recupera os embeddings e tokens de palavra            
-            saidaEmbeddingPalavra = self.get_transformer().getTokensEmbeddingsPOSTexto(embeddings_texto,
+            saidaEmbeddingPalavra = self.getTransformer().getTokensEmbeddingsPOSTexto(embeddings_texto,
                                                                                        tokens_texto_mcl,
                                                                                        tokens_texto_concatenado,
-                                                                                       self.get_pln())
+                                                                                       self.getPln())
 
             #Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
@@ -1007,21 +1010,21 @@ class TextoTransformer:
                     return sum([len(t) for t in texto])      ##Soma do comprimento de strings individuais
     
     # ============================
-    def get_model(self):
+    def getModel(self):
         return self.model
 
     # ============================
-    def get_tokenizer(self):
+    def getTokenizer(self):
         return self.tokenizer
 
     # ============================
-    def get_transformer(self):
+    def getTransformer(self):
         return self.transformer
 
     # ============================    
-    def get_mensurador(self):
+    def getMensurador(self):
         return self.mensurador        
         
     # ============================        
-    def get_pln(self):
+    def getPln(self):
         return self.pln                  

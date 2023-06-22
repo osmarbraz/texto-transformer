@@ -40,11 +40,11 @@ class PLN():
     # ============================   
     def __repr__(self):
         '''
-        Retorna uma string com descrição do objeto
+        Retorna uma string com descrição do objeto.
         '''
 
-        return "Classe ({}) com modelo: {}".format(self.__class__.__name__,
-                                                   self.model_pln.__class__.__name__)            
+        return "Classe ({}) carregada com o modelo: {}".format(self.__class__.__name__,
+                                                               self.modelo_args.modelo_spacy)            
     
     # ============================    
     def carrega(self):
@@ -67,7 +67,12 @@ class PLN():
         Tags de palavras universal https://universaldependencies.org/u/pos/
 
         Detalhes das tags em português: http://www.dbd.puc-rio.br/pergamum/tesesabertas/1412298_2016_completo.pdf
-        
+
+        Parâmetros:
+        `postagging` - Uma tag de uma palavra.
+
+        Retorno:
+        Uma string com a tradução da tag.        
         '''
     
         #dicionário que contêm pos tag universal e suas explicações
@@ -167,6 +172,9 @@ class PLN():
         
         Parâmetros:
         `texto` - Um texto a ser convertido em uma lista de sentenças.
+
+        Retorno:
+        `lista` - Lista com as sentenças do texto.
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -207,11 +215,22 @@ class PLN():
         for sentenca in lista_sentencas:
             # Adiciona os tokens a lista
             lista_tokens.append(self.getListaTokensSentenca(sentenca))
+        
+        # @TODO: Verificar se é necessário retornar a lista de tokens. Converter para um dicionário?
 
         return lista_sentencas, lista_tokens
 
     # ============================
     def getVerbosTexto(self, texto):
+        '''
+        Retorna uma lista com os verbos de um texto.
+
+        Parâmetros:
+        `texto` - Um texto a ser processado em uma lista de sentenças e tokens.
+        
+        Retorno:
+        `lista_verbos` - Lista com os verbos do texto.
+        '''
         
         # (verbo normal como auxilar ou auxilar) + vários verbos auxiliares +verbo principal ou verbo auxiliar
         gramaticav1 =  [
@@ -468,11 +487,10 @@ class PLN():
         return lista
 
     # ============================   
-    def get_model_pln(self):
+    def getModelPln(self):
         '''
         Recupera o modelo de PLN.
         '''
 
         return self.model_pln
-        
-   
+    

@@ -19,7 +19,10 @@ def similaridadeCoseno(texto1, texto2):
     
     Parâmetros:
     `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido.                 
+    `texto2` - Um texto a ser medido. 
+
+    Retorno:
+    A similaridade do cosseno entre os textos.                
     '''
     
     similaridade = 1 - cosine(texto1, texto2)
@@ -45,6 +48,7 @@ def PytorchSimilaridadeCoseno(a: torch.Tensor, b: torch.Tensor):
 
     a_norm = torch.nn.functional.normalize(a, p=2, dim=1)
     b_norm = torch.nn.functional.normalize(b, p=2, dim=1)
+
     return torch.mm(a_norm, b_norm.transpose(0, 1))
 
 # ============================  
@@ -54,7 +58,10 @@ def similaridadeCoseno(texto1, texto2):
     
     Parâmetros:
     `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido.                 
+    `texto2` - Um texto a ser medido.
+
+    Retorno:
+    A similaridade do cosseno entre os textos.
     '''
     
     similaridade = 1 - cosine(texto1, texto2)
@@ -70,6 +77,9 @@ def distanciaEuclidiana(texto1, texto2):
     Parâmetros:
     `texto1` - Um texto a ser medido.           
     `texto2` - Um texto a ser medido.
+
+    Retorno:
+    A distância euclidiana entre os textos.
     '''
     
     distancia = euclidean(texto1, texto2)
@@ -85,6 +95,9 @@ def distanciaManhattan(texto1, texto2):
     Parâmetros:
     `texto1` - Um texto a ser medido.           
     `texto2` - Um texto a ser medido.
+
+    Retorno:
+    A distância Manhattan entre os textos.
     '''
     
     distancia = cityblock(texto1, texto2)

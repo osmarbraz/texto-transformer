@@ -41,10 +41,10 @@ class Mensurador:
         self.transformer = transformer
     
         # Recupera o modelo.
-        self.auto_model = transformer.get_auto_model()
+        self.auto_model = transformer.getAutoMmodel()
     
         # Recupera o tokenizador.     
-        self.tokenizer = transformer.get_tokenizer()
+        self.tokenizer = transformer.getTokenizer()
         
         # Recupera a classe PLN
         self.pln = pln
@@ -57,10 +57,10 @@ class Mensurador:
         Retorna uma string com descrição do objeto.
         '''
         
-        return "Classe ({}) com modelo Transformer: {}, tokenizador: {} e NLP: {} ".format(self.__class__.__name__, 
-                                                                          self.auto_model.__class__.__name__,
-                                                                          self.tokenizer.__class__.__name__,
-                                                                          self.pln.__class__.__name__)
+        return "Classe ({}) com  Transformer: {}, tokenizador: {} e NLP: {} ".format(self.__class__.__name__, 
+                                                                                     self.auto_model.__class__.__name__,
+                                                                                     self.tokenizer.__class__.__name__,
+                                                                                     self.pln.__class__.__name__)
 
     # ============================
     def getEmbeddingsTodasCamadas(self, texto):    

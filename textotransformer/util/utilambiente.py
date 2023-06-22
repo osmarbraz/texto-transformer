@@ -16,6 +16,7 @@ class InstaladorModelo:
     Parâmetros:
     `modelo_args` - Um objeto com os parâmetros do modelo.
     ''' 
+    
     def __init__(self, modelo_args: ModeloArgumentos):
         #Atualiza os parâmetros
         self.modelo_args = modelo_args
@@ -28,11 +29,16 @@ class InstaladorModelo:
         '''
         Retorna uma string com descrição do objeto
         '''
+
         return "Classe ({}) de instalação do modelo {}.".format(self.__class__.__name__, 
                                                        self.modelo_args.modelo_spacy.__class__.__name__)
 
     # ============================
     def install_model_spacy(self):
+        '''
+        Realiza a instalação do modelo spaCy.
+        '''
+
         try:
             # Download do modelo de linguagem na linguagem solicitada
             subprocess.run(["python", "-m", "spacy", "download", self.modelo_args.modelo_spacy])
