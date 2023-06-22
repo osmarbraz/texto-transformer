@@ -66,6 +66,7 @@ from textotransformer import TextoTransformer
 # Instância uma objeto e baixa o modelo de linguagem
 modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased")
 
+# Texto a ser codificado
 texto = "Você gosta de sorvete de manga? Sim, adoro muito."
 
 # Recupera os embeddings consolidados do texto
@@ -97,7 +98,7 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 #Cada token de tamanho    : 768
 ````
 
-Os exemplos pode ser executado no notebook do GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).
+**Os exemplos pode ser executados através deste notebook no GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).**
 
 ## Métodos principais:
 
