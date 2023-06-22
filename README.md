@@ -98,7 +98,7 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 #Cada token de tamanho    : 768
 ````
 
-**Os exemplos pode ser executados através deste notebook no GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).**
+**Os exemplos podem ser executados através deste notebook no GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).**
 
 ## Métodos principais:
 
