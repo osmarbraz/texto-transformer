@@ -42,9 +42,9 @@ class ModeloArgumentos:
                                        default=False,
                                        metadata={'help': 'habilita gerar as camadas ocultas do modelo.'},
                                        )      
-    camadas_embeddings: int = field(
-                                    default=2, # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
-                                    metadata={'help': 'Especifica de onde retirar os embeddings das camadas do transformer.'},
+    abordagem_extracao_embeddings_camadas: int = field(
+                                    default=2, # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
+                                    metadata={'help': 'Especifica a abordagem para a extracao dos embeddings das camadas do transformer.'},
                                     )
     estrategia_pooling: int = field(
                                     default=0, # 0 - MEAN estratégia de pooling média / 1 - MAX  estratégia de pooling maior

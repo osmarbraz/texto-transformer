@@ -15,7 +15,7 @@ class MedidasComparacao(Enum):
     MANHATTAN = 2 # Distância de Manhattan
 
 # ============================
-class PalavrasRelevantes(Enum):
+class PalavraRelevante(Enum):
     ALL = 0 # Todas as palavras
     CLEAN = 1 # Sem stopwords
     NOUN = 2 # Somente substantivos

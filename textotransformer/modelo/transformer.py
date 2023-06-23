@@ -17,7 +17,9 @@ import os
 
 # Bibliotecas próprias
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
-from textotransformer.modelo.modeloenum import listaTipoCamadas
+from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
+from textotransformer.util.utilconstantes import LISTATIPOCAMADA_NOME
+from textotransformer.util.utilconversao import getIntParaAbordagemExtracaoEmbeddingsCamadas
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class Transformer(nn.Module):
         # Recupera o nome do modelo dos argumentos
         model_name_or_path = modelo_args.pretrained_model_name_or_path;
       
-        # Recupera parâmetros do transformador dos argumentos
+        # Recupera parâmetros do transformador dos argumentos e cria um dicionário para o AutoConfig
         model_args = {"output_attentions": modelo_args.output_attentions, 
                       "output_hidden_states": modelo_args.output_hidden_states}
     
@@ -74,7 +76,7 @@ class Transformer(nn.Module):
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
             
-        logger.info("Classe Transformer carregada: {}.".format(modelo_args))            
+        logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
     # ============================   
     def __repr__(self):
@@ -82,11 +84,11 @@ class Transformer(nn.Module):
         Retorna uma string com descrição do objeto.
         '''
 
-        return "Classe ({}) carregada com o modelo {}, m AutoConfig {}, Transformer {} e tokenizador: {}.".format(self.__class__.__name__, 
-                                                                                                             self.modelo_args.pretrained_model_name_or_path,
-                                                                                                             self.config.__class__.__name__,
-                                                                                                             self.auto_model.__class__.__name__,                                                                                                             
-                                                                                                             self.tokenizer.__class__.__name__)
+        return "Classe (\"{}\") carregada com o modelo \"{}\", m AutoConfig \"{}\", Transformer \"{}\" e tokenizador: \"{}\".".format(self.__class__.__name__,
+                                                                                                                                      self.modelo_args.pretrained_model_name_or_path,
+                                                                                                                                      self.config.__class__.__name__,
+                                                                                                                                      self.auto_model.__class__.__name__,
+                                                                                                                                      self.tokenizer.__class__.__name__)
 
     # ============================   
     def _load_model(self, 
@@ -238,7 +240,7 @@ class Transformer(nn.Module):
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in saida['tokens_texto_mcl']:
             if len(tokens) >= 512:
-                logger.info("Utilizando embeddings do modelo de: {}.".format(listaTipoCamadas[self.modelo_args.camadas_embeddings]))   
+                logger.info("Utilizando embeddings do modelo de:\"{}\".".format(getIntParaAbordagemExtracaoEmbeddingsCamadas(self.modelo_args.abordagem_extracao_embeddings_camadas)[LISTATIPOCAMADA_NOME]))
   
         return saida
         
@@ -316,6 +318,214 @@ class Transformer(nn.Module):
             saida.update({'all_layer_embeddings': hidden_states})
 
         return saida
+
+    # ============================
+    def getEmbeddingPrimeiraCamadaRede(self, saida_rede: dict):
+        '''
+        Retorna os embeddings extraído da primeira camada do transformer.
+
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+        
+        # Retorna toda a primeira(0) camada da saida da rede.
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)          
+        resultado = saida_rede['all_layer_embeddings'][0]
+        # Retorno: (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        print('resultado=',resultado.size())
+
+        return resultado
+
+    # ============================
+    def getEmbeddingPenultimaCamada(self, saida_rede: dict):
+        '''
+        Retorna os embeddings extraído da penúltima camada do transformer.
+        
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+        # Retorna todas a penúltima(-2) camada
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        resultado = saida_rede['all_layer_embeddings'][-2]
+        # Retorno: (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        #print('resultado=',resultado.size())
+
+        return resultado
+
+    # ============================
+    def getEmbeddingUltimaCamada(self, saida_rede: dict):
+        '''
+        Retorna os embeddings extraído da última camada do transformer.
+        
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+        # Retorna todas a última(-1) camada
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        resultado = saida_rede['all_layer_embeddings'][-1]
+        # Retorno: (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        #print('resultado=',resultado.size())
+
+        return resultado        
+
+     # ============================
+    def getEmbeddingSoma4UltimasCamadas(self, saida_rede: dict):
+        '''        
+        Retorna a soma dos embeddings extraído das 4 últimas camada do transformer.
+     
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+        
+        # Retorna todas as 4 últimas camadas
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        embedding_camadas = saida_rede['all_layer_embeddings'][-4:]
+        # Retorno: List das camadas(4) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+
+        # Usa o método `stack` para criar uma nova dimensão no tensor 
+        # com a concateção dos tensores dos embeddings.        
+        # Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        resultado_stack = torch.stack(embedding_camadas, dim=0)
+        # Retorno: <4> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        #print('resultado_stack=',resultado_stack.size())
+      
+        # Realiza a soma dos embeddings de todos os tokens para as camadas
+        # Entrada: <4> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        resultado = torch.sum(resultado_stack, dim=0)
+        # Saida: <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        #print('resultado=',resultado.size())
+
+        return resultado
+
+    # ============================
+    def getEmbeddingConcat4UltimasCamadas(self, saida_rede: dict):
+        '''        
+        Retorna a concatenação dos embeddings das 4 últimas camadas do transformer.
+             
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+        
+        # Cria uma lista com os tensores a serem concatenados
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        # Lista com os tensores a serem concatenados
+        lista_concatenada = []
+        # Percorre os 4 últimos
+        for i in [-1, -2, -3, -4]:
+            # Concatena da lista
+            lista_concatenada.append(saida_rede['all_layer_embeddings'][i])
+        # Retorno: Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        #print('lista_concatenada=',len(lista_concatenada))
+
+        # Realiza a concatenação dos embeddings de todos as camadas
+        # Retorno: Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+        resultado = torch.cat(lista_concatenada, dim=-1)
+        # Retorno: Entrada: (<1(lote)> x <qtde_tokens> <3072 ou 4096>)  
+        # print('resultado=',resultado.size())
+      
+        return resultado
+
+    # ============================
+    def getEmbeddingSomaTodasAsCamada(self, saida_rede: dict):
+        '''
+        Retorna a soma dos embeddings extraído de todas as camadas do transformer.
+                   
+        Parâmtros:
+        `saida_rede` - Um dicionário com a saída da rede.
+
+        Retorno:
+        Uma lista com os embeddings.
+        '''
+      
+        # Retorna todas as camadas descontando a primeira(0)
+        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        embedding_camadas = saida_rede['all_layer_embeddings'][1:]
+        # Retorno: List das camadas(12 ou 24) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
+
+        # Usa o método `stack` para criar uma nova dimensão no tensor 
+        # com a concateção dos tensores dos embeddings.        
+        # Entrada: List das camadas(12 ou 24) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
+        resultado_stack = torch.stack(embedding_camadas, dim=0)
+        # Retorno: <12 ou 24> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        #print('resultado_stack=',resultado_stack.size())
+      
+        # Realiza a soma dos embeddings de todos os tokens para as camadas
+        # Entrada: <12 ou 24> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        resultado = torch.sum(resultado_stack, dim=0)
+        # Saida: <1(lote)> x <qtde_tokens> x <768 ou 1024>
+        # print('resultado=',resultado.size())
+      
+        return resultado
+
+    # ============================
+    def getSaidaRedeCamada(self, texto: Union[str, dict], 
+                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
+        '''
+        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
+        
+        Parâmetros:
+        `texto` - Texto a ser recuperado os embeddings.
+        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+
+        Retorno:
+        Os embeddings da camada para o texto.
+        '''
+        
+        # Converte o inteiro para um objeto da classe AbordagemExtracaoEmbeddingsCamadas
+        abordagem_extracao_embeddings_camadas = getIntParaAbordagemExtracaoEmbeddingsCamadas(abordagem_extracao_embeddings_camadas)
+        
+        # Recupera todos os embeddings da rede('all_layer_embeddings')
+        saida_rede = self.getSaidaRede(texto)
+                
+        # Embedding extraído usando a abordagem de extração
+        embedding_extraido_abordagem = None
+
+        # Chama o método que recupera os embeddings da camada especificada
+        if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.PRIMEIRA_CAMADA:
+          embedding_extraido_abordagem = self.getEmbeddingPrimeiraCamadaRede(saida_rede)
+        else:
+            if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.PENULTIMA_CAMADA:
+              embedding_extraido_abordagem = self.getEmbeddingPenultimaCamada(saida_rede)
+            else:
+                if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA:
+                  embedding_extraido_abordagem = self.getEmbeddingUltimaCamada(saida_rede)
+                else:
+                    if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.SOMA_4_ULTIMAS_CAMADAS:
+                      embedding_extraido_abordagem = self.getEmbeddingSoma4UltimasCamadas(saida_rede)
+                    else:
+                        if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.CONCAT_4_ULTIMAS_CAMADAS:
+                            embedding_extraido_abordagem = self.getEmbeddingConcat4UltimasCamadas(saida_rede)
+                        else:
+                            if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.TODAS_AS_CAMADAS:
+                                embedding_extraido_abordagem = self.getEmbeddingSomaTodasAsCamada(saida_rede)
+                            else:                                
+                                logger.info("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
+        
+        # Verifica se foi realizado a extração
+        if embedding_extraido_abordagem != None:
+          # Atualiza a saída com os embeddings extraídos usando abordagem
+          saida_rede.update({'embedding_extraido': embedding_extraido_abordagem,  # Embeddings extraídos usando abordagem de extração
+                             'abordagem_extracao_embeddings_camadas': abordagem_extracao_embeddings_camadas})  # Tipo da abordagem da extração  dos embeddings
+        else:
+          logger.info("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
+          saida_rede = None  
+
+        return saida_rede
 
     # ============================  
     # getTokensEmbeddingsPOStexto

@@ -11,9 +11,10 @@ from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos 
 from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
-from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
-from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME, EmbeddingsCamadas, EstrategiasPooling 
+from textotransformer.mensurador.mensuradorenum import PalavraRelevante
+from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas, EstrategiasPooling
 from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
+from textotransformer.util.utilconversao import getIntParaAbordagemExtracaoEmbeddingsCamadas
 from textotransformer.util.utiltexto import encontrarIndiceSubLista  
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ class Mensurador:
         self.transformer = transformer
     
         # Recupera o modelo.
-        self.auto_model = transformer.getAutoMmodel()
+        self.model = transformer.getAutoMmodel()
     
         # Recupera o tokenizador.     
         self.tokenizer = transformer.getTokenizer()
@@ -49,7 +50,7 @@ class Mensurador:
         # Recupera a classe PLN
         self.pln = pln
         
-        logger.info("Classe Mensurador carregada: {}.".format(modelo_args))
+        logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
     # ============================   
     def __repr__(self):
@@ -57,321 +58,14 @@ class Mensurador:
         Retorna uma string com descrição do objeto.
         '''
         
-        return "Classe ({}) com  Transformer: {}, tokenizador: {} e NLP: {} ".format(self.__class__.__name__, 
-                                                                                     self.auto_model.__class__.__name__,
-                                                                                     self.tokenizer.__class__.__name__,
-                                                                                     self.pln.__class__.__name__)
+        return "Classe (\"{}\") com  Transformer: \"{}\", tokenizador: \"{}\" e NLP: \"{}\" ".format(self.__class__.__name__,
+                                                                                                     self.model.__class__.__name__,
+                                                                                                     self.tokenizer.__class__.__name__,
+                                                                                                     self.pln.__class__.__name__)
 
     # ============================
-    def getEmbeddingsTodasCamadas(self, texto):    
-        '''   
-        Retorna os embeddings de todas as camadas de um texto.
-        
-        Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do BERT.
-        
-        Retorno:
-        `texto_tokenizado` - Texto tokenizado.
-        `input_ids` - Input ids do texto.
-        `attention_mask` - Máscara de atenção do texto
-        `token_type_ids` - Token types ids do texto.
-        `outputs` - Embeddings do texto.
-        '''
-
-        # Texto tokenizado
-        texto_tokenizado =  self.transformer.getTextoTokenizado(texto)
-
-        #print('O texto (', texto, ') tem tamanho = ', len(texto_tokenizado), ' = ', texto_tokenizado)
-
-        # Recupera a quantidade tokens do texto tokenizado.
-        qtdeTokens = len(texto_tokenizado)
-
-        #tokeniza o texto e retorna os tensores.
-        dic_codificado = self.tokenizer.encode_plus(
-                                                texto, # Texto a ser codificado.
-                                                add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'
-                                                max_length=qtdeTokens, # Define o tamanho máximo para preencheer ou truncar.
-                                                truncation=True, # Trunca o texto por max_length
-                                                padding='max_length', # Preenche o texto até max_length
-                                                return_attention_mask=True, # Constrói a máscara de atenção.
-                                                return_tensors='pt' # Retorna os dados como tensores pytorch.
-                                                )
-        
-        # Ids dos tokens de entrada mapeados em seus índices do vocabuário.
-        input_ids = dic_codificado['input_ids']
-
-        # Máscara de atenção de cada um dos tokens como pertencentes à sentença '1'.
-        attention_mask = dic_codificado['attention_mask']
-
-        # Recupera os tensores dos segmentos.
-        token_type_ids = dic_codificado['token_type_ids']
-
-        # Roda o texto através do BERT, e coleta todos os estados ocultos produzidos.
-        # das 12 camadas. 
-        with torch.no_grad():
-
-            # Passe para a frente, calcule as previsões outputs.     
-            outputs = self.auto_model(input_ids=input_ids, 
-                                 attention_mask=attention_mask)
-
-            # A avaliação do modelo retorna um número de diferentes objetos com base em
-            # como é configurado na chamada do método `from_pretrained` anterior. Nesse caso,
-            # porque definimos `output_hidden_states = True`, o terceiro item será o
-            # estados ocultos(hidden_states) de todas as camadas. Veja a documentação para mais detalhes:
-            # https://huggingface.co/transformers/model_doc/bert.html#bertmodel
-
-            # Retorno de model quando ´output_hidden_states=True´ é setado:    
-            # outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
-            # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-            
-            # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        return texto_tokenizado, input_ids, attention_mask, token_type_ids, outputs
-
-    # ============================
-    # Cria um buffer com os embeddings de sentenças para economizar memória no processamento.
-    buffer_embeddings = {}
-    
-    def getEmbeddingsTodasCamadasBuffer(self, embedding):
-        '''
-        Retorna os embeddings de uma sentença de um buffer ou do modelo.
-
-        Parâmetros:
-        `embedding` - Uma sentença a ser recuperado os embeddings.
-        '''
-        
-        # Se está no dicionário retorna o embedding
-        if embedding in self.buffer_embeddings:
-            return self.buffer_embeddings.get(embedding)
-        else:
-            # Gera o embedding
-            total_camada = self.getEmbeddingsTodasCamadas(embedding)
-            self.buffer_embeddings.update({embedding: total_camada})
-            return total_camada
-
-    # ============================
-    def limpaBufferEmbedding(self):
-        '''
-        Esvazia o buffer de embeddings das sentenças.
-        '''
-        
-        self.buffer_embeddings.clear(self)
-
-    # ============================
-    def getEmbeddingPrimeiraCamada(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da primeira camada.
-        '''
-        
-        # Cada elemento do vetor sentenca_embedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-      
-        # Retorna todas a primeira(-1) camada
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        resultado = sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][0]
-        # Retorno: (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        #print('resultado=',resultado.size())
-
-        return resultado
-
-    # ============================
-    def getEmbeddingPenultimaCamada(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da penúltima camada.
-        '''
-        
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-      
-        # Retorna todas a penúltima(-2) camada
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        resultado = sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][-2]
-        # Retorno: (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        #print('resultado=',resultado.size())
-
-        return resultado
-
-    # ============================
-    def getEmbeddingUltimaCamada(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da última camada.
-        '''
-        
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-      
-        # Retorna todas a última(-1) camada
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        resultado = sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][-1]
-        # Retorno: (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        #print('resultado=',resultado.size())
-      
-        return resultado    
-
-    # ============================
-    def getEmbeddingSoma4UltimasCamadas(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da soma das 4 últimas camadas.
-        '''
-        
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-      
-        # Retorna todas as 4 últimas camadas
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        embedding_camadas = sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][-4:]
-        # Retorno: List das camadas(4) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-
-        # Usa o método `stack` para criar uma nova dimensão no tensor 
-        # com a concateção dos tensores dos embeddings.        
-        # Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        resultado_stack = torch.stack(embedding_camadas, dim=0)
-        # Retorno: <4> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        #print('resultado_stack=',resultado_stack.size())
-      
-        # Realiza a soma dos embeddings de todos os tokens para as camadas
-        # Entrada: <4> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        resultado = torch.sum(resultado_stack, dim=0)
-        # Saida: <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        #print('resultado=',resultado.size())
-
-        return resultado
-
-    # ============================
-    def getEmbeddingConcat4UltimasCamadas(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da concatenação das 4 últimas camadas.
-        '''
-        
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-        
-        # Cria uma lista com os tensores a serem concatenados
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        # Lista com os tensores a serem concatenados
-        lista_concatenada = []
-        # Percorre os 4 últimos
-        for i in [-1, -2, -3, -4]:
-            # Concatena da lista
-            lista_concatenada.append(sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][i])
-        # Retorno: Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        #print('lista_concatenada=',len(lista_concatenada))
-
-        # Realiza a concatenação dos embeddings de todos as camadas
-        # Retorno: Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-        resultado = torch.cat(lista_concatenada, dim=-1)
-        # Retorno: Entrada: (<1(lote)> x <qtde_tokens> <3072 ou 4096>)  
-        # print('resultado=',resultado.size())
-      
-        return resultado   
-
-    # ============================
-    def getEmbeddingSomaTodasAsCamada(self, sentenca_embedding):
-        '''
-        Retorna os embeddings da soma de todas as camadas.
-        '''
-        
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-      
-        # Retorna todas as camadas descontando a primeira(0)
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        embedding_camadas = sentenca_embedding[OUTPUTS][OUTPUTS_HIDDEN_STATES][1:]
-        # Retorno: List das camadas(12 ou 24) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
-
-        # Usa o método `stack` para criar uma nova dimensão no tensor 
-        # com a concateção dos tensores dos embeddings.        
-        # Entrada: List das camadas(12 ou 24) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        resultado_stack = torch.stack(embedding_camadas, dim=0)
-        # Retorno: <12 ou 24> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        #print('resultado_stack=',resultado_stack.size())
-      
-        # Realiza a soma dos embeddings de todos os tokens para as camadas
-        # Entrada: <12 ou 24> x <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        resultado = torch.sum(resultado_stack, dim=0)
-        # Saida: <1(lote)> x <qtde_tokens> x <768 ou 1024>
-        # print('resultado=',resultado.size())
-      
-        return resultado
-
-    # ============================
-    def getResultadoEmbeddings(self, sentenca_embedding, camada):
-        '''
-        Retorna o resultado da operação sobre os embeddings das camadas de acordo com tipo de camada especificada.
-        
-        Parâmetros:
-        `sentencaEmbedding` - Embeddings da stentença.
-        `camada` - Camada dos embeddings.
-        '''
-
-        # Cada elemento do vetor sentencaEmbedding é formado por:  
-        # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
-        #[4]outpus e [2]hidden_states 
-        #[OUTPUTS]outpus e [OUTPUTS_HIDDEN_STATES]hidden_states      
-        # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>) 
-
-        resultado_embedding_camadas = None
-      
-        if camada == EmbeddingsCamadas.PRIMEIRA_CAMADA.value[0]:
-            resultado_embedding_camadas = self.getEmbeddingPrimeiraCamada(sentenca_embedding)
-            #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
-        else:
-            if camada == EmbeddingsCamadas.PENULTIMA_CAMADA.value[0]:
-                resultado_embedding_camadas = self.getEmbeddingPenultimaCamada(sentenca_embedding)
-                #print('resultadoEmbeddingCamadas1=',resultadoEmbeddingCamadas.size())
-            else:                
-                if camada == EmbeddingsCamadas.ULTIMA_CAMADA.value[0]:
-                    resultado_embedding_camadas = self.getEmbeddingUltimaCamada(sentenca_embedding)
-                    #print('resultadoEmbeddingCamadas2=',resultadoEmbeddingCamadas.size())
-                else:
-                    if camada == EmbeddingsCamadas.SOMA_4_ULTIMAS_CAMADAS.value[0]:
-                        resultado_embedding_camadas = self.getEmbeddingSoma4UltimasCamadas(sentenca_embedding)
-                        #print('resultadoEmbeddingCamadas3=',resultadoEmbeddingCamadas.size())
-                    else:                        
-                        if camada == EmbeddingsCamadas.CONCAT_4_ULTIMAS_CAMADAS.value[0]:
-                            resultado_embedding_camadas = self.getEmbeddingConcat4UltimasCamadas(sentenca_embedding)
-                            #print('resultadoEmbeddingCamadas4=',resultadoEmbeddingCamadas.size())
-                        else:
-                            if camada == EmbeddingsCamadas.TODAS_AS_CAMADAS.value[0]:                            
-                                resultado_embedding_camadas = self.getEmbeddingSomaTodasAsCamada(sentenca_embedding)
-                                #print('resultadoEmbeddingCamadas5=',resultadoEmbeddingCamadas.size())
-                                # Retorno: <1> x <qtde_tokens> x <768 ou 1024>
-                            else:
-                                logger.info("Nenhuma seleção da camada dos embeddings foi especificada.")
-          
-        # Verifica se a primeira dimensão é igual 1 para remover a dimensão de lote 'batches'
-        # Entrada: <1> x <qtde_tokens> x <768 ou 1024>
-        if resultado_embedding_camadas.shape[0] == 1:
-            # Remove a dimensão 0 caso seja de tamanho 1.
-            # Usa o método 'squeeze' para remover a primeira dimensão(0) pois possui tamanho 1
-            # Entrada: <1> x <qtde_tokens> x <768 ou 1024>
-            resultado_embedding_camadas = torch.squeeze(resultado_embedding_camadas, dim=0)     
-        #print('resultadoEmbeddingCamadas2=', resultadoEmbeddingCamadas.size())    
-        # Retorno: <qtde_tokens> x <768 ou 1024>
-      
-        # Retorna o resultados dos embeddings dos tokens da sentença  
-        return resultado_embedding_camadas
-
-    # ============================
-    def getMedidasSentencasEmbeddingMEAN(self, embedding_si, embedding_sj):
+    def getMedidasSentencasEmbeddingMEAN(self, embedding_si, 
+                                         embedding_sj):
         '''
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MEAN.
         
@@ -422,7 +116,8 @@ class Mensurador:
         return media_embedding_si, media_embedding_sj, Scos, Seuc, Sman
 
     # ============================
-    def getMedidasSentencasEmbeddingMAX(self, embedding_si, embedding_sj):
+    def getMedidasSentencasEmbeddingMAX(self, embedding_si, 
+                                        embedding_sj):
         '''
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MAX.
         
@@ -473,7 +168,8 @@ class Mensurador:
         return maior_embedding_si, maior_embedding_sj, Scos, Seuc, Sman
 
     # ============================
-    def getMedidasSentencasEmbedding(self, embedding_si, embedding_sj):
+    def getMedidasSentencasEmbedding(self, embedding_si, 
+                                     embedding_sj):
         '''
         Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
         
@@ -493,12 +189,16 @@ class Mensurador:
                 return None
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoALL(self, 
-                                              embedding_texto, 
+    def getEmbeddingSentencaEmbeddingTextoALL(self, embedding_texto, 
                                               texto, 
                                               sentenca):
         '''
         Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
+        
+        Parâmetros:
+        `embedding_texto` - Embeddings do texto.
+        `texto ` - Texto.
+        `sentenca` - Sentença.
         
         '''
             
@@ -508,7 +208,7 @@ class Mensurador:
 
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
-        #print(sentencaTokenizada)
+        #print(sentenca_tokenizada)
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada.remove('[CLS]')
         sentenca_tokenizada.remove('[SEP]')    
@@ -526,17 +226,22 @@ class Mensurador:
         return embedding_sentenca
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoCLEAN(self, 
-                                                embedding_texto, 
+    def getEmbeddingSentencaEmbeddingTextoCLEAN(self, embedding_texto, 
                                                 texto, 
                                                 sentenca):
         '''
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
+        
+        Parâmetros:
+        `embedding_texto` - Embeddings do texto.
+        `texto ` - Texto.
+        `sentenca` - Sentença.
+        
         '''
           
         # Tokeniza o texto
         texto_tokenizado =  self.transformer.getTextoTokenizado(texto)  
-        #print(textoTokenizado)
+        #print(sentenca_tokenizada)
 
         # Remove as stopword da sentença
         sentenca_sem_stopword = self.pln.removeStopWord(sentenca)
@@ -588,17 +293,22 @@ class Mensurador:
         return embedding_sentenca_sem_stopword
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTextoNOUN(self, 
-                                               embedding_texto, 
+    def getEmbeddingSentencaEmbeddingTextoNOUN(self, embedding_texto, 
                                                texto, 
                                                sentenca):
         '''
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
+        
+        Parâmetros:
+        `embedding_texto` - Embeddings do texto.
+        `texto ` - Texto.
+        `sentenca` - Sentença.
+        
         '''
 
         # Tokeniza o texto
         texto_tokenizado =  self.transformer.getTextoTokenizado(texto)  
-        #print(textoTokenizado)
+        #print(sentenca_tokenizada)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
         sentenca_somente_relevante = self.pln.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
@@ -649,30 +359,59 @@ class Mensurador:
         return embedding_sentenca_com_substantivo
 
     # ============================
-    def getEmbeddingSentencaEmbeddingTexto(self, 
-                                           embedding_texto, 
+    def getEmbeddingSentencaEmbeddingTexto(self, embedding_texto, 
                                            texto, 
                                            sentenca):
         '''
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
+        
+        Parâmetros:
+        `embedding_texto` - Embeddings do texto.
+        `texto ` - Texto.
+        `sentenca` - Sentença.
+        
         '''
 
-        if self.model_args.palavra_relevante == PalavrasRelevantes.ALL.value:
+        if self.model_args.palavra_relevante == PalavraRelevante.ALL.value:
             return self.getEmbeddingSentencaEmbeddingTextoALL(embedding_texto, texto, sentenca)
         else:
-            if self.model_args.palavra_relevante == PalavrasRelevantes.CLEAN.value:                
+            if self.model_args.palavra_relevante == PalavraRelevante.CLEAN.value:                
                 return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embedding_texto, texto, sentenca)
             else:
-                if self.model_args.palavra_relevante == PalavrasRelevantes.NOUN.value:
+                if self.model_args.palavra_relevante == PalavraRelevante.NOUN.value:
                     return self.getEmbeddingSentencaEmbeddingTextoNOUN(embedding_texto, texto, sentenca)
                 else:
                     logger.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
+    
+    
+    # ============================
+    def getEmbeddingTextoCamada(self, texto, 
+                                abordagem_extracao_embeddings_camadas):
+        '''
+        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
+        
+        Parâmetros:
+        `texto` - Texto a ser recuperado os embeddings.
+        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+
+        Retorno:
+        Os embeddings da camada para o texto.
+        '''
+        
+        # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
+        with torch.no_grad():
+        
+            saida = self.getTransformer().getSaidaRedeCamada(texto,
+                                                            abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+        
+        # Remove o lote com [0]
+        embedding_texto = saida['embedding_extraido'][0]
+        
+        return embedding_texto
 
     # ============================
-    def getMedidasComparacaoTexto(self, 
-                                  texto, 
-                                  camada, 
-                                  tipo_texto='p'):
+    def getMedidasComparacaoTexto(self, texto, 
+                                  abordagem_extracao_embeddings_camadas):        
         '''
         Retorna as medidas do texto.
         Considera somente sentenças com pelo menos uma palavra.
@@ -692,29 +431,16 @@ class Mensurador:
         divisor = n - 1
 
         # Texto é uma lista com as sentenças
-        #print('camada=',camada)
+        #print('abordagem_extracao_embeddings_camadas=',abordagem_extracao_embeddings_camadas)
         #print('Texto=', texto)
 
         # Junta a lista de sentenças em um texto(string)
         string_texto = ' '.join(texto)
+        #print('string_texto=', string_texto)
 
-        # Envia o texto ao MCL e recupera os embeddings de todas as camadas
-        # Se for o texto original pega do buffer para evitar a repetição
-        if tipo_texto == 'o':
-            # Retorna os embeddings de todas as camadas do texto
-            # O embedding possui os seguintes valores        
-            # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-            total_camadas_texto = self.getEmbeddingsTodasCamadasBuffer(string_texto)      
-            # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
-        else:
-            # Retorna os embeddings de todas as camadas do texto
-            # O embedding possui os seguintes valores        
-            # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
-            total_camadas_texto = self.getEmbeddingsTodasCamadas(string_texto)      
-            # Retorno: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> <768 ou 1024>) 
-
-        # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada  
-        embedding_texto = self.getResultadoEmbeddings(total_camadas_texto, camada=camada)
+        # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada          
+        embedding_texto = self.getEmbeddingTextoCamada(string_texto,
+                                                       abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
         #print('embedding_texto=', embedding_texto.shape)
 
         # Acumuladores das medidas entre as sentenças  
@@ -748,13 +474,13 @@ class Mensurador:
                 somaSeuc = somaSeuc + Seuc
                 somaSman = somaSman + Sman
 
-                    # avança para o próximo par de sentenças
+                # avança para o próximo par de sentenças
                 posSi = posSj
                 posSj = posSj + 1
             else:
                 # Reduz um da quantidade de sentenças pois uma delas está vazia
                 divisor = divisor - 1
-                # Se embeddingSi igual a None avanca pos1 e pos2
+                # Se embedding_si igual a None avanca pos1 e pos2
                 if embedding_si == None:
                     # Avança a posição da sentença posSi para a posSj
                     posSi = posSj
@@ -781,4 +507,20 @@ class Mensurador:
                       'euc' : Ceuc,
                       'man' : Cman})
 
-        return saida   
+        return saida
+    
+    # ============================
+    def getTransformer(self):
+        return self.transformer
+    
+    # ============================
+    def getModel(self):
+        return self.model
+
+    # ============================
+    def getTokenizer(self):
+        return self.tokenizer
+
+    # ============================        
+    def getPln(self):
+        return self.pln

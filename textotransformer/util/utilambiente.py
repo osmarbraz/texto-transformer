@@ -30,8 +30,8 @@ class InstaladorModelo:
         Retorna uma string com descrição do objeto
         '''
 
-        return "Classe ({}) de instalação do modelo {}.".format(self.__class__.__name__, 
-                                                       self.modelo_args.modelo_spacy.__class__.__name__)
+        return "Classe (\"{}\") de instalação do modelo \"{}\".".format(self.__class__.__name__,
+                                                                        self.modelo_args.modelo_spacy.__class__.__name__)
 
     # ============================
     def install_model_spacy(self):
@@ -42,7 +42,7 @@ class InstaladorModelo:
         try:
             # Download do modelo de linguagem na linguagem solicitada
             subprocess.run(["python", "-m", "spacy", "download", self.modelo_args.modelo_spacy])
-            logger.info("Download do modelo spaCy {} realizado!".format(self.modelo_args.modelo_spacy))    
+            logger.info("Download do modelo spaCy \"{}\" realizado!".format(self.modelo_args.modelo_spacy))
         except subprocess.CalledProcessError as e:
-            logger.info("Falha em instalar modelo spaCy {}. Erro: {}.".format(self.modelo_args.modelo_spacy, e))
+            logger.info("Falha em instalar modelo spaCy \"{}\". Erro: {}.".format(self.modelo_args.modelo_spacy, e))
 

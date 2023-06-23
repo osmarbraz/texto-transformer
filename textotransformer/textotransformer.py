@@ -15,26 +15,26 @@ from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
-from textotransformer.modelo.modeloenum import LISTATIPOCAMADA_NOME
 from textotransformer.modelo.modeloenum import EstrategiasPooling
-from textotransformer.modelo.modeloenum import listaTipoCamadas
-from textotransformer.mensurador.mensuradorenum import PalavrasRelevantes
+from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
+from textotransformer.mensurador.mensuradorenum import PalavraRelevante
+from textotransformer.util.utilconversao import getAbordagemExtracaoEmbeddingsCamadasStr, getIntParaEstrategiasPooling, getIntParaPalavraRelevante
 from textotransformer.util.utiltexto import encontrarIndiceSubLista
 
 logger = logging.getLogger(__name__)
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
-modelo_argumentos = ModeloArgumentos(
-        max_seq_len=512,
-        pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
-        modelo_spacy="pt_core_news_lg", # Nome do modelo de linguagem da ferramenta de PLN
-        do_lower_case=False,            # default True
-        output_attentions=False,        # default False
-        output_hidden_states=True,      # default False  /Retornar os embeddings das camadas ocultas  
-        camadas_embeddings=2,           # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
-        estrategia_pooling=0,           # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
-        palavra_relevante=0             # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
-        )
+model_args = ModeloArgumentos(
+    max_seq_len=512,
+    pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
+    modelo_spacy="pt_core_news_lg",             # Nome do modelo de linguagem da ferramenta de PLN
+    do_lower_case=False,                        # default True
+    output_attentions=False,                    # default False
+    output_hidden_states=True,                  # default False  /Retornar os embeddings das camadas ocultas  
+    abordagem_extracao_embeddings_camadas=2,    # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma todas
+    estrategia_pooling=0,                       # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
+    palavra_relevante=0                         # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
+)
 
 class TextoTransformer:
     
@@ -45,24 +45,24 @@ class TextoTransformer:
     Parâmetros:
     `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
     `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.                       
-    `camadas_embeddings` - Especifica de qual camada ou camadas será recuperado os embeddings do transformer. Valor defaul '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas.       
+    `abordagem_extracao_embeddings_camadas` - Especifica a abordagem para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
     `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
     ''' 
     
     # Construtor da classe
     def __init__(self, pretrained_model_name_or_path: str ="neuralmind/bert-base-portuguese-cased", 
                        modelo_spacy: str ="pt_core_news_lg",
-                       camadas_embeddings: int = 2,
+                       abordagem_extracao_embeddings_camadas: int = 2,
                        device = None):
                        
         # Parâmetro recebido para o modelo de linguagem
-        modelo_argumentos.pretrained_model_name_or_path = pretrained_model_name_or_path
+        model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
                
         # Parâmetro recebido para o modelo da ferramenta de pln
-        modelo_argumentos.modelo_spacy = modelo_spacy
+        model_args.modelo_spacy = modelo_spacy
                 
         # Carrega o modelo de linguagem da classe transformador
-        self.transformer = Transformer(modelo_args=modelo_argumentos)
+        self.transformer = Transformer(modelo_args=model_args)
     
         # Recupera o modelo de linguagem.
         self.model = self.transformer.getAutoMmodel()
@@ -70,17 +70,17 @@ class TextoTransformer:
         # Recupera o tokenizador.     
         self.tokenizer = self.transformer.getTokenizer()
         
-        # Especifica de qual camada utilizar os embeddings                
-        logger.info("Utilizando embeddings do modelo da {} camada(s).".format(listaTipoCamadas[modelo_argumentos.camadas_embeddings][LISTATIPOCAMADA_NOME]))
+        # Especifica a abordagem para a extração dos embeddings das camadas do transformer.         
+        logger.info("Utilizando abordagem para extração dos embeddings das camadas do transfomer \"{}\" camada(s).".format(getAbordagemExtracaoEmbeddingsCamadasStr(model_args.abordagem_extracao_embeddings_camadas)))
                     
         # Especifica camadas para recuperar os embeddings
-        modelo_argumentos.camadas_embeddings = camadas_embeddings
+        model_args.abordagem_extracao_embeddings_camadas = abordagem_extracao_embeddings_camadas
       
         # Carrega o spaCy
-        self.pln = PLN(modelo_args=modelo_argumentos)
+        self.pln = PLN(modelo_args=model_args)
                         
         # Constroi um mensurador
-        self.mensurador = Mensurador(modelo_args=modelo_argumentos, 
+        self.mensurador = Mensurador(modelo_args=model_args, 
                                      transformer=self.transformer, 
                                      pln=self.pln)        
     
@@ -88,8 +88,8 @@ class TextoTransformer:
         if device is None:
             if torch.cuda.is_available():    
                 device = "cuda"
-                logger.info("Existem {} GPU(s) disponíveis.".format(torch.cuda.device_count()))
-                logger.info("Iremos usar a GPU: {}.".format(torch.cuda.get_device_name(0)))
+                logger.info("Existem\"{}\" GPU(s) disponíveis.".format(torch.cuda.device_count()))
+                logger.info("Iremos usar a GPU:\"{}\".".format(torch.cuda.get_device_name(0)))
 
             else:                
                 device = "cpu"
@@ -102,19 +102,18 @@ class TextoTransformer:
             self._target_device = torch.device(device)
 
         # Mensagem de carregamento da classe
-        logger.info("Classe TextoTransformer carregada: {}.".format(modelo_argumentos))
+        logger.info("Classe \"{}\" carregada com os parâmetros: \"{}\".".format(self.__class__.__name__, model_args))
     
     # ============================   
     def __repr__(self):
         '''
         Retorna uma string com descrição do objeto.
         '''
-        
-        return "Classe ({}) com Transformer {} carregada com o modelo {} e NLP {} carregado com o modelo {} ".format(self.__class__.__name__, 
-                                                                                                            self.getTransformer().auto_model.__class__.__name__,
-                                                                                                            modelo_argumentos.pretrained_model_name_or_path,
-                                                                                                            self.getPln().model_pln.__class__.__name__,
-                                                                                                            modelo_argumentos.modelo_spacy)
+        return "Classe (\"{}\") com o Transformer \"{}\" carregada com o modelo \"{}\" e NLP \"{}\" carregada com o modelo \"{}\" ".format(self.__class__.__name__,
+                                                                                                                                           self.getTransformer().auto_model.__class__.__name__,
+                                                                                                                                           model_args.pretrained_model_name_or_path,
+                                                                                                                                           self.getPln().model_pln.__class__.__name__,
+                                                                                                                                           model_args.modelo_spacy)
     
     # ============================
     def _defineEstrategiaPooling(self, estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
@@ -125,28 +124,20 @@ class TextoTransformer:
         `estrategia_pooling` - Um número de 0 a 1 com a estratégia de pooling das camadas do modelo contextualizado. Valor defaul '0'. Valores possíveis: 0 - MEAN estratégia média / 1 - MAX  estratégia maior.
         ''' 
         
-        # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
-        if isinstance(estrategia_pooling, int):
-          if estrategia_pooling == 0:
-            estrategia_pooling = EstrategiasPooling.MEAN
-          else:
-            if estrategia_pooling == 1:
-              estrategia_pooling = EstrategiasPooling.MAX
-            else:
-              estrategia_pooling = None
-              logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
+        # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+        estrategia_pooling = getIntParaEstrategiasPooling(estrategia_pooling)
         
         # Atribui para os parâmetros do modelo
         if estrategia_pooling == EstrategiasPooling.MEAN:
-            modelo_argumentos.estrategia_pooling = EstrategiasPooling.MEAN.value
+            model_args.estrategia_pooling = EstrategiasPooling.MEAN.value
         else:
             if estrategia_pooling == EstrategiasPooling.MAX:
-                modelo_argumentos.estrategia_pooling = EstrategiasPooling.MAX.value            
+                model_args.estrategia_pooling = EstrategiasPooling.MAX.value            
             else:
                 logger.info("Não foi especificado uma estratégia de pooling válida.") 
     
     # ============================
-    def _definePalavraRelevante(self, palavra_relevante: Union[int, PalavrasRelevantes] = PalavrasRelevantes.ALL):
+    def _definePalavraRelevante(self, palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
         ''' 
         Define a estratégia de palavra relavante para os parâmetros do modelo.
         
@@ -154,36 +145,25 @@ class TextoTransformer:
         `palavra_relevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
         ''' 
         
-        # Verifica o tipo de dado do parâmetro 'palavra_relevante'
-        if isinstance(palavra_relevante, int):
-          if palavra_relevante == 0:
-            palavra_relevante = PalavrasRelevantes.ALL
-          else:
-            if palavra_relevante == 1:
-              palavra_relevante = PalavrasRelevantes.CLEAN
-            else:
-                if palavra_relevante == 2:
-                    palavra_relevante = PalavrasRelevantes.NOUN
-                else:
-                    palavra_relevante = None
-                    logger.info("Não foi especificado um valor inteiro para a estratégia de relevância de palavra.") 
-        
+        # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+        palavra_relevante = getIntParaPalavraRelevante(palavra_relevante)
+                
         # Atribui para os parâmetros do modelo
-        if palavra_relevante == PalavrasRelevantes.ALL:
-            modelo_argumentos.palavra_relevante = PalavrasRelevantes.ALL.value            
+        if palavra_relevante == PalavraRelevante.ALL:
+            model_args.palavra_relevante = PalavraRelevante.ALL.value            
         else:
-            if palavra_relevante == PalavrasRelevantes.CLEAN:
-                modelo_argumentos.palavra_relevante = PalavrasRelevantes.CLEAN.value                
+            if palavra_relevante == PalavraRelevante.CLEAN:
+                model_args.palavra_relevante = PalavraRelevante.CLEAN.value                
             else:
-                if palavra_relevante == PalavrasRelevantes.NOUN:
-                    modelo_argumentos.palavra_relevante = PalavrasRelevantes.NOUN.value                    
+                if palavra_relevante == PalavraRelevante.NOUN:
+                    model_args.palavra_relevante = PalavraRelevante.NOUN.value                    
                 else:
                     logger.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
     # ============================
     def getMedidasTexto(self, texto: str, 
                         estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                        palavra_relevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
+                        palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
@@ -202,15 +182,14 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          camada=modelo_argumentos.camadas_embeddings, 
-                                                          tipo_texto='o')
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
           
         return saida
     
     # ============================
     def getMedidasTextoCosseno(self, texto: str, 
                                estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                               palavra_relevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
+                               palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de similaridade de cosseno.
         
@@ -222,20 +201,19 @@ class TextoTransformer:
         Retorno:
         `cos` - Medida de cos do do texto.            
         '''         
-        
+
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          camada=modelo_argumentos.camadas_embeddings, 
-                                                          tipo_texto='o')
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
           
         return saida['cos']
     
     # ============================
     def getMedidasTextoEuclediana(self, texto: str, 
                                   estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                                  palavra_relevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
+                                  palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Euclidiana.
                  
@@ -252,15 +230,14 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
 
         saida = self.mensurador.getMedidasComparacaoTexto(texto,
-                                                          camada=modelo_argumentos.camadas_embeddings, 
-                                                          tipo_texto='o')
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
           
         return saida['euc']      
        
     # ============================
     def getMedidasTextoManhattan(self, texto: str, 
                                  estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                                 palavra_relevante: PalavrasRelevantes = PalavrasRelevantes.ALL):
+                                 palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Manhattan.
                  
@@ -277,8 +254,7 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          camada=modelo_argumentos.camadas_embeddings, 
-                                                          tipo_texto='o')
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
           
         return saida['man']
     
@@ -373,7 +349,7 @@ class TextoTransformer:
             # Adiciona ao device gpu ou cpu
             lote_textos_tokenizados = self.getTransformer().batchToDevice(lote_textos_tokenizados, device)
             
-            # Recupera os embeddings do modelo
+            # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
             with torch.no_grad():
 
                 # Recupera a saída da rede
@@ -482,7 +458,7 @@ class TextoTransformer:
             # Adiciona ao device gpu ou cpu
             lote_textos_tokenizados = self.getTransformer().batchToDevice(lote_textos_tokenizados, device)
             
-            # Recupera os embeddings do modelo
+            # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
             with torch.no_grad():
 
                 # Recupera a saída da rede
@@ -537,6 +513,22 @@ class TextoTransformer:
         '''
         
         return self.getTransformer().getSaidaRede(texto)
+
+    # ============================
+    def getSaidaRedeCamada(self, texto: Union[str, dict], 
+                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
+        '''
+        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
+        
+        Parâmetros:
+        `texto` - Texto a ser recuperado os embeddings.
+        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+
+        Retorno:
+        Os embeddings da camada para o texto.
+        '''    
+
+        return self.getTransformer().getSaidaRedeCamada(texto, abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
 
    # ============================
     def getEmbeddingTexto(self, texto: Union[str, List[str]], 

@@ -11,24 +11,24 @@ import os
 import sys
 
 # Bibliotecas próprias
-from textotransformer.util.utilconstantes import DIRETORIO_MODELO_LINGUAGEM
-from textotransformer.util.utiltexto import remove_tags
+from textotransformer.util.utilconstantes import DIRETORIO_TEXTO_TRANSFORMER
+from textotransformer.util.utiltexto import removeTags
 
 logger = logging.getLogger(__name__)
 
 # ============================  
-def verificaDiretorioModeloLinguagem():
+def verificaDiretorioTextoTransformer():
     '''    
-    Verifica se existe o diretório modelo_linguagem no diretório corrente.    
+    Verifica se existe o diretório DIRETORIO_TEXTO_TRANSFORMER no diretório corrente.    
     '''
     
     # Verifica se o diretório existe
-    if not os.path.exists(DIRETORIO_MODELO_LINGUAGEM):  
+    if not os.path.exists(DIRETORIO_TEXTO_TRANSFORMER):  
         # Cria o diretório
-        os.makedirs(DIRETORIO_MODELO_LINGUAGEM)
-        logger.info("Diretório modelo de linguagem criado: {}".format(DIRETORIO_MODELO_LINGUAGEM))
+        os.makedirs(DIRETORIO_TEXTO_TRANSFORMER)
+        logger.info("Diretório \"{}\" criado.".format(DIRETORIO_TEXTO_TRANSFORMER))
     
-    return DIRETORIO_MODELO_LINGUAGEM
+    return DIRETORIO_TEXTO_TRANSFORMER
 
 # ============================  
 def downloadArquivo(url_arquivo: str, nome_arquivo_destino: str):
@@ -41,14 +41,14 @@ def downloadArquivo(url_arquivo: str, nome_arquivo_destino: str):
     '''
     
     # Verifica se existe o diretório base
-    DIRETORIO_MODELO_LINGUAGEM = verificaDiretorioModeloLinguagem()
+    DIRETORIO_TEXTO_TRANSFORMER = verificaDiretorioTextoTransformer()
     
     # Realiza o download de um arquivo em uma url
     data = requests.get(url_arquivo, stream=True)
     
     # Verifica se o arquivo existe
     if data.status_code != 200:
-        logger.info("Exceção ao tentar realizar download {}. Response {}.".format(url_arquivo, data.status_code))
+        logger.info("Exceção ao tentar realizar download \"{}\". Response \"{}\".".format(url_arquivo, data.status_code))
         data.raise_for_status()
         return
 
@@ -56,9 +56,9 @@ def downloadArquivo(url_arquivo: str, nome_arquivo_destino: str):
     nome_arquivo = nome_arquivo_destino.split('/')[-1]  
 
     # Define o nome e caminho do arquivo temporário    
-    nome_arquivo_temporario = DIRETORIO_MODELO_LINGUAGEM + "/" + nome_arquivo + "_part"
+    nome_arquivo_temporario = DIRETORIO_TEXTO_TRANSFORMER + "/" + nome_arquivo + "_part"
     
-    logger.info("Download do arquivo: {}.".format(nome_arquivo_destino))
+    logger.info("Download do arquivo: \"{}\".".format(nome_arquivo_destino))
     
     # Baixa o arquivo
     with open(nome_arquivo_temporario, "wb") as arquivo_binario:        
@@ -95,7 +95,7 @@ def carregar(nome_arquivo: str):
         linha = linha.splitlines()
         linha = ' '.join(linha)
         # Remove as tags existentes no final das linhas
-        linha = remove_tags(linha)
+        linha = removeTags(linha)
         if linha != '':
             paragrafo = paragrafo + linha.strip() + ' '
      
@@ -121,7 +121,7 @@ def carregarLista(nome_arquivo: str):
     for linha in arquivo:        
         linha = linha.splitlines()
         linha = ' '.join(linha)
-        linha = remove_tags(linha)
+        linha = removeTags(linha)
         if linha != '':
             sentencas.append(linha.strip())
             

@@ -35,7 +35,7 @@ class PLN():
         #Carrega o modelo do spacy
         self.carrega()
             
-        logger.info("Classe PLN carregada: {}.".format(modelo_args))    
+        logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
             
     # ============================   
     def __repr__(self):
@@ -43,8 +43,8 @@ class PLN():
         Retorna uma string com descrição do objeto.
         '''
 
-        return "Classe ({}) carregada com o modelo: {}".format(self.__class__.__name__,
-                                                               self.modelo_args.modelo_spacy)            
+        return "Classe (\"{}\") carregada com o modelo: \"{}\"".format(self.__class__.__name__,
+                                                                       self.modelo_args.modelo_spacy)         
     
     # ============================    
     def carrega(self):
@@ -56,7 +56,8 @@ class PLN():
         self.model_pln = spacy.load(self.modelo_args.modelo_spacy)    
         # Opção para remover funcionalidades
         #self.model_pln = spacy.load(self.modelo_args.modelo_spacy,disable=['tokenizer', 'lemmatizer', 'ner', 'parser', 'textcat', 'custom'])                
-        logger.info("Modelo spaCy versão {} carregado!".format(self.modelo_args.modelo_spacy))    
+        
+        logger.info("Modelo spaCy versão \"{}\" carregado!".format(self.modelo_args.modelo_spacy))
     
     # ============================
     

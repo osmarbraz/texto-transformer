@@ -8,29 +8,32 @@ import unittest
 # Bibliotecas próprias
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
 from textotransformer.modelo.transformer import Transformer
+from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 
 logger = logging.getLogger(__name__)
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
 modelo_argumentos = ModeloArgumentos(
-        max_seq_len=512,
-        pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
-        modelo_spacy="pt_core_news_lg", # Nome do modelo de linguagem da ferramenta de PLN
-        do_lower_case=False,            # default True
-        output_attentions=False,        # default False
-        output_hidden_states=True,      # default False  /Retornar os embeddings das camadas ocultas  
-        camadas_embeddings=2,           # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
-        estrategia_pooling=0,           # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
-        palavra_relevante=0             # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
-        )
+    max_seq_len=512,
+    pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
+    modelo_spacy="pt_core_news_lg",             # Nome do modelo de linguagem da ferramenta de PLN
+    do_lower_case=False,                        # default True
+    output_attentions=False,                    # default False
+    output_hidden_states=True,                  # default False  /Retornar os embeddings das camadas ocultas  
+    abordagem_extracao_embeddings_camadas=2,    # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últiamas/5-Todas
+    estrategia_pooling=0,                       # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
+    palavra_relevante=0                         # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
+)
 
 class TestTransformer(unittest.TestCase):
     
+    # Inicialização do modelo para os testes
     @classmethod     
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")        
         self.modelo = Transformer(modelo_args=modelo_argumentos) 
-        
+    
+    # Testes construtor    
     def test_transformer(self):
         logger.info("Testando o construtor de Transformer")
                 
@@ -55,7 +58,7 @@ class TestTransformer(unittest.TestCase):
 
         saida = self.modelo.tokenize(texto)
           
-        self.assertEqual(len(saida), 5)
+        self.assertEqual(len(saida), 5) # Dicionário possui 5 chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -75,7 +78,7 @@ class TestTransformer(unittest.TestCase):
 
         saida = self.modelo.tokenize(texto)
         
-        self.assertEqual(len(saida), 5)
+        self.assertEqual(len(saida), 5) # Dicionário possui 5 chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -94,13 +97,13 @@ class TestTransformer(unittest.TestCase):
 
     # Testes getSaidaRede String
     def test_getSaidaRede_string(self):
-        logger.info("Testando o getSaidaRede com lista de strings")
+        logger.info("Testando o getSaidaRede com string")
                 
         texto = "Adoro sorvete de manga."
         
         saida = self.modelo.getSaidaRede(texto)
         
-        self.assertEqual(len(saida), 7)
+        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -125,7 +128,7 @@ class TestTransformer(unittest.TestCase):
         
         saida = self.modelo.getSaidaRede(texto)
         
-        self.assertEqual(len(saida), 7)
+        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -150,7 +153,49 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][1]),  2)
         self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11)                         
 
-       
+    # Testes getSaidaRedeCamada String
+    def test_getSaidaRedeCamada_string(self):
+        logger.info("Testando o getSaidaRedeCamada com strings")
+                
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+        
+        # Abordagem extração de embeddings das camadas
+        # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
+        saida = self.modelo.getSaidaRedeCamada(texto, 2)
+        
+        self.assertEqual(len(saida), 9) # Dicionário possui 9 chaves
+        self.assertEqual(len(saida['input_ids']), 2)
+        self.assertEqual(len(saida['input_ids'][0]), 11)
+        self.assertEqual(len(saida['input_ids'][1]), 11)
+        self.assertEqual(len(saida['token_type_ids']), 2)
+        self.assertEqual(len(saida['token_type_ids'][0]), 11)
+        self.assertEqual(len(saida['token_type_ids'][1]), 11)
+        self.assertEqual(len(saida['attention_mask']), 2)
+        self.assertEqual(len(saida['attention_mask'][0]), 11)
+        self.assertEqual(len(saida['attention_mask'][1]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 2)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 11) 
+        self.assertEqual(len(saida['texto_original']), 2)
+        self.assertEqual(saida['texto_original'][0], texto[0])
+        self.assertEqual(saida['texto_original'][1], texto[1])        
+        self.assertEqual(len(saida['token_embeddings']), 2)
+        self.assertEqual(len(saida['token_embeddings'][0]), 11)
+        self.assertEqual(len(saida['token_embeddings'][1]), 11)        
+        self.assertEqual(len(saida['all_layer_embeddings']), 13) #13 Camadas
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 2) # Dois textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11) # 11 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1]),  2) # Dois textos
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) # 11 tokens
+        
+        # Chaves adicionais para abordagem extração de embeddings das camadas
+        self.assertEqual(len(saida['embedding_extraido']), 2) # Dois textos
+        self.assertEqual(len(saida['embedding_extraido'][0]), 11) # 11 tokens        
+        self.assertEqual(len(saida['embedding_extraido'][1]), 11) # 11 tokens
+        
+        self.assertEqual(saida['abordagem_extracao_embeddings_camadas'], AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA) 
+        
+      
 if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)

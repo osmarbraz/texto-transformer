@@ -30,10 +30,16 @@ def similaridadeCoseno(texto1, texto2):
     return similaridade
 
 def PytorchSimilaridadeCoseno(a: torch.Tensor, b: torch.Tensor):
-    """
+    '''
     Calcula a similaridade do cosseno cos_sim(a[i], b[j]) para todo i e j.
-    :Retorna: Uma matriz com res[i][j] = cos_sim(a[i], b[j])
-    """
+    
+    Parâmetros:
+    `a` - Um tensor de forma (N, D)
+    `b` - Um tensor de forma (M, D)    
+    
+    Retorno: 
+    Uma matriz com res[i][j] = cos_sim(a[i], b[j])
+    '''
     if not isinstance(a, torch.Tensor):
         a = torch.tensor(a)
 

@@ -50,26 +50,9 @@ def removeAcentos(texto: str):
     texto = texto.decode("utf-8")
     
     return str(texto)
-
+   
 # ============================  
-def limpaTexto(texto: str):    
-    '''    
-    Remove acentos e espaços e outros caracteres de um texto.
-    
-    Parâmetros:
-   `texto` - Texto a ser limpo.
-    '''
-    # Converte para minúsculo
-    texto = removeAcentos(texto.lower())
-    # Remove espaços em branco
-    texto = re.sub('[ ]+', '_', texto)
-    # Remove caracteres especiais
-    texto = re.sub('[^.0-9a-zA-Z_-]', '', texto)
-    
-    return texto
-    
-# ============================  
-def remove_tags(texto: str):
+def removeTags(texto: str):
     '''
     Remove tags de um texto.
      
@@ -121,6 +104,8 @@ def getTextoLista(listaSentencas: List):
     # Concatena as sentenças do texto
     for sentenca in listaSentencas:                
         stringTexto = stringTexto + sentenca
+        
+    return stringTexto
 
 # ============================   
 def atualizaValor(a,b):
@@ -141,7 +126,8 @@ def getSomaDic(lista: List):
  
     return novodic
 
-def limpeza(texto: str):
+# ============================   
+def limpezaTexto(texto: str):
     '''
     Realiza limpeza dos dados.
         
@@ -151,25 +137,26 @@ def limpeza(texto: str):
     Retorno:
     `texto` - Texto limpo.  
     '''
+    
     # Substitui \n por espaço em branco no documento
     conta_caracter_barra_n = texto.count("\n")
     if conta_caracter_barra_n > 0:
         # Transforma \n em espaços em branco 
         texto = texto.replace("\n"," ")
 
-    # Transforma em string e remove os espaços do início e do fim
-    texto = str(texto).strip()
-
     # Conta texto com duas ou mais interrogação
     conta_caracter_interrogacoes = texto.count("?")
     if conta_caracter_interrogacoes > 1:
-        # Transforma 2 ou mais interrogações consecutivas em 1
+        #Nessa expressão, o \? representa uma interrogação, e o + indica que devemos buscar um ou mais interrogações consecutivos.
         texto = re.sub("\?+", "?", texto)
         
     # Conta caracteres em branco repetidos
     conta_caracter_espacos = texto.count("  ")
-    if conta_caracter_espacos > 0:
-        # Transforma 2 ou mais caracteres em branco consecutivos em 1    
-        texto = re.sub("\W*\?+\W*", "? ", texto)
+    if conta_caracter_espacos > 0:        
+        # Nessa expressão, o \s representa um espaço em branco, e o + indica que devemos buscar um ou mais espaços em branco consecutivos.
+        texto = re.sub("\s+", " ", texto)
+  
+    # Transforma em string e remove os espaços do início e do fim
+    texto = str(texto).strip()
         
     return texto
