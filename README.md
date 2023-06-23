@@ -4,7 +4,7 @@ Este framework realiza o processamento de textos utilizando modelos de linguagem
 
 ## Instalação
 
-Recomendamos **Python 3.6**, **[PyTorch 1.6.0](https://pytorch.org/get-started/locally/)** e **[transformers 4.26.1](https://github.com/huggingface/transformers)** e **[spaCy 3.5.2](https://spacy.io)**. 
+Recomendamos **Python 3.6**, **[Transformers 4.26.1](https://huggingface.co/transformers)**, **[PyTorch2.0.1](https://pytorch.org)**, **[spaCy 3.5.2](https://spacy.io)**, **[SciPy 1.10.1](https://scipy.org)** e **[NumPy 1.22.4](https://numpy.org)**. 
 
 **Instalação com pip**
 
@@ -75,17 +75,17 @@ print("Um texto de tamanho      :",len(embeddings_texto))
 
 # Recupera os embeddings consolidados das sentenças do texto
 embeddings_sentenca = modelo.getEmbeddingSentenca(texto)
-print("\nQuantidade de sentenças  :",len(embeddings_sentenca))
+print("Quantidade de sentenças  :",len(embeddings_sentenca))
 print("Cada sentença de tamanho :",len(embeddings_sentenca[0]))
 
 # Recupera os embeddings consolidados das palavras do texto
 embeddings_palavra = modelo.getEmbeddingPalavra(texto)
-print("\nQuantidade de palavras   :",len(embeddings_palavra))
+print("Quantidade de palavras   :",len(embeddings_palavra))
 print("Cada palavra de tamanho  :",len(embeddings_palavra[0]))
 
 # Recupera os embeddings dos tokens do texto
 embeddings_token = modelo.getEmbeddingToken(texto)
-print("\nQuantidade de tokens     :",len(embeddings_token))
+print("Quantidade de tokens     :",len(embeddings_token))
 print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 #Resultado
@@ -136,6 +136,9 @@ A lista completa dos modelos de linguagem pré-treiandos podem ser consultados n
 - transformers==4.26.1
 - spacy==3.5.2
 - tqdm==4.65.0
+- torch==2.0.1
+- scipy==1.10.1
+- numpy==1.22.4
 
 ## Licença
 
