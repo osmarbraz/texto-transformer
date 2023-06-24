@@ -14,7 +14,6 @@ from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaMa
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas, EstrategiasPooling
 from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
-from textotransformer.util.utilconversao import getIntParaAbordagemExtracaoEmbeddingsCamadas
 from textotransformer.util.utiltexto import encontrarIndiceSubLista  
 
 logger = logging.getLogger(__name__)
@@ -25,9 +24,9 @@ class Mensurador:
     Realiza mensurações em textos.
      
     Parâmetros:
-    `modelo_args` - Parâmetros do modelo de linguagem.
-    `transformer` - Modelo de linguagem carregado.
-    `pln` - Processador de linguagem natural.
+       `modelo_args` - Parâmetros do modelo de linguagem.
+       `transformer` - Modelo de linguagem carregado.
+       `pln` - Processador de linguagem natural.
     ''' 
 
     # Construtor da classe
@@ -70,13 +69,13 @@ class Mensurador:
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MEAN.
         
         Parâmetros:
-        `embedding_si` - Embeddings da primeira sentença.
-        `embedding_sj` - Embeddings da segunda sentença.
+           `embedding_si` - Embeddings da primeira sentença.
+           `embedding_sj` - Embeddings da segunda sentença.
         
         Retorno:
-        `Scos` - Similaridade do cosseno - usando a média dos embeddings Si e Sj das camadas especificadas.
-        `Seuc` - Distância euclidiana - usando a média dos embeddings Si e Sj das camadas especificadas.
-        `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.
+           `Scos` - Similaridade do cosseno - usando a média dos embeddings Si e Sj das camadas especificadas.
+           `Seuc` - Distância euclidiana - usando a média dos embeddings Si e Sj das camadas especificadas.
+           `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.
         '''
 
         #print('embedding_si=', embedding_si.shape) 
@@ -122,13 +121,13 @@ class Mensurador:
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MAX.
         
         Parâmetros:
-        `embedding_si` - Embeddings da primeira sentença.
-        `embedding_sj` - Embeddings da segunda sentença.
+           `embedding_si` - Embeddings da primeira sentença.
+           `embedding_sj` - Embeddings da segunda sentença.
            
         Retorno:
-        `Scos` - Similaridade do cosseno - usando o maior dos embeddings Si e Sj das camadas especificadas.
-        `Seuc` - Distância euclidiana - usando o maior dos embeddings Si e Sj das camadas especificadas.
-        `Sman` - Distância de manhattan - usando o maior dos embeddings Si e Sj das camadas especificadas.
+           `Scos` - Similaridade do cosseno - usando o maior dos embeddings Si e Sj das camadas especificadas.
+           `Seuc` - Distância euclidiana - usando o maior dos embeddings Si e Sj das camadas especificadas.
+           `Sman` - Distância de manhattan - usando o maior dos embeddings Si e Sj das camadas especificadas.
         '''
 
         #print('embedding_si=', embedding_si.shape) 
@@ -174,9 +173,12 @@ class Mensurador:
         Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
         
         Parâmetros:
-        `embedding_si` - Embeddings da primeira sentença.
-        `embedding_sj` - Embeddings da segunda sentença.
-        `estrategia_pooling` - Estratégia de pooling a ser utilizada.       
+           `embedding_si` - Embeddings da primeira sentença.
+           `embedding_sj` - Embeddings da segunda sentença.
+           `estrategia_pooling` - Estratégia de pooling a ser utilizada.     
+        
+        Retorno:
+           As medidas de duas sentenças Si e Sj utilizando a estratégia especificada.  
         '''
 
         if self.model_args.estrategia_pooling == EstrategiasPooling.MEAN.value:
@@ -196,10 +198,12 @@ class Mensurador:
         Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         
         Parâmetros:
-        `embedding_texto` - Embeddings do texto.
-        `texto ` - Texto.
-        `sentenca` - Sentença.
+           `embedding_texto` - Embeddings do texto.
+           `texto` - Texto.
+           `sentenca` - Sentença.
         
+        Retorno:
+           Uma lista com os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         '''
             
         # Tokeniza o texto
@@ -233,9 +237,12 @@ class Mensurador:
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         
         Parâmetros:
-        `embedding_texto` - Embeddings do texto.
-        `texto ` - Texto.
-        `sentenca` - Sentença.
+          `embedding_texto` - Embeddings do texto.
+          `texto` - Texto.
+          `sentenca` - Sentença.
+        
+        Retorno:
+           Uma lista com os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         
         '''
           
@@ -300,9 +307,12 @@ class Mensurador:
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         
         Parâmetros:
-        `embedding_texto` - Embeddings do texto.
-        `texto ` - Texto.
-        `sentenca` - Sentença.
+           `embedding_texto` - Embeddings do texto.
+           `texto` - Texto.
+           `sentenca` - Sentença.
+        
+        Retorno:
+           Uma lista com os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         
         '''
 
@@ -366,10 +376,12 @@ class Mensurador:
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         
         Parâmetros:
-        `embedding_texto` - Embeddings do texto.
-        `texto ` - Texto.
-        `sentenca` - Sentença.
+           `embedding_texto` - Embeddings do texto.
+           `texto` - Texto.
+           `sentenca` - Sentença.
         
+        Retorno:
+           Uma lista com os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.
         '''
 
         if self.model_args.palavra_relevante == PalavraRelevante.ALL.value:
@@ -391,11 +403,11 @@ class Mensurador:
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-        `texto` - Texto a ser recuperado os embeddings.
-        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+           `texto` - Texto a ser recuperado os embeddings.
+           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
 
         Retorno:
-        Os embeddings da camada para o texto.
+           Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
         '''
         
         # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
@@ -418,10 +430,14 @@ class Mensurador:
         Estratégia de pooling padrão é MEAN(0).
         Palavra relavante padrão é ALL(0).
         
+        Parâmetros:
+           `texto` - Texto a ser realizado as comparações.
+         'abordagem_extracao_embeddings_camadas' - Camada de onde deve ser recupera os embeddings.
+                 
         Retorno um dicionário com:
-        `cos` - Medida de cos do do texto.
-        `euc` - Medida de euc do do texto.
-        `man` - Medida de man do do texto.
+           `cos` - Medida de cos do do texto.
+           `euc` - Medida de euc do do texto.
+           `man` - Medida de man do do texto.
         '''
 
         # Quantidade de sentenças no texto

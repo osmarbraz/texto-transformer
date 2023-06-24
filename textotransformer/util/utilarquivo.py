@@ -8,7 +8,6 @@ import requests
 from tqdm.notebook import tqdm as tqdm_notebook 
 # Biblioteca para manipular arquivos
 import os 
-import sys
 
 # Bibliotecas próprias
 from textotransformer.util.utilconstantes import DIRETORIO_TEXTO_TRANSFORMER
@@ -36,8 +35,8 @@ def downloadArquivo(url_arquivo: str, nome_arquivo_destino: str):
     Realiza o download de um arquivo de uma url em salva em nome_arquivo_destino.
     
     Parâmetros:
-    `url_arquivo` - URL do arquivo a ser feito download.      
-    `nome_arquivo_destino` - Nome do arquivo a ser salvo.      
+       `url_arquivo` - URL do arquivo a ser feito download.      
+       `nome_arquivo_destino` - Nome do arquivo a ser salvo.      
     '''
     
     # Verifica se existe o diretório base
@@ -84,7 +83,7 @@ def carregar(nome_arquivo: str):
     Carrega um arquivo texto e retorna as linhas como um único parágrafo(texto).
     
     Parâmetros:
-    `nome_arquivo` - Nome do arquivo a ser carregado.           
+       `nome_arquivo` - Nome do arquivo a ser carregado.           
     '''
         
     # Abre o arquivo
@@ -111,7 +110,7 @@ def carregarLista(nome_arquivo: str):
     Carrega um arquivo texto e retorna as linhas como uma lista de sentenças(texto).
     
     Parâmetros:
-    `nome_arquivo` - Nome do arquivo a ser carregado.           
+       `nome_arquivo` - Nome do arquivo a ser carregado.           
     '''
 
     # Abre o arquivo
@@ -136,8 +135,8 @@ def salvar(nome_arquivo: str, texto: str):
     Salva um texto em um arquivo.
      
     Parâmetros:
-    `nome_arquivo` - Nome do arquivo a ser salvo.     
-    `texto` - Texto a ser salvo.     
+       `nome_arquivo` - Nome do arquivo a ser salvo.     
+       `texto` - Texto a ser salvo.     
      '''
 
     arquivo = open(nome_arquivo, 'w')

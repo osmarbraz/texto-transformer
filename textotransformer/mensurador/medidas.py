@@ -18,11 +18,11 @@ def similaridadeCoseno(texto1, texto2):
     Similaridade do cosseno dos embeddgins dos textos.
     
     Parâmetros:
-    `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido. 
+       `texto1` - Um texto a ser medido.           
+       `texto2` - Um texto a ser medido. 
 
     Retorno:
-    A similaridade do cosseno entre os textos.                
+       A similaridade do cosseno entre os textos.                
     '''
     
     similaridade = 1 - cosine(texto1, texto2)
@@ -34,11 +34,11 @@ def PytorchSimilaridadeCoseno(a: torch.Tensor, b: torch.Tensor):
     Calcula a similaridade do cosseno cos_sim(a[i], b[j]) para todo i e j.
     
     Parâmetros:
-    `a` - Um tensor de forma (N, D)
-    `b` - Um tensor de forma (M, D)    
+       `a` - Um tensor de forma (N, D)
+       `b` - Um tensor de forma (M, D)    
     
     Retorno: 
-    Uma matriz com res[i][j] = cos_sim(a[i], b[j])
+       Uma matriz com res[i][j] = cos_sim(a[i], b[j])
     '''
     if not isinstance(a, torch.Tensor):
         a = torch.tensor(a)
@@ -63,11 +63,11 @@ def similaridadeCoseno(texto1, texto2):
     Similaridade do cosseno dos embeddgins dos textos.
     
     Parâmetros:
-    `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido.
+       `texto1` - Um texto a ser medido.           
+       `texto2` - Um texto a ser medido.
 
     Retorno:
-    A similaridade do cosseno entre os textos.
+       A similaridade do cosseno entre os textos.
     '''
     
     similaridade = 1 - cosine(texto1, texto2)
@@ -81,11 +81,11 @@ def distanciaEuclidiana(texto1, texto2):
     Possui outros nomes como distância L2 ou norma L2.
     
     Parâmetros:
-    `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido.
+       `texto1` - Um texto a ser medido.           
+       `texto2` - Um texto a ser medido.
 
     Retorno:
-    A distância euclidiana entre os textos.
+       A distância euclidiana entre os textos.
     '''
     
     distancia = euclidean(texto1, texto2)
@@ -99,11 +99,11 @@ def distanciaManhattan(texto1, texto2):
     Possui outros nomes como distância Cityblock, distância L1, norma L1 e métrica do táxi.
     
     Parâmetros:
-    `texto1` - Um texto a ser medido.           
-    `texto2` - Um texto a ser medido.
+       `texto1` - Um texto a ser medido.           
+       `texto2` - Um texto a ser medido.
 
     Retorno:
-    A distância Manhattan entre os textos.
+       A distância Manhattan entre os textos.
     '''
     
     distancia = cityblock(texto1, texto2)

@@ -20,7 +20,7 @@ class PLN():
     Realiza o processamento de linguagem natural.
      
     Parâmetros:
-    `modelo_args` - Parâmetros da classe PLN a ser carregado.    
+       `modelo_args` - Parâmetros da classe PLN a ser carregado.    
     ''' 
 
     # Construtor da classe
@@ -30,7 +30,7 @@ class PLN():
         self.modelo_args = modelo_args
         
         #Instala a ferramenta pln spaCy
-        InstaladorModelo(modelo_args=modelo_args)
+        InstaladorModelo(model_args=modelo_args)
         
         #Carrega o modelo do spacy
         self.carrega()
@@ -70,10 +70,10 @@ class PLN():
         Detalhes das tags em português: http://www.dbd.puc-rio.br/pergamum/tesesabertas/1412298_2016_completo.pdf
 
         Parâmetros:
-        `postagging` - Uma tag de uma palavra.
+           `postagging` - Uma tag de uma palavra.
 
         Retorno:
-        Uma string com a tradução da tag.        
+           Uma string com a tradução da tag.        
         '''
     
         #dicionário que contêm pos tag universal e suas explicações
@@ -110,7 +110,7 @@ class PLN():
         Recupera as stop words do model_pln(Spacy).
 
         Retorno:
-        Uma lista com as stopwords.                
+           Uma lista com as stopwords.                
         '''
         
         spacy_stopwords = self.model_pln.Defaults.stop_words
@@ -123,10 +123,10 @@ class PLN():
         Remove as stopwords de um texto.
         
         Parâmetros:
-        `texto` - Um texto com stopwords.
+           `texto` - Um texto com stopwords.
 
         Retorno:
-        Uma string com o texto sem as stopwords.
+           Uma string com o texto sem as stopwords.
         '''
 
         # Recupera as stopwords
@@ -147,11 +147,11 @@ class PLN():
         Retorna somente os palavras do texto ou sentença do tipo especificado.
         
         Parâmetros:
-        `texto` - Um texto com todas as palavras.        
-        `tipo_palavra_relevante` - Tipo de palavra relevante a ser selecionada.
+           `texto` - Um texto com todas as palavras.        
+           `tipo_palavra_relevante` - Tipo de palavra relevante a ser selecionada.
         
         Retorno:
-        `textoComRelevantesConcatenado` - Texto somente com as palavras relevantes.
+           `textoComRelevantesConcatenado` - Texto somente com as palavras relevantes.
         '''
       
         # Realiza o parsing no texto usando spacy
@@ -172,10 +172,10 @@ class PLN():
         Retorna uma lista com as sentenças de um texto. Utiliza o spacy para dividir o texto em sentenças.
         
         Parâmetros:
-        `texto` - Um texto a ser convertido em uma lista de sentenças.
+           `texto` - Um texto a ser convertido em uma lista de sentenças.
 
         Retorno:
-        `lista` - Lista com as sentenças do texto.
+           `lista` - Lista com as sentenças do texto.
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -200,11 +200,11 @@ class PLN():
         Retorna duas listas, uma com as sentenças de um texto e outra com a lista de lista de tokens de cada sentença.
         
         Parâmetros:
-        `texto` - Um texto a ser processado em uma lista de sentenças e tokens.           
+           `texto` - Um texto a ser processado em uma lista de sentenças e tokens.           
 
         Retorno:
-        `lista_sentencas` - Lista com as sentenças do texto.
-        `lista_tokens` - Lista com os tokens de cada sentença do texto.                 
+           `lista_sentencas` - Lista com as sentenças do texto.
+           `lista_tokens` - Lista com os tokens de cada sentença do texto.                 
         '''
 
         # Retorna uma lista com as sentenlas do texto        
@@ -227,10 +227,10 @@ class PLN():
         Retorna uma lista com os verbos de um texto.
 
         Parâmetros:
-        `texto` - Um texto a ser processado em uma lista de sentenças e tokens.
+           `texto` - Um texto a ser processado em uma lista de sentenças e tokens.
         
         Retorno:
-        `lista_verbos` - Lista com os verbos do texto.
+           `lista_verbos` - Lista com os verbos do texto.
         '''
         
         # (verbo normal como auxilar ou auxilar) + vários verbos auxiliares +verbo principal ou verbo auxiliar
@@ -293,10 +293,10 @@ class PLN():
         Retorna a quantidade de cada POS Tagging existentes em um texto.
         
         Parâmetros:
-        `texto` - Um texto a ser convertido em uma lista de sentenças.           
+           `texto` - Um texto a ser convertido em uma lista de sentenças.           
 
         Retorno:
-        Um dicionário com as POS-Tagging e suas quantidades.                 
+           Um dicionário com as POS-Tagging e suas quantidades.                 
         '''
         
         # Verifica se o texto não foi processado pelo spaCy  
@@ -324,10 +324,10 @@ class PLN():
         Retorna a quantidade de cada POS Tagging em um texto. Considera um conjunto fixo de POS-Tagging.
         
         Parâmetros:
-        `texto` - Um texto a ser convertido em uma lista de sentenças.           
+           `texto` - Um texto a ser convertido em uma lista de sentenças.           
 
         Retorno:
-        Um dicionário com as classes POS-Tagging e suas quantidades.                 
+           Um dicionário com as classes POS-Tagging e suas quantidades.                 
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -355,10 +355,10 @@ class PLN():
         Retorna a quantidade de cada POS Tagging de uma lista. Considera um conjunto fixo de POS-Tagging.
         
         Parâmetros:
-        `lista` - Uma lista com as POS-Tagging.
+           `lista` - Uma lista com as POS-Tagging.
 
         Retorno:
-        Um dicionário com as POS-Tagging e suas quantidades.
+           Um dicionário com as POS-Tagging e suas quantidades.
         '''
 
         # Dicionário com as tags e quantidades
@@ -379,10 +379,10 @@ class PLN():
         Retorna a lista de tokens do texto.
         
         Parâmetros:
-        `texto` - Um texto a ser recuperado os tokens.
+           `texto` - Um texto a ser recuperado os tokens.
 
         Retorno:
-        Uma lista com os tokens do texto.                 
+           Uma lista com os tokens do texto.                 
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -407,10 +407,10 @@ class PLN():
         Retorna a lista das POS-Tagging dos tokens do texto.
         
         Parâmetros:
-        `texto` - Um texto a ser recuperado as POS-Tagging.
+           `texto` - Um texto a ser recuperado as POS-Tagging.
                  
         Retorno:
-        Uma lista com as POS-Tagging dos tokens do texto.
+           Uma lista com as POS-Tagging dos tokens do texto.
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -435,10 +435,10 @@ class PLN():
         Retorna duas listas uma com os tokens e a outra com a POS-Tagging dos tokens do texto.
         
         Parâmetros:
-        `texto` - Um texto a ser recuperado as listas de tokens e POS-Tagging.
+           `texto` - Um texto a ser recuperado as listas de tokens e POS-Tagging.
 
         Retorno:
-        Duas listas com os tokens e a POS-Tagging do texto.                 
+           Duas listas com os tokens e a POS-Tagging do texto.                 
         '''
 
         # Verifica se o texto não foi processado pelo spaCy  
@@ -465,10 +465,10 @@ class PLN():
         Retorna uma lista com tokens de um texto excluindo as stopwords.
         
         Parâmetros:
-        `listaTokens` - Uma lista com os tokens de um texto.    
+           `listaTokens` - Uma lista com os tokens de um texto.    
 
         Retorno:
-        Uma lista com os tokens sem as stopwords.             
+           Uma lista com os tokens sem as stopwords.             
         '''
 
         # Recupera as stopwords do modelo

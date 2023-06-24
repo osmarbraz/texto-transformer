@@ -14,12 +14,12 @@ class InstaladorModelo:
     Realiza a instalação do modelo spaCy.
      
     Parâmetros:
-    `modelo_args` - Um objeto com os parâmetros do modelo.
+       `model_args` - Um objeto com os parâmetros do modelo.
     ''' 
     
-    def __init__(self, modelo_args: ModeloArgumentos):
+    def __init__(self, model_args: ModeloArgumentos):
         #Atualiza os parâmetros
-        self.modelo_args = modelo_args
+        self.model_args = model_args
         
         # Executa o processo de atualização e instalação do spaCy
         self.install_model_spacy()
@@ -31,7 +31,7 @@ class InstaladorModelo:
         '''
 
         return "Classe (\"{}\") de instalação do modelo \"{}\".".format(self.__class__.__name__,
-                                                                        self.modelo_args.modelo_spacy.__class__.__name__)
+                                                                        self.model_args.modelo_spacy.__class__.__name__)
 
     # ============================
     def install_model_spacy(self):
@@ -41,8 +41,8 @@ class InstaladorModelo:
 
         try:
             # Download do modelo de linguagem na linguagem solicitada
-            subprocess.run(["python", "-m", "spacy", "download", self.modelo_args.modelo_spacy])
-            logger.info("Download do modelo spaCy \"{}\" realizado!".format(self.modelo_args.modelo_spacy))
+            subprocess.run(["python", "-m", "spacy", "download", self.model_args.modelo_spacy])
+            logger.info("Download do modelo spaCy \"{}\" realizado!".format(self.model_args.modelo_spacy))
         except subprocess.CalledProcessError as e:
-            logger.info("Falha em instalar modelo spaCy \"{}\". Erro: {}.".format(self.modelo_args.modelo_spacy, e))
+            logger.info("Falha em instalar modelo spaCy \"{}\". Erro: {}.".format(self.model_args.modelo_spacy, e))
 

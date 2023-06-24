@@ -19,7 +19,6 @@ import os
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.util.utilconstantes import LISTATIPOCAMADA_NOME
-from textotransformer.util.utilconversao import getIntParaAbordagemExtracaoEmbeddingsCamadas
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +27,11 @@ class Transformer(nn.Module):
     Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     Carrega a classe correta, por exemplo BERT / RoBERTa etc.
 
-     `modelo_args' - Argumentos passados para o modelo Huggingface Transformers          
-     'cache_dir' - Cache dir para Huggingface Transformers para armazenar/carregar modelos
-     'tokenizer_args' - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
-     'tokenizer_name_or_path' - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado    
+    Parâmetros:
+       `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
+       `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
+       `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
+       `tokenizer_name_or_path` - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado    
     '''
 
     def __init__(self, 
@@ -99,9 +99,9 @@ class Transformer(nn.Module):
         Carrega o modelo transformer
 
         Parâmetros:
-        `model_name_or_path` - Nome ou caminho do modelo.
-        `config` - Configuração do modelo.
-        `cache_dir` - Diretório de cache.
+           `model_name_or_path` - Nome ou caminho do modelo.
+           `config` - Configuração do modelo.
+           `cache_dir` - Diretório de cache.
         '''
 
         # Carregamento T5
@@ -130,9 +130,9 @@ class Transformer(nn.Module):
         Carrega codificador do modelo¨T5
 
         Parâmetros:
-        `model_name_or_path` - Nome ou caminho do modelo.
-        `config` - Configuração do modelo.
-        `cache_dir` - Diretório de cache.
+           `model_name_or_path` - Nome ou caminho do modelo.
+           `config` - Configuração do modelo.
+           `cache_dir` - Diretório de cache.
         '''
 
         from transformers import T5EncoderModel
@@ -149,9 +149,9 @@ class Transformer(nn.Module):
         Carrega codificador do modelo MT5
 
         Parâmetros:
-        `model_name_or_path` - Nome ou caminho do modelo.
-        `config` - Configuração do modelo.
-        `cache_dir` - Diretório de cache.
+           `model_name_or_path` - Nome ou caminho do modelo.
+           `config` - Configuração do modelo.
+           `cache_dir` - Diretório de cache.
         '''
 
         from transformers import MT5EncoderModel
@@ -166,10 +166,10 @@ class Transformer(nn.Module):
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
         
         Parâmetros:
-        `texto` - Um texto a ser tokenizado.
+           `texto` - Um texto a ser tokenizado.
         
         Retorno:
-        `texto_tokenizado` - Texto tokenizado.
+           `texto_tokenizado` - Texto tokenizado.
         '''
 
         # Adiciona os tokens especiais.
@@ -190,13 +190,13 @@ class Transformer(nn.Module):
         Ou use attention_mask diferente de 1 para saber que posições devem ser utilizadas na lista.
 
         Parâmetros:
-        `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
+           `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
                           
-        Retorna um dicionário com:
-            tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
-            input_ids uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
-            token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
+        Retorna um dicionário com as seguintes chaves:
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+           `input_ids` - Uma lsta com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
+           `token_type_ids` - Uma lista com os tipos dos tokens.
+           `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         
         # Dicionário com a saída do tokenizador
@@ -240,7 +240,7 @@ class Transformer(nn.Module):
         # Verifica se existe algum texto maior que o limite de tokenização
         for tokens in saida['tokens_texto_mcl']:
             if len(tokens) >= 512:
-                logger.info("Utilizando embeddings do modelo de:\"{}\".".format(getIntParaAbordagemExtracaoEmbeddingsCamadas(self.modelo_args.abordagem_extracao_embeddings_camadas)[LISTATIPOCAMADA_NOME]))
+                logger.info("Utilizando embeddings do modelo de:\"{}\".".format(AbordagemExtracaoEmbeddingsCamadas.converteInt(self.modelo_args.abordagem_extracao_embeddings_camadas).getStr()))
   
         return saida
         
@@ -254,16 +254,16 @@ class Transformer(nn.Module):
         Retorna os embeddings de todas as camadas de um texto.
     
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+           `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
     
-        Retorna um dicionário com:            
-            token_embeddings uma lista com os embeddings da última camada
-            input_ids uma lista com os textos indexados.            
-            attention_mask uma lista com os as máscaras de atenção
-            token_type_ids uma lista com os tipos dos tokens.            
-            tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
-            texto_original uma lista com os textos originais.
-            all_layer_embeddings uma lista com os embeddings de todas as camadas.
+        Retorna um dicionário com as seguintes chaves:
+           `token_embeddings` - Uma lista com os embeddings da última camada.
+           `input_ids` - Uma lista com os textos indexados.            
+           `attention_mask` - Uma lista com os as máscaras de atenção
+           `token_type_ids` - Uma lista com os tipos dos tokens.            
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+           `texto_origina`l - Uma lista com os textos originais.
+           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
 
         # Se o texto não estiver tokenizado, tokeniza
@@ -325,10 +325,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da primeira camada do transformer.
 
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
         
         # Retorna toda a primeira(0) camada da saida da rede.
@@ -345,10 +345,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da penúltima camada do transformer.
         
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
         # Retorna todas a penúltima(-2) camada
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
@@ -364,10 +364,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da última camada do transformer.
         
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
         # Retorna todas a última(-1) camada
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
@@ -383,10 +383,10 @@ class Transformer(nn.Module):
         Retorna a soma dos embeddings extraído das 4 últimas camada do transformer.
      
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
         
         # Retorna todas as 4 últimas camadas
@@ -415,10 +415,10 @@ class Transformer(nn.Module):
         Retorna a concatenação dos embeddings das 4 últimas camadas do transformer.
              
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
         
         # Cria uma lista com os tensores a serem concatenados
@@ -446,10 +446,10 @@ class Transformer(nn.Module):
         Retorna a soma dos embeddings extraído de todas as camadas do transformer.
                    
         Parâmtros:
-        `saida_rede` - Um dicionário com a saída da rede.
+           `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-        Uma lista com os embeddings.
+           Uma lista com os embeddings.
         '''
       
         # Retorna todas as camadas descontando a primeira(0)
@@ -479,15 +479,18 @@ class Transformer(nn.Module):
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-        `texto` - Texto a ser recuperado os embeddings.
-        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+           `texto` - Texto a ser recuperado os embeddings.
+           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
 
         Retorno:
-        Os embeddings da camada para o texto.
+           Os embeddings da camada para o texto.
         '''
-        
-        # Converte o inteiro para um objeto da classe AbordagemExtracaoEmbeddingsCamadas
-        abordagem_extracao_embeddings_camadas = getIntParaAbordagemExtracaoEmbeddingsCamadas(abordagem_extracao_embeddings_camadas)
+                
+        # Verifica o tipo de dado do parâmetro 'abordagem_extracao_embeddings_camadas'
+        if isinstance(abordagem_extracao_embeddings_camadas, int):
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe AbordagemExtracaoEmbeddingsCamadas
+            abordagem_extracao_embeddings_camadas = AbordagemExtracaoEmbeddingsCamadas.converteInt(abordagem_extracao_embeddings_camadas)
         
         # Recupera todos os embeddings da rede('all_layer_embeddings')
         saida_rede = self.getSaidaRede(texto)
@@ -541,10 +544,10 @@ class Transformer(nn.Module):
         Retorna o deslocamento do token no texto para considerar mais tokens do BERT em relação ao spaCy.
 
         Parâmetros:
-        `token` - Um token a ser verificado se é uma exceção.
+           `token` - Um token a ser verificado se é uma exceção.
 
         Retorno:
-        O deslocamento do token no texto para considerar mais tokens do BERT em relação ao spaCy.
+           O deslocamento do token no texto para considerar mais tokens do BERT em relação ao spaCy.
         '''
     
         valor = self._dic_excecao_maior.get(token)
@@ -563,10 +566,10 @@ class Transformer(nn.Module):
         Retorna o deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
 
         Parâmetros:
-        `token` - Um token a ser verificado se é uma exceção.
+           `token` - Um token a ser verificado se é uma exceção.
 
         Retorno:
-        O deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
+           O deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
         '''  
         
         valor = self._dic_excecao_menor.get(token)
@@ -576,10 +579,10 @@ class Transformer(nn.Module):
             return -1
 
     def getTokensEmbeddingsPOSTexto(self, 
-                                   embeddings_texto, 
-                                   tokens_texto_mcl,                                       
-                                   tokens_texto_concatenado,
-                                   pln):
+                                    embeddings_texto, 
+                                    tokens_texto_mcl,                                       
+                                    tokens_texto_concatenado,
+                                    pln):
         '''
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
         Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -588,25 +591,25 @@ class Transformer(nn.Module):
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
-        `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
-        `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
-        `tokens_texto_concatenado` - Os tokens do texto concatenado gerados pelo método getEmbeddingsTexto
-        `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
+           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
+           `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
+           `tokens_texto_concatenado` - Os tokens do texto concatenado gerados pelo método getEmbeddingsTexto
+           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
     
-        Retorna um dicionário com 5 lista:            
-            lista_tokens  uma lista com os tokens do texto gerados pelo método.
-            texto_pos_pln uma lista com as postagging dos tokens gerados pela ferramenta de pln.
-            lista_tokens_oov_mcl uma lista com os tokens OOV do mcl.
-            lista_embeddings_MEAN uma lista com os embeddings com a estratégia MEAN.
-            lista_embeddings_MAX uma lista com os embeddings com a estratégia MAX.
+        Retorna um dicionário com as seguintes chaves:          
+           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
+           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de pln.
+           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
+           `palavra_embeddings_MEAN` - Uma lista com os embeddings com a estratégia MEAN.
+           `palavra_embeddings_MAX` - Uma lista com os embeddings com a estratégia MAX.
         '''
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
         lista_tokens_oov_mcl = []
-        lista_embeddings_MEAN = []
-        lista_embeddings_MAX = []
+        lista_palavra_embeddings_MEAN = []
+        lista_palavra_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
         lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(tokens_texto_concatenado)
@@ -665,16 +668,16 @@ class Transformer(nn.Module):
                         # calcular a média dos embeddings dos tokens do MCL da palavra
                         embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
                         #print("embedding_estrategia_MEAN:",embedding_estrategia_MEAN.shape)
-                        lista_embeddings_MEAN.append(embedding_estrategia_MEAN)
+                        lista_palavra_embeddings_MEAN.append(embedding_estrategia_MEAN)
 
                         # calcular o máximo dos embeddings dos tokens do MCL da palavra
                         embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
                         #print("embedding_estrategia_MAX:",embedding_estrategia_MAX.shape)
-                        lista_embeddings_MAX.append(embedding_estrategia_MAX)
+                        lista_palavra_embeddings_MAX.append(embedding_estrategia_MAX)
                     else:
                         # Adiciona o embedding do token a lista de embeddings
-                        lista_embeddings_MEAN.append(embeddings_texto[pos_wj])            
-                        lista_embeddings_MAX.append(embeddings_texto[pos_wj])
+                        lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])            
+                        lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
              
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
@@ -691,8 +694,8 @@ class Transformer(nn.Module):
                         # Verifica se tem mais de um token
                         if pos2 == 1: 
                             # Adiciona o embedding do token a lista de embeddings
-                            lista_embeddings_MEAN.append(embeddings_texto[pos_wj])
-                            lista_embeddings_MAX.append(embeddings_texto[pos_wj])
+                            lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])
+                            lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
               
                         # Avança para a próxima palavra e token do MCL
                         pos_wi = pos_wi + 2
@@ -709,8 +712,8 @@ class Transformer(nn.Module):
                     # Marca como dentro do vocabulário do MCL
                     lista_tokens_oov_mcl.append(0)
                     # Adiciona o embedding do token a lista de embeddings
-                    lista_embeddings_MEAN.append(embeddings_texto[pos_wj])
-                    lista_embeddings_MAX.append(embeddings_texto[pos_wj])
+                    lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])
+                    lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
                     #print("embedding1[pos_wj]:", embedding_texto[pos_wj].shape)
                     # Avança para a próxima palavra e token do MCL
                     pos_wi = pos_wi + 1
@@ -750,13 +753,13 @@ class Transformer(nn.Module):
                         embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)        
                         #print("embedding_estrategia_MEAN:",embedding_estrategia_MEAN)
                         #print("embedding_estrategia_MEAN.shape:",embedding_estrategia_MEAN.shape)      
-                        lista_embeddings_MEAN.append(embedding_estrategia_MEAN)
+                        lista_palavra_embeddings_MEAN.append(embedding_estrategia_MEAN)
                  
                         # calcular o valor máximo dos embeddings dos tokens do MCL da palavra
                         embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
                         #print("embedding_estrategia_MAX:",embedding_estrategia_MAX)
                         #print("embedding_estrategia_MAX.shape:",embedding_estrategia_MAX.shape)     
-                        lista_embeddings_MAX.append(embedding_estrategia_MAX)
+                        lista_palavra_embeddings_MAX.append(embedding_estrategia_MAX)
 
                     # Avança para o próximo token do spaCy
                     pos_wi = pos_wi + 1
@@ -765,17 +768,17 @@ class Transformer(nn.Module):
         
         # Verificação se as listas estão com o mesmo tamanho
         #if (len(lista_tokens) != len(texto_token)) or (len(lista_embeddings_MEAN) != len(texto_token)):
-        if (len(lista_tokens) !=  len(lista_embeddings_MEAN)):
+        if (len(lista_tokens) !=  len(lista_palavra_embeddings_MEAN)):
             logger.info("texto                      :{}.".format(tokens_texto_concatenado))            
             logger.info("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
             logger.info("lista_pos_texto_pln        :{}.".format(lista_pos_texto_pln))
             logger.info("texto_tokenizado_mcl       :{}.".format(tokens_texto_mcl))
             logger.info("lista_tokens               :{}.".format(lista_tokens))
             logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logger.info("lista_embeddings_MEAN      :{}.".format(lista_embeddings_MEAN))
-            logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_embeddings_MEAN)))
-            logger.info("lista_embeddings_MAX       :{}.".format(lista_embeddings_MAX))
-            logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_embeddings_MAX)))
+            logger.info("lista_embeddings_MEAN      :{}.".format(lista_palavra_embeddings_MEAN))
+            logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_palavra_embeddings_MEAN)))
+            logger.info("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
+            logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
        
         del embeddings_texto
         del tokens_texto_mcl
@@ -786,8 +789,8 @@ class Transformer(nn.Module):
         saida.update({'tokens_texto' : lista_tokens,
                       'pos_texto_pln' : lista_pos_texto_pln,
                       'tokens_oov_texto_mcl' : lista_tokens_oov_mcl,
-                      'embeddings_MEAN' : lista_embeddings_MEAN,
-                      'embeddings_MAX' : lista_embeddings_MAX})
+                      'palavra_embeddings_MEAN' : lista_palavra_embeddings_MEAN,
+                      'palavra_embeddings_MAX' : lista_palavra_embeddings_MAX})
 
         #return lista_tokens, lista_pos_texto_pln, lista_tokens_OOV_mcl, lista_embeddings_MEAN, lista_embeddings_MAX
         return saida
@@ -806,7 +809,7 @@ class Transformer(nn.Module):
         Salva o modelo.
 
         Parâmetros:
-        `output_path` - caminho para salvar o modelo
+           `output_path` - caminho para salvar o modelo
         '''
 
         self.auto_model.save_pretrained(output_path)
@@ -837,14 +840,15 @@ class Transformer(nn.Module):
         Envia lote pytorch batch para um dispositivo (CPU/GPU)
 
         Parâmetros:
-         `lote` - lote pytorch
-         `target_device` - dispositivo de destino (CPU/GPU)
+           `lote` - lote pytorch
+           `target_device` - dispositivo de destino (CPU/GPU)
         
         Retorno:
-         lote enviado para o dispositivo        
+           lote enviado para o dispositivo        
         '''
 
         for key in lote:
             if isinstance(lote[key], Tensor):
                 lote[key] = lote[key].to(target_device)
+                
         return lote

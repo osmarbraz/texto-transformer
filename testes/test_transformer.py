@@ -58,7 +58,17 @@ class TestTransformer(unittest.TestCase):
 
         saida = self.modelo.tokenize(texto)
           
-        self.assertEqual(len(saida), 5) # Dicionário possui 5 chaves
+         # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 5) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -78,7 +88,17 @@ class TestTransformer(unittest.TestCase):
 
         saida = self.modelo.tokenize(texto)
         
-        self.assertEqual(len(saida), 5) # Dicionário possui 5 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 5) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -103,7 +123,19 @@ class TestTransformer(unittest.TestCase):
         
         saida = self.modelo.getSaidaRede(texto)
         
-        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 7) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -128,7 +160,19 @@ class TestTransformer(unittest.TestCase):
         
         saida = self.modelo.getSaidaRede(texto)
         
-        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 7) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -163,7 +207,21 @@ class TestTransformer(unittest.TestCase):
         # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
         saida = self.modelo.getSaidaRedeCamada(texto, 2)
         
-        self.assertEqual(len(saida), 9) # Dicionário possui 9 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 9) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        self.assertTrue("embedding_extraido" in saida)
+        self.assertTrue("abordagem_extracao_embeddings_camadas" in saida)
+                
+        # Testa a saida das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)

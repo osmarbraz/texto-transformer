@@ -5,7 +5,7 @@ import logging
 # Biblioteca de testes unitários
 import unittest
 
-from textotransformer.util.utiltexto import getTextoLista, limpezaTexto, removeTags
+from textotransformer.util.utiltexto import getTextoLista, limpezaTexto, removeTags, tamanhoTexto
 
 # Bibliotecas próprias
 logger = logging.getLogger(__name__)
@@ -43,7 +43,28 @@ class TestUtilTexto(unittest.TestCase):
         saida = removeTags(texto)
         saidaEsperada = "texto"
                 
-        self.assertEqual(saida, saidaEsperada)        
+        self.assertEqual(saida, saidaEsperada)
+        
+    # Testes tamanhoTexto
+    def test_tamanhoTexto(self):
+        logger.info("Testando o tamanhoTexto")
+        
+        texto1 = ""
+        texto2 = "manga"
+        texto3 = []
+        texto4 = [["manga","banana"]]
+        texto5 = [["manga","banana"],["uva","laranja"]]
+        texto6 = {'lista1' :[["manga","banana"]]}        
+        texto7 = [{'lista1' :[["manga","banana"]], 
+                   'lista2' : [["uva","laranja"]]}]
+               
+        self.assertEqual(tamanhoTexto(texto1), 0)
+        self.assertEqual(tamanhoTexto(texto2), 5)
+        self.assertEqual(tamanhoTexto(texto3), 0)
+        self.assertEqual(tamanhoTexto(texto4), 2)
+        self.assertEqual(tamanhoTexto(texto5), 4)
+        self.assertEqual(tamanhoTexto(texto6), 1)
+        self.assertEqual(tamanhoTexto(texto7), 2)
 
 if "__main__" == __name__:
     logger = logging.getLogger()

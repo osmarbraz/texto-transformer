@@ -15,11 +15,10 @@ from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
-from textotransformer.modelo.modeloenum import EstrategiasPooling
+from textotransformer.modelo.modeloenum import EstrategiasPooling, GranularidadeTexto
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
-from textotransformer.util.utilconversao import getAbordagemExtracaoEmbeddingsCamadasStr, getIntParaEstrategiasPooling, getIntParaPalavraRelevante
-from textotransformer.util.utiltexto import encontrarIndiceSubLista
+from textotransformer.util.utiltexto import encontrarIndiceSubLista, tamanhoTexto
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +42,10 @@ class TextoTransformer:
     Manipula embeddings de tokens, palavras, sentenças e textos.
      
     Parâmetros:
-    `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
-    `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.                       
-    `abordagem_extracao_embeddings_camadas` - Especifica a abordagem para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
-    `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
+       `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
+       `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.                       
+       `abordagem_extracao_embeddings_camadas` - Especifica a abordagem para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
+       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
     ''' 
     
     # Construtor da classe
@@ -71,7 +70,7 @@ class TextoTransformer:
         self.tokenizer = self.transformer.getTokenizer()
         
         # Especifica a abordagem para a extração dos embeddings das camadas do transformer.         
-        logger.info("Utilizando abordagem para extração dos embeddings das camadas do transfomer \"{}\" camada(s).".format(getAbordagemExtracaoEmbeddingsCamadasStr(model_args.abordagem_extracao_embeddings_camadas)))
+        logger.info("Utilizando abordagem para extração dos embeddings das camadas do transfomer \"{}\" camada(s).".format(AbordagemExtracaoEmbeddingsCamadas.converteInt(model_args.abordagem_extracao_embeddings_camadas).getStr()))
                     
         # Especifica camadas para recuperar os embeddings
         model_args.abordagem_extracao_embeddings_camadas = abordagem_extracao_embeddings_camadas
@@ -121,11 +120,14 @@ class TextoTransformer:
         Define a estratégia de pooling para os parâmetros do modelo.
 
         Parâmetros:
-        `estrategia_pooling` - Um número de 0 a 1 com a estratégia de pooling das camadas do modelo contextualizado. Valor defaul '0'. Valores possíveis: 0 - MEAN estratégia média / 1 - MAX  estratégia maior.
+           `estrategia_pooling` - Um número de 0 a 1 com a estratégia de pooling das camadas do modelo contextualizado. Valor defaul '0'. Valores possíveis: 0 - MEAN estratégia média / 1 - MAX  estratégia maior.
         ''' 
-        
-        # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
-        estrategia_pooling = getIntParaEstrategiasPooling(estrategia_pooling)
+
+        # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
+        if isinstance(estrategia_pooling, int):
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+            estrategia_pooling = EstrategiasPooling.converteInt(estrategia_pooling)
         
         # Atribui para os parâmetros do modelo
         if estrategia_pooling == EstrategiasPooling.MEAN:
@@ -142,12 +144,15 @@ class TextoTransformer:
         Define a estratégia de palavra relavante para os parâmetros do modelo.
         
         Parâmetros:        
-        `palavra_relevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
+           `palavra_relevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
         ''' 
         
-        # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
-        palavra_relevante = getIntParaPalavraRelevante(palavra_relevante)
-                
+        # Verifica o tipo de dado do parâmetro 'palavra_relevante'
+        if isinstance(palavra_relevante, int):
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe PalavraRelevante
+            palavra_relevante = PalavraRelevante.converteInt(palavra_relevante)
+
         # Atribui para os parâmetros do modelo
         if palavra_relevante == PalavraRelevante.ALL:
             model_args.palavra_relevante = PalavraRelevante.ALL.value            
@@ -163,19 +168,19 @@ class TextoTransformer:
     # ============================
     def getMedidasTexto(self, texto: str, 
                         estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                        palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
+                        palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
         Parâmetros:
-        `texto` - Um texto a ser medido.           
-        `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
-        `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `texto` - Um texto a ser medido.           
+           `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
+           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
         
         Retorno um dicionário com:
-        `cos` - Medida de cos do do texto.
-        `euc` - Medida de euc do do texto.
-        `man` - Medida de man do do texto.
+           `cos` - Medida de cos do do texto.
+           `euc` - Medida de euc do do texto.
+           `man` - Medida de man do do texto.
         ''' 
 
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -188,18 +193,18 @@ class TextoTransformer:
     
     # ============================
     def getMedidasTextoCosseno(self, texto: str, 
-                               estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                               palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
+                               estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
+                               palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de similaridade de cosseno.
         
         Parâmetros:
-        `texto` - Um texto a ser medido a coerência.           
-        `estrategia_pooling` - Estratégia de pooling das camadas do BERT. 
-        `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `texto` - Um texto a ser medido a coerência.           
+           `estrategia_pooling` - Estratégia de pooling das camadas do transformer. 
+           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
         
         Retorno:
-        `cos` - Medida de cos do do texto.            
+           `cos` - Medida de cos do do texto.            
         '''         
 
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -212,18 +217,18 @@ class TextoTransformer:
     
     # ============================
     def getMedidasTextoEuclediana(self, texto: str, 
-                                  estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                                  palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
+                                  estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
+                                  palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Euclidiana.
                  
         Parâmetros:
-        `texto` - Um texto a ser mensurado.           
-        `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
-        `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `texto` - Um texto a ser mensurado.           
+           `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
+           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
         
         Retorno:
-        `ceu` - Medida euc do texto.            
+           `ceu` - Medida euc do texto.            
         ''' 
         
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -236,18 +241,18 @@ class TextoTransformer:
        
     # ============================
     def getMedidasTextoManhattan(self, texto: str, 
-                                 estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                                 palavra_relevante: PalavraRelevante = PalavraRelevante.ALL):
+                                 estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
+                                 palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Manhattan.
                  
         Parâmetros:
-        `texto` - Um texto a ser mensurado.           
-        `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
-        `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `texto` - Um texto a ser mensurado.           
+           `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
+           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
         
         Retorno:
-        `man` - Medida  Cman do do texto.            
+           `man` - Medida  Cman do do texto.            
         ''' 
         
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -269,16 +274,55 @@ class TextoTransformer:
         Facilita acesso a classe Transformer.    
 
         Parâmetros:
-        `texto` - Texto a ser tokenizado para o modelo de linguagem.
+           `texto` - Texto a ser tokenizado para o modelo de linguagem.
          
-        Retorna um dicionário com:
-            tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
-            input_ids uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
-            token_type_ids uma lista com os tipos dos tokens.
-            attention_mask uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
+        Retorna um dicionário com as seguintes chaves:
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+           `input_ids` - Uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
+           `token_type_ids` - Uma lista com os tipos dos tokens.
+           `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         return self.getTransformer().tokenize(texto)
+        
+    # ============================
+    def getSaidaRede(self, texto: Union[str, dict]):
+        '''
+        De um texto preparado(tokenizado) ou não, retorna token_embeddings, input_ids, attention_mask, token_type_ids, 
+        tokens_texto, texto_original  e all_layer_embeddings em um dicionário.
+        
+        Facilita acesso ao método "getSaidaRede" da classe Transformer.
     
+        Parâmetros:
+           `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+    
+        Retorna um dicionário com as seguintes chaves:
+           `token_embeddings` - Uma lista com os embeddings da última camada.
+           `input_ids` - Uma lista com os textos indexados.            
+           `attention_mask` - Uma lista com os as máscaras de atenção
+           `token_type_ids` - Uma lista com os tipos dos tokens.            
+           `tokens_texto` - Uma lista com os textos tokenizados com os tokens especiais.
+           `texto_original` - Uma lista com os textos originais.
+           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+        '''
+        
+        return self.getTransformer().getSaidaRede(texto)
+
+    # ============================
+    def getSaidaRedeCamada(self, texto: Union[str, dict], 
+                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
+        '''
+        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
+        
+        Parâmetros:
+           `texto` - Texto a ser recuperado os embeddings.
+           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+
+        Retorno:
+           Os embeddings da camada para o texto.
+        '''    
+
+        return self.getTransformer().getSaidaRedeCamada(texto, abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+
     # ============================
     def getCodificacaoCompleta(self, texto: Union[str, List[str]],
                                tamanho_lote: int = 32, 
@@ -287,27 +331,29 @@ class TextoTransformer:
                                device: str = None):
 
         '''
-        Retorna um dicionário com as informações completas da codificação do texto utilizando o modelo de linguagem.
+        Retorna a codificação completa do texto utilizando o modelo de linguagem.
     
         Parâmetros:
-         `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
-         `tamanho_lote` - o tamanho do lote usado para o computação
-         `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-         `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-         `device` - Qual torch.device usar para o computação.
+           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para a computação.
     
-        Retorno um dicionário com:            
-            token_embeddings uma lista com os embeddings da última camada
-            input_ids uma lista com os textos indexados.            
-            attention_mask uma lista com os as máscaras de atenção
-            token_type_ids uma lista com os tipos dos tokens.            
-            tokens_texto_mcl uma lista com os textos tokenizados com os tokens especiais.
-            texto_original uma lista com os textos originais.
-            all_layer_embeddings uma lista com os embeddings de todas as camadas.
+        Retorna um dicionário com as seguintes chaves:
+           `token_embeddings` - Uma lista com os embeddings da última camada.
+           `input_ids` - Uma lista com os textos indexados.            
+           `attention_mask` - Uma lista com os as máscaras de atenção
+           `token_type_ids` - Uma lista com os tipos dos tokens.            
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+           `texto_original` - Uma lista com os textos originais.
+           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
-        #Coloca o modelo e modo avaliação
+        
+        # Coloca o modelo em modo avaliação
         self.model.eval()
 
+        # Verifica se a entrada é uma string ou uma lista de strings
         entrada_eh_string = False
         if isinstance(texto, str) or not hasattr(texto, '__len__'): 
             #Colocar uma texto individual em uma lista com comprimento 1
@@ -333,6 +379,11 @@ class TextoTransformer:
                       }
                      )
 
+        # Ordena o texto pelo comprimento decrescente
+        indice_tamanho_ordenado = np.argsort([-tamanhoTexto(sen) for sen in texto])        
+        # Ordena o texto pelo comprimento decrescente
+        textos_ordenados = [texto[idx] for idx in indice_tamanho_ordenado]
+        
         # Percorre os lotes
         for start_index in trange(0, 
                                   len(texto), 
@@ -341,7 +392,7 @@ class TextoTransformer:
                                   disable=not mostra_barra_progresso):
             
             # Recupera um lote
-            lote_textos = texto[start_index:start_index+tamanho_lote]
+            lote_textos = textos_ordenados[start_index:start_index+tamanho_lote]
 
             # Tokeniza o lote usando o modelo
             lote_textos_tokenizados = self.getTransformer().tokenize(lote_textos)
@@ -385,8 +436,18 @@ class TextoTransformer:
                     saida['texto_original'].append(texto_original)
                     saida['all_layer_embeddings'].append(all_layer_embeddings[0:ultimo_mask_id+1])
         
+        # Reorganiza as listas
+        saida['token_embeddings'] = [saida['token_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['input_ids'] = [saida['input_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['attention_mask'] = [saida['attention_mask'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['token_type_ids'] = [saida['token_type_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['tokens_texto_mcl'] = [saida['tokens_texto_mcl'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['texto_original'] = [saida['texto_original'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        saida['all_layer_embeddings'] = [saida['all_layer_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+                
         if convert_to_numpy:
           saida['token_embeddings'] = np.array([emb.numpy() for emb in saida['token_embeddings']],dtype=object)
+          saida['all_layer_embeddings'] = np.array([emb.numpy() for emb in saida['all_layer_embeddings']],dtype=object)
 
         # Se é uma string remove a lista de lista
         if entrada_eh_string:
@@ -402,158 +463,93 @@ class TextoTransformer:
 
     # ============================
     def getCodificacao(self, texto: Union[str, List[str]],
+                       granularidade_texto: Union[int, GranularidadeTexto] = GranularidadeTexto.TOKEN,
                        tamanho_lote: int = 32,
                        mostra_barra_progresso: bool = False,
                        convert_to_numpy: bool = False,
                        device: str = None):
-
+       
         '''
-        Retorna os embeddings da codificação de um texto utilizando o modelo de linguagem.
-    
-        Parâmetros:
-         `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
-         `tamanho_lote` - o tamanho do lote usado para o computação
-         `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-         `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-         `device` - Qual torch.device usar para o computação.
-    
-        Retorno:
-         Uma lista de tensores é com os embeddings do texto. Se convert_to_numpy, uma matriz numpy é retornada.
-        '''
-        #Coloca o modelo e modo avaliação
-        self.model.eval()
-
-        entrada_eh_string = False
-        if isinstance(texto, str) or not hasattr(texto, '__len__'): 
-            #Colocar uma texto individual em uma lista com comprimento 1
-            texto = [texto]
-            entrada_eh_string = True
-
-        # Se não foi especificado um dispositivo, use-o defaul
-        if device is None:
-            device = self._target_device
-
-        # Adiciona um dispositivo ao modelo
-        self.model.to(device)
-
-        # Lista com embeddings de saída
-        all_embeddings = []
-
-        # Ordena o texto pelo comprimento decrescente
-        indice_tamanho_ordenado = np.argsort([-self._tamanho_texto(sen) for sen in texto])        
-        # Ordena o texto pelo comprimento decrescente
-        textos_ordenados = [texto[idx] for idx in indice_tamanho_ordenado]
-        
-        # Percorre os lotes
-        for start_index in trange(0, 
-                                  len(texto), 
-                                  tamanho_lote, 
-                                  desc="Lotes", 
-                                  disable=not mostra_barra_progresso):
-            # Recupera um lote
-            lote_textos = textos_ordenados[start_index:start_index+tamanho_lote]
-
-            # Tokeniza o lote
-            lote_textos_tokenizados = self.getTransformer().tokenize(lote_textos)
-            # Adiciona ao device gpu ou cpu
-            lote_textos_tokenizados = self.getTransformer().batchToDevice(lote_textos_tokenizados, device)
+        Retorna a codificação do texto utilizando o modelo de linguagem de acordo com o tipo codificação do texto.
             
-            # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
-            with torch.no_grad():
-
-                # Recupera a saída da rede
-                output_rede = self.getTransformer().getSaidaRede(lote_textos_tokenizados)
-
-                embeddings = []
-                # Percorre todas as saídas(textos) do lote
-                for token_emb, attention in zip(output_rede['token_embeddings'], output_rede['attention_mask']):                    
-                    ultimo_mask_id = len(attention)-1
-                    
-                    # Localiza o último token de "attention_mask" igual a 1
-                    while ultimo_mask_id > 0 and attention[ultimo_mask_id].item() == 0:                        
-                      ultimo_mask_id -= 1                        
-                    
-                    # Adiciona os embeddings do primeiro(0) até o último token que "attention_mask" seja 1                        
-                    embeddings.append(token_emb[0:ultimo_mask_id+1])
-                                   
-                # Concatena a nova lista a lista já existente
-                all_embeddings.extend(embeddings)
+        Parâmetros:
+           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem
+           `tipo_codificação_texto` - O tipo de codificação do texto. Pode ser: texto, sentenca, palavra e token.         
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para a computação.
+    
+        Retorna um dicionário com as seguintes chaves:
+           `token_embeddings` - Uma lista com os embeddings da última camada.
+           `input_ids` - Uma lista com os textos indexados.            
+           `attention_mask` - Uma lista com os as máscaras de atenção
+           `token_type_ids` - Uma lista com os tipos dos tokens.            
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+           `texto_original` - Uma lista com os textos originais.
+           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+        '''
         
-        # Reorganiza a lista
-        all_embeddings = [all_embeddings[idx] for idx in np.argsort(indice_tamanho_ordenado)]
-
-        if convert_to_numpy:
-          all_embeddings = np.array([emb.numpy() for emb in all_embeddings],dtype=object)
-
-        # Se é uma string remove a lista de lista
-        if entrada_eh_string:
-          all_embeddings = all_embeddings[0]
-
-        return all_embeddings
+        # Verifica o tipo de dado do parâmetro 'granularidade_texto'
+        if isinstance(granularidade_texto, int):
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe GranularidadeTexto
+            granularidade_texto = GranularidadeTexto.converteInt(granularidade_texto)
+        
+        # Verifica qual granularidade de texto foi passada como parâmetro para a função e chama a função correspondente de codificação.        
+        if granularidade_texto == GranularidadeTexto.TOKEN:
+            return self.getCodificacaoToken(texto, 
+                                            tamanho_lote=tamanho_lote, 
+                                            mostra_barra_progresso=mostra_barra_progresso, 
+                                            convert_to_numpy=convert_to_numpy, device=device)
+            
+        else:
+            if granularidade_texto == GranularidadeTexto.PALAVRA:
+                return self.getCodificacaoPalavra(texto,
+                                                  tamanho_lote=tamanho_lote,
+                                                  mostra_barra_progresso=mostra_barra_progresso, 
+                                                  convert_to_numpy=convert_to_numpy, device=device)
+            
+            else:
+                if granularidade_texto == GranularidadeTexto.SENTENCA:
+                    return self.getCodificacaoSentenca(texto, 
+                                                       tamanho_lote=tamanho_lote, 
+                                                       mostra_barra_progresso=mostra_barra_progresso, 
+                                                       convert_to_numpy=convert_to_numpy, device=device)                
+                else:
+                    if granularidade_texto == GranularidadeTexto.TEXTO:
+                        return self.getCodificacaoTexto(texto,
+                                                        tamanho_lote=tamanho_lote, 
+                                                        mostra_barra_progresso=mostra_barra_progresso, 
+                                                        convert_to_numpy=convert_to_numpy, device=device)
+                    
+                    else:
+                        logger.info("Granularidade de texto inválida.")
+                        return None
 
     # ============================
-    def getSaidaRede(self, texto: Union[str, dict]):
-        '''
-        De um texto preparado(tokenizado) ou não, retorna token_embeddings, input_ids, attention_mask, token_type_ids, 
-        tokens_texto, texto_original  e all_layer_embeddings em um dicionário.
-        
-        Facilita acesso ao método "getSaidaRede" da classe Transformer.
-    
-        Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
-    
-        Retorna um dicionário com:            
-            token_embeddings uma lista com os embeddings da última camada
-            input_ids uma lista com os textos indexados.            
-            attention_mask uma lista com os as máscaras de atenção
-            token_type_ids uma lista com os tipos dos tokens.            
-            tokens_texto uma lista com os textos tokenizados com os tokens especiais.
-            texto_original uma lista com os textos originais.
-            all_layer_embeddings uma lista com os embeddings de todas as camadas.
-        '''
-        
-        return self.getTransformer().getSaidaRede(texto)
-
-    # ============================
-    def getSaidaRedeCamada(self, texto: Union[str, dict], 
-                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
-        '''
-        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
-        
-        Parâmetros:
-        `texto` - Texto a ser recuperado os embeddings.
-        `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
-
-        Retorno:
-        Os embeddings da camada para o texto.
-        '''    
-
-        return self.getTransformer().getSaidaRedeCamada(texto, abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
-
-   # ============================
     def getEmbeddingTexto(self, texto: Union[str, List[str]], 
                           estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
         '''
-        Recebe um texto (string ou uma lista de strings) e retorna os embeddings consolidados dos tokens do texto utilizando estratégia pooling especificada(MEAN, MAX).
+        De um texto (string ou uma lista de strings) retorna os embeddings do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX.         
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-        `texto` - Um texto é uma string ou uma lista de strings.
-        `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+           `texto` - Um texto é uma string ou uma lista de strings.
+           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
     
         Retorno: 
-        Os embeddings consolidados do texto se o parâmetro texto é uma string, caso contrário uma lista com os embeddings consolidados se o parâmetro é lista de string.
+           Os embeddings consolidados do texto se o parâmetro texto é uma string, caso contrário uma lista com os embeddings consolidados se o parâmetro é lista de string.
         '''
 
-        # Verifica o tipo da estratégia de pooling
+        # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
         if isinstance(estrategia_pooling, int):
-          if estrategia_pooling == 0:
-            estrategia_pooling = EstrategiasPooling.MEAN
-          else:
-            if estrategia_pooling == 1:
-              estrategia_pooling = EstrategiasPooling.MAX
-            else:
-              estrategia_pooling = None
-              logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+            estrategia_pooling = EstrategiasPooling.converteInt(estrategia_pooling)
+
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
@@ -571,14 +567,24 @@ class TextoTransformer:
                             mostra_barra_progresso: bool = False,                     
                             convert_to_numpy: bool = False,         
                             device: str = None):
-        '''        
-        De um texto preparado(tokenizado) ou não, retorna a codificação dos textos consolidados dos tokens do textos utilizando estratégia pooling MEAN e MAX.
+        '''                
+        De um texto (string ou uma lista de strings) retorna a codificação do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX.         
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
     
-        Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+        Parâmetros:         
+           `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para a computação.
     
-        Retorno:
-        Uma lista com os embeddings consolidados dos textos utilizando embeddings da última camada do transformer.
+        Retorna um dicionário com as seguintes chaves:
+           `texto_original` - Uma lista com os textos originais.
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.        
+           `texto_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens do texto.
+           `texto_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens do texto.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -598,9 +604,8 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [],            # Lista com os textos originais
                       'tokens_texto_mcl' : [],          # Lista com os tokens dos textos originais
-                      'texto_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens que da sentença.
-                      'texto_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens que da sentença.
-                      #'all_layer_embeddings': []
+                      'texto_embeddings_MEAN': [],      # Lista de lista da média dos embeddings dos tokens do texto
+                      'texto_embeddings_MAX': [],       # Lista de lista do máximo dos embeddings dos tokens do texto.
                      }
         )
 
@@ -619,47 +624,45 @@ class TextoTransformer:
             # Calcula a média dos embeddings dos tokens das sentenças do texto
             embedding_documento_maximo, linha = torch.max(embeddings_texto, dim=0)
             
-            #Acumula a saída do método 
-            #Se é uma string uma lista com comprimento 1
-            if entrada_eh_string:
-                saida['texto_original'] = texto_embeddings['texto_original'][i]
-                saida['tokens_texto_mcl'] =  tokens_texto_mcl
-                saida['texto_embeddings_MEAN'] = embedding_documento_media
-                saida['texto_embeddings_MAX'] = embedding_documento_maximo
-            else:
-                saida['texto_original'].append(texto_embeddings['texto_original'][i])
-                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
-                saida['texto_embeddings_MEAN'].append(embedding_documento_media)
-                saida['texto_embeddings_MAX'].append(embedding_documento_maximo)
+            # Acumula a saída do método 
+            saida['texto_original'].append(texto_embeddings['texto_original'][i])
+            saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+            saida['texto_embeddings_MEAN'].append(embedding_documento_media)
+            saida['texto_embeddings_MAX'].append(embedding_documento_maximo)
+
+        #Se é uma string uma lista com comprimento 1
+        if entrada_eh_string:
+            saida['texto_original'] = saida['texto_original'][0]
+            saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
+            saida['texto_embeddings_MEAN'] = saida['texto_embeddings_MEAN'][0]
+            saida['texto_embeddings_MAX'] = saida['texto_embeddings_MAX'][0]
 
         return saida
     
     # ============================
     def getEmbeddingSentenca(self, texto: Union[str, List[str]], 
                              estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
-        '''
-        Recebe um texto (string ou uma lista de strings) e retorna os embeddings consolidados dos tokens das sentenças do texto utilizando estratégia pooling especificada(MEAN, MAX).          
+        '''        
+        De um texto (string ou uma lista de strings) retorna os embeddings das sentenças do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX. 
         O texto ou a lista de textos é sentenciado utilizando a ferramenta de PLN. 
-        Os embeddings dos tokens gerados pelo modelo de linguagem serão consolidados em sentenças geradas pela sentenciação da ferramenta de pln.
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-        `texto` - Um texto é uma string ou uma lista de strings.
-        `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+           `texto` - Um texto é uma string ou uma lista de strings.
+           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
     
         Retorno: 
-        Uma lista com os embeddings consolidados das sentenças se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das sentenças se o parâmetro é lista de string.
+           Uma lista com os embeddings consolidados das sentenças se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das sentenças se o parâmetro é lista de string.        
         '''
 
-        # Verifica o tipo da estratégia de pooling
+        # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
         if isinstance(estrategia_pooling, int):
-          if estrategia_pooling == 0:
-            estrategia_pooling = EstrategiasPooling.MEAN
-          else:
-            if estrategia_pooling == 1:
-              estrategia_pooling = EstrategiasPooling.MAX
-            else:
-              estrategia_pooling = None
-              logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+            estrategia_pooling = EstrategiasPooling.converteInt(estrategia_pooling)
+
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
@@ -678,13 +681,25 @@ class TextoTransformer:
                                convert_to_numpy: bool = False,         
                                device: str = None):      
         '''        
-        De um texto preparado(tokenizado) ou não, retorna a codificação das sentenças consolidados dos tokens do textos utilizando estratégia pooling MEAN e MAX.
+        De um texto (string ou uma lista de strings) retorna a codificação das sentenças do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX. 
+        O texto ou a lista de textos é sentenciado utilizando a ferramenta de PLN. 
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
     
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+           `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para a computação.
     
-        Retorno:
-        Uma lista com os embeddings consolidados das sentenças utilizando embeddings da última camada do transformer.
+        Retorna um dicionário com as seguintes chaves:
+           `texto_original` - Uma lista com os textos originais.        
+           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.                
+           `sentencas_texto` - Uma lista com as sentenças do texto.
+           `sentenca_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens da sentença.
+           `sentenca_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens da sentença.        
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -704,9 +719,9 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [],               # Lista com os textos originais
                       'tokens_texto_mcl' : [],             # Lista com os tokens dos textos originais
-                      'sentencas_texto' : [],              # Lista com as sentenças do texto
-                      'sentenca_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens que da sentença.
-                      'sentenca_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens que da sentença.
+                      'sentencas_texto' : [],               # Lista com as sentenças do texto
+                      'sentenca_embeddings_MEAN': [],      # Lista de lista média dos embeddings dos tokens da sentença.
+                      'sentenca_embeddings_MAX': [],       # Lista de lista máximo dos embeddings dos tokens da sentença.
                      }
         )
 
@@ -774,34 +789,33 @@ class TextoTransformer:
     def getEmbeddingPalavra(self, texto: Union[str, List[str]], 
                              estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
         '''
-        Recebe um texto (string ou uma lista de strings) e retorna os embeddings consolidados dos tokens das palavras do texto utilizando estratégia pooling especificada(MEAN, MAX).          
-        O texto ou a lista de textos será tokenizado utilizando a ferramenta de PLN. 
-        Os embeddings dos tokens gerados pelo modelo de linguagem serão consolidados em palavras geradas pela tokenização da ferramenta de pln.
+        De um texto (string ou uma lista de strings) retorna os embeddings das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
+        As palavras são tokenizadas utilizando a ferramenta de PLN. 
+        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
+            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
+            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-        `texto` - Um texto é uma string ou uma lista de strings.
-        `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+           `texto` - Um texto é uma string ou uma lista de strings.
+           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
     
-        Retorno: Uma lista com os embeddings consolidados das palavras se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das palavras se o parâmetro é lista de string.
+        Retorno: 
+           Uma lista com os embeddings consolidados das palavras se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das palavras se o parâmetro é lista de string.
         '''
 
-        # Verifica o tipo da estratégia de pooling
+        # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
         if isinstance(estrategia_pooling, int):
-          if estrategia_pooling == 0:
-            estrategia_pooling = EstrategiasPooling.MEAN
-          else:
-            if estrategia_pooling == 1:
-              estrategia_pooling = EstrategiasPooling.MAX
-            else:
-              estrategia_pooling = None
-              logger.info("Não foi especificado um valor inteiro para a estratégia de pooling.") 
+            
+            # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
+            estrategia_pooling = EstrategiasPooling.converteInt(estrategia_pooling)
+
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
-            return self.getCodificacaoPalavra(texto)['embeddings_MEAN']
+            return self.getCodificacaoPalavra(texto)['palavra_embeddings_MEAN']
         else:
             if estrategia_pooling == EstrategiasPooling.MAX:
-                return self.getCodificacaoPalavra(texto)['embeddings_MAX']
+                return self.getCodificacaoPalavra(texto)['palavra_embeddings_MAX']
             else:              
                 logger.info("Não foi especificado uma estratégia de pooling válida.") 
                 return None
@@ -813,24 +827,29 @@ class TextoTransformer:
                               convert_to_numpy: bool = False,
                               device: str = None):      
         
-        '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
-        Retorna um dicionário 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
+        '''                
+        De um texto (string ou uma lista de strings) retorna a codificação das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
+        As palavras são tokenizadas utilizando a ferramenta de PLN. 
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
             - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+           `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para o computação.
     
-        Retorna um dicionário com:    
-            tokens_texto uma lista com os tokens(palavras) realizados pelo método.
-            tokens_texto_mcl uma lista com os tokens e tokens especiais realizados pelo mcl.
-            tokens_oov_texto_mcl uma lista com os tokens OOV(com ##) do mcl.
-            tokens_texto_pln uma lista com os tokens realizados pela ferramenta de pln(spaCy).
-            pos_texto_pln uma lista com as postagging dos tokens realizados pela ferramenta de pln(spaCy).            
-            embeddings_MEAN uma lista com os embeddings com a estratégia MEAN.
-            embeddings_MAX uma lista com os embeddings com a estratégia MAX.
+        Retorna um dicionário com as seguintes chaves:
+           `texto_original` - Uma lista com os textos originais.  
+           `tokens_texto` - Uma lista com os tokens(palavras) realizados pelo método.
+           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
+           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV(com ##) do mcl.
+           `tokens_texto_pln` - Uma lista com os tokens realizados pela ferramenta de pln(spaCy).
+           `pos_texto_pln` - Uma lista com as postagging dos tokens realizados pela ferramenta de pln(spaCy).            
+           `palavra_embeddings_MEAN` - Uma lista com os embeddings das palavras com a estratégia MEAN.
+           `palavra_embeddings_MAX` - Uma lista com os embeddings das palavras com a estratégia MAX.
         '''
         
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -854,8 +873,8 @@ class TextoTransformer:
                       'tokens_oov_texto_mcl': [],                      
                       'tokens_texto_pln' : [],
                       'pos_texto_pln': [],
-                      'embeddings_MEAN': [],        
-                      'embeddings_MAX': []
+                      'palavra_embeddings_MEAN': [],        
+                      'palavra_embeddings_MAX': []
                      }
         )
 
@@ -887,10 +906,10 @@ class TextoTransformer:
             saida['tokens_oov_texto_mcl'].append(saidaEmbeddingPalavra['tokens_oov_texto_mcl'])            
             saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
             saida['pos_texto_pln'].append(saidaEmbeddingPalavra['pos_texto_pln'])            
-            saida['embeddings_MEAN'].append(saidaEmbeddingPalavra['embeddings_MEAN'])
-            saida['embeddings_MAX'].append(saidaEmbeddingPalavra['embeddings_MAX'])
+            saida['palavra_embeddings_MEAN'].append(saidaEmbeddingPalavra['palavra_embeddings_MEAN'])
+            saida['palavra_embeddings_MAX'].append(saidaEmbeddingPalavra['palavra_embeddings_MAX'])
         
-         # Se é uma string uma lista com comprimento 1
+        # Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
             saida['texto_original'] = saida['texto_original'][0]
             saida['tokens_texto'] = saida['tokens_texto'][0]
@@ -898,8 +917,8 @@ class TextoTransformer:
             saida['tokens_oov_texto_mcl'] = saida['tokens_oov_texto_mcl'][0]
             saida['tokens_texto_pln'] = saida['tokens_texto_pln'][0]
             saida['pos_texto_pln'] = saida['pos_texto_pln'][0]
-            saida['embeddings_MEAN'] = saida['embeddings_MEAN'][0]
-            saida['embeddings_MAX'] = saida['embeddings_MAX'][0]
+            saida['palavra_embeddings_MEAN'] = saida['palavra_embeddings_MEAN'][0]
+            saida['palavra_embeddings_MAX'] = saida['palavra_embeddings_MAX'][0]
 
         return saida
     
@@ -909,9 +928,10 @@ class TextoTransformer:
         Recebe um texto (string ou uma lista de strings) e retorna os embeddings dos tokens gerados pelo tokenizador modelo de linguagem.                  
                     
         Parâmetros:
-        `texto` - Um texto é uma string ou uma lista de strings.
+           `texto` - Um texto é uma string ou uma lista de strings.
     
-        Retorno: Uma lista com os embeddings dos tokens se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings dos tokens se o parâmetro é lista de string.
+        Retorno: 
+           Uma lista com os embeddings dos tokens se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings dos tokens se o parâmetro é lista de string.
         '''
 
         return self.getCodificacaoToken(texto)['token_embeddings']
@@ -923,12 +943,19 @@ class TextoTransformer:
                             convert_to_numpy: bool = False,         
                             device: str = None):
         '''        
-        De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto utilizando estratégia pooling MEAN.
-    
+        De um texto (string ou uma lista de strings) retorna a codificação dos tokens do texto utilizando o modelo de linguagem.
+                
         Parâmetros:
-        `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+           `texto` - Um texto a ser recuperado os embeddings dos tokens utilizando o modelo de linguagem
+           `tamanho_lote` - o tamanho do lote usado para o computação
+           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+           `convert_to_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `device` - Qual torch.device usar para o computação.
     
-        Retorna uma lista com os embeddings da última camada.
+        Retorna um dicionário com as seguintes chaves:
+           `texto_original` - Uma lista com os textos originais.  
+           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
+           `token_embeddings` - Uma lista com os embeddings dos tokens.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -948,8 +975,7 @@ class TextoTransformer:
         saida = {}
         saida.update({'texto_original' : [],
                       'tokens_texto_mcl' : [],                      
-                      'token_embeddings': [],        
-                      #'all_layer_embeddings': []
+                      'token_embeddings': []
                      }
         )
 
@@ -959,49 +985,21 @@ class TextoTransformer:
             # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
             lista_token_embeddings = texto_embeddings['token_embeddings'][i][1:-1]
 
-            # Recupera os embeddings do texto  
-            #lista_all_layer_embeddings = texto_embeddings['all_layer_embeddings'][i][1:-1]
-            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
 
-            # Acumula a saída do método 
-            #Se é uma string uma lista com comprimento 1
-            if entrada_eh_string:
-                saida['texto_original'] = texto_embeddings['texto_original'][i]
-                saida['tokens_texto_mcl'] = tokens_texto_mcl
-                saida['token_embeddings'] = lista_token_embeddings
-            else:
-                saida['texto_original'].append(texto_embeddings['texto_original'][i])
-                saida['tokens_texto_mcl'].append(tokens_texto_mcl)
-                saida['token_embeddings'].append(lista_token_embeddings)
+            # Acumula a saída do método             
+            saida['texto_original'].append(texto_embeddings['texto_original'][i])
+            saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+            saida['token_embeddings'].append(lista_token_embeddings)
+
+        #Se é uma string uma lista com comprimento 1
+        if entrada_eh_string:
+            saida['texto_original'] = saida['texto_original'][0]
+            saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
+            saida['token_embeddings'] = saida['token_embeddings'][0]
 
         return saida
-
-    # ============================    
-    def _tamanho_texto(self, texto: Union[List[int], List[List[int]]]):
-        '''                
-        Função de ajuda para obter o comprimento do texto de entrada. O texto pode ser 
-        uma lista de ints (o que significa um único texto como entrada) ou uma tupla de 
-        lista de ints (representando várias entradas de texto para o modelo).
-
-        Parâmetros:
-        `texto` - Um texto a ser recuperado o tamanho.
-
-        Retorno:
-          Um inteiro com tamanho do texto.
-        '''
-
-        if isinstance(texto, dict):              # caso seja um dic de listas
-            return len(next(iter(texto.values())))
-        else:
-            if not hasattr(texto, '__len__'):      # Objeto não tem o len()
-                return 1
-            else:
-                if len(texto) == 0 or isinstance(texto[0], int):  #String vazia ou lista de ints
-                    return len(texto)
-                else:
-                    return sum([len(t) for t in texto])      ##Soma do comprimento de strings individuais
     
     # ============================
     def getModel(self):

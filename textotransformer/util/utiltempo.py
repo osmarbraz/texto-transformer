@@ -16,10 +16,10 @@ def formataTempo(tempo):
     Pega a tempo em segundos e retorna uma string hh:mm:ss
 
     Parâmetros:
-    'tempo' - Tempo em segundos.
+       `tempo` - Tempo em segundos.
 
     Retorno:
-    Uma string no formato hh:mm:ss
+       Uma string no formato hh:mm:ss
     '''
         
     # Arredonda para o segundo mais próximo.
@@ -34,10 +34,10 @@ def mediaAngulo(deg):
     Calcula a média de uma lista de ângulos em graus.
 
     Parâmetros:
-    'deg' - Uma lista de ângulos em graus.
+       `deg` - Uma lista de ângulos em graus.
 
     Retorno:
-    Um ângulo em graus.
+       Um ângulo em graus.
     '''
     
     return degrees(phase(sum(rect(1, radians(d)) for d in deg) / len(deg)))
@@ -48,10 +48,10 @@ def mediaTempo(tempos):
     Calcula a média de uma lista de tempo string no formato hh:mm:ss
 
     Parâmetros:
-    'tempos' - Uma lista de tempo string no formato hh:mm:ss
+       `tempos` - Uma lista de tempo string no formato hh:mm:ss
 
     Retorno:
-    Uma string no formato hh:mm:ss
+       Uma string no formato hh:mm:ss
     '''
     
     t = (tempo.split(':') for tempo in tempos)
@@ -79,10 +79,10 @@ def somaTempo(tempos):
     Calcula a soma de uma lista de tempo string no formato hh:mm:ss
 
     Parâmetros:
-    'tempos' - Uma lista de tempo string no formato hh:mm:ss
+       `tempos` - Uma lista de tempo string no formato hh:mm:ss
 
     Retorno:
-    Uma string no formato hh:mm:ss
+       Uma string no formato hh:mm:ss
     '''
     
     t = (tempo.split(':') for tempo in tempos)

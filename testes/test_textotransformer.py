@@ -24,16 +24,6 @@ class TestTextTransformer(unittest.TestCase):
         logger.info("Testando o construtor de TextoTransformer")
                 
         self.assertIsNotNone(self.modelo)
-
-    # Testes getCodificacao string
-    def test_getCodificacao_string(self):
-        logger.info("Testando o getCodificacao com string")
-                
-        texto = "Adoro sorvete de manga."
-
-        saida = self.modelo.getCodificacao(texto)
-        
-        self.assertEqual(len(saida), 10) # Dicionário possui 10 chaves
     
     # Testes getSaidaRede 
     def test_getSaidaRede(self):
@@ -43,7 +33,8 @@ class TestTextTransformer(unittest.TestCase):
         
         saida = self.modelo.getSaidaRede(texto)
         
-        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 7) 
         
     # Testes getSaidaRedeCamada
     def test_getSaidaRedeCamada(self):
@@ -53,20 +44,9 @@ class TestTextTransformer(unittest.TestCase):
         
         saida = self.modelo.getSaidaRedeCamada(texto, 2) # Camada 2 - Ultima camada dos transformers
         
-        self.assertEqual(len(saida), 9) # Dicionário possui 9 chaves    
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 9)
     
-    # Testes getCodificacao lista de string    
-    def test_getCodificacao_list_string(self):
-        print("Testando o getCodificacao com lista de strings")
-                
-        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
-
-        saida = self.modelo.getCodificacao(texto)
-                
-        self.assertEqual(len(saida), 2) # Dicionário possui 2 chaves
-        self.assertEqual(len(saida[0]), 10)
-        self.assertEqual(len(saida[1]), 11)
-        
     # Testes getCodificacaoCompleta string
     def test_getCodificacaoCompleta_string(self):
         logger.info("Testando o getCodificacaoCompleta com string")
@@ -75,7 +55,19 @@ class TestTextTransformer(unittest.TestCase):
 
         saida = self.modelo.getCodificacaoCompleta(texto)
         
-        self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 7)
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['token_embeddings']), 10)
         self.assertEqual(len(saida['input_ids']), 10)
         self.assertEqual(len(saida['attention_mask']), 10)
@@ -93,6 +85,38 @@ class TestTextTransformer(unittest.TestCase):
         
         self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves   
     
+    # Testes getCodificacao
+    def test_getCodificacao_string(self):
+        logger.info("Testando o getCodificacao(texto)")
+        
+        texto = "Adoro sorvete de manga."
+        
+        saida = self.modelo.getCodificacao(texto)
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 3) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("texto_original" in saida)
+    
+    # Testes getCodificacaoGranularidade0
+    def test_getCodificacao_granularidade_0(self):
+        logger.info("Testando o getCodificacao(texto,granularidade_texto=0)")
+        
+        texto = "Adoro sorvete de manga."
+        
+        saida = self.modelo.getCodificacao(texto,granularidade_texto=0)
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 3) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("texto_original" in saida)
+             
     # Testes getCodificacaoToken string
     def test_getCodificacaoToken_string(self):
         logger.info("Testando o getCodificacaoToken com strings")
@@ -101,7 +125,15 @@ class TestTextTransformer(unittest.TestCase):
         
         saida = self.modelo.getCodificacaoToken(texto)
         
-        self.assertEqual(len(saida), 3) # Dicionário possui 3 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 3) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['tokens_texto_mcl']), 8)
         self.assertEqual(len(saida['token_embeddings']), 8)
         self.assertEqual(saida['texto_original'], texto)
@@ -114,7 +146,15 @@ class TestTextTransformer(unittest.TestCase):
         
         saida = self.modelo.getCodificacaoToken(texto)
         
-        self.assertEqual(len(saida), 3) # Dicionário possui 3 chaves
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 3)
+                
+         # Testa o nome das chaves
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida das chaves
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         self.assertEqual(len(saida['tokens_texto_mcl'][0]), 8)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 9)
@@ -127,7 +167,30 @@ class TestTextTransformer(unittest.TestCase):
     
     # Testes getMedidasTexto
     def test_getMedidasTexto(self):
-        print("Rodando getMedidasTexto")
+        logger.info("Testando o getMedidasTexto(texto)")
+        
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+
+        # Recupera as medida do texto
+        saida = self.modelo.getMedidasTexto(texto)
+        
+        CcosEsperado = 0.7125453352928162                
+        CeucEsperado = 5.883016586303711
+        CmanEsperado = 125.89885711669922
+                       
+        # Testa o nome das chaves
+        self.assertTrue("cos" in saida)
+        self.assertTrue("euc" in saida)
+        self.assertTrue("man" in saida)
+                       
+        # Compara somente 5 casas decimais
+        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
+        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
+        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+        
+    # Testes getMedidasTextoPalavraRelevante_0
+    def test_getMedidasTexto_PalavraRelevante_0(self):
+        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0)")
         
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
@@ -138,11 +201,62 @@ class TestTextTransformer(unittest.TestCase):
         CeucEsperado = 5.883016586303711
         CmanEsperado = 125.89885711669922
                        
+        # Testa o nome das chaves
+        self.assertTrue("cos" in saida)
+        self.assertTrue("euc" in saida)
+        self.assertTrue("man" in saida)
+                       
         # Compara somente 5 casas decimais
         self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
         self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
         self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
-               
+        
+    # Testes getMedidasTextoPalavraRelevante_1
+    def test_getMedidasTexto_PalavraRelevante_1(self):
+        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1)")
+        
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+
+        # Recupera as medida do texto
+        saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
+        
+        CcosEsperado = 0.726082324981689              
+        CeucEsperado = 5.497143745422363
+        CmanEsperado = 117.38613891601562
+                                              
+        # Testa o nome das chaves
+        self.assertTrue("cos" in saida)
+        self.assertTrue("euc" in saida)
+        self.assertTrue("man" in saida)
+                       
+        # Compara somente 5 casas decimais
+        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
+        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
+        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+
+    # Testes getMedidasTextoPalavraRelevante_2
+    def test_getMedidasTexto_PalavraRelevante_2(self):
+        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2)")
+        
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+
+        # Recupera as medida do texto
+        saida = self.modelo.getMedidasTexto(texto, palavra_relevante=2)
+        
+        CcosEsperado = 0.0                
+        CeucEsperado = 0.0
+        CmanEsperado = 0.0
+                       
+        # Testa o nome das chaves
+        self.assertTrue("cos" in saida)
+        self.assertTrue("euc" in saida)
+        self.assertTrue("man" in saida)
+                       
+        # Compara somente 5 casas decimais
+        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
+        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
+        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))    
+                       
 if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
