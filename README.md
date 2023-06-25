@@ -4,7 +4,7 @@ Este framework realiza o processamento de textos utilizando modelos de linguagem
 
 ## Instalação
 
-Recomendamos **Python 3.6**, **[Transformers 4.26.1](https://huggingface.co/transformers)**, **[PyTorch 2.0.1](https://pytorch.org)**, **[spaCy 3.5.2](https://spacy.io)**, **[SciPy 1.10.1](https://scipy.org)**, **[NumPy 1.22.4](https://numpy.org)** e **[scikit-learn 1.2.2](https://scikit-learn.org/)**. 
+Recomendamos **Python 3.6**, **[Transformers 4.26.1](https://huggingface.co/transformers)**, **[PyTorch 2.0.1](https://pytorch.org)**, **[spaCy 3.5.2](https://spacy.io)**, **[SciPy 1.10.1](https://scipy.org)** e **[NumPy 1.22.4](https://numpy.org)**. 
 
 **Instalação com pip**
 

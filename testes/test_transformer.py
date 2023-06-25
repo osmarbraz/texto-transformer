@@ -42,8 +42,11 @@ class TestTransformer(unittest.TestCase):
     #Testes getTextoTokenizado string
     def test_getTextoTokenizado(self):
         logger.info("Testando o getTextoTokenizado com string")
+        
+        # Valores de entrada
         texto = "Adoro sorvete de manga."
 
+        # Valores de saída
         saida = self.modelo.getTextoTokenizado(texto)
         
         saidaEsperada = ['[CLS]', 'Ado', '##ro', 'sor', '##vete', 'de', 'mang', '##a', '.', '[SEP]']
@@ -53,9 +56,11 @@ class TestTransformer(unittest.TestCase):
     #Testes tokenize string
     def test_tokenize_string(self):
         logger.info("Testando o tokenize com string")
-                
+        
+        # Valores de entrada        
         texto = "Adoro sorvete de manga."
 
+        # Valores de saída
         saida = self.modelo.tokenize(texto)
           
          # Testa o tamanho do dicionário
@@ -83,9 +88,11 @@ class TestTransformer(unittest.TestCase):
     # Testes tokenize Lista de Strings
     def test_tokenize_list_string(self):
         logger.info("Testando o tokenize com lista de strings")
-                
+        
+        # Valores de entrada        
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
+        # Valores de saída
         saida = self.modelo.tokenize(texto)
         
         # Testa o tamanho do dicionário
@@ -118,9 +125,11 @@ class TestTransformer(unittest.TestCase):
     # Testes getSaidaRede String
     def test_getSaidaRede_string(self):
         logger.info("Testando o getSaidaRede com string")
-                
+         
+        # Valores de entrada        
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getSaidaRede(texto)
         
         # Testa o tamanho do dicionário
@@ -155,9 +164,11 @@ class TestTransformer(unittest.TestCase):
     # Testes getSaidaRede Lista de Strings
     def test_getSaidaRede_list_string(self):
         logger.info("Testando o getSaidaRede com lista de strings")
-                
+         
+        # Valores de entrada       
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
+        # Valores de saída
         saida = self.modelo.getSaidaRede(texto)
         
         # Testa o tamanho do dicionário
@@ -200,9 +211,11 @@ class TestTransformer(unittest.TestCase):
     # Testes getSaidaRedeCamada String
     def test_getSaidaRedeCamada_string(self):
         logger.info("Testando o getSaidaRedeCamada com strings")
-                
+        
+        # Valores de entrada        
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
+        # Valores de saída
         # Abordagem extração de embeddings das camadas
         # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
         saida = self.modelo.getSaidaRedeCamada(texto, 2)

@@ -5,9 +5,9 @@ import logging
 # Biblioteca de testes unitários
 import unittest
 
+# Bibliotecas próprias
 from textotransformer.util.utiltexto import getTextoLista, limpezaTexto, removeTags, tamanhoTexto
 
-# Bibliotecas próprias
 logger = logging.getLogger(__name__)
 
 class TestUtilTexto(unittest.TestCase):

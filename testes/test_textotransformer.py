@@ -28,9 +28,11 @@ class TestTextTransformer(unittest.TestCase):
     # Testes getSaidaRede 
     def test_getSaidaRede(self):
         logger.info("Testando o getSaidaRede")
-                
+        
+        # Valores de entrada                
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getSaidaRede(texto)
         
         # Testa o tamanho do dicionário
@@ -39,9 +41,11 @@ class TestTextTransformer(unittest.TestCase):
     # Testes getSaidaRedeCamada
     def test_getSaidaRedeCamada(self):
         logger.info("Testando o getSaidaRedeCamada")
-                
+         
+        # Valores de entrada       
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getSaidaRedeCamada(texto, 2) # Camada 2 - Ultima camada dos transformers
         
         # Testa o tamanho do dicionário
@@ -50,7 +54,8 @@ class TestTextTransformer(unittest.TestCase):
     # Testes getCodificacaoCompleta string
     def test_getCodificacaoCompleta_string(self):
         logger.info("Testando o getCodificacaoCompleta com string")
-                
+        
+        # Valores de entrada        
         texto = "Adoro sorvete de manga."
 
         saida = self.modelo.getCodificacaoCompleta(texto)
@@ -78,9 +83,11 @@ class TestTextTransformer(unittest.TestCase):
     # Testes getCodificacaoCompleta lista de string
     def test_getCodificacaoCompleta_list_string(self):
         logger.info("Testando o getCodificacaoCompleta com lista de strings")
-                
+        
+        # Valores de entrada        
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
+        # Valores de saída
         saida = self.modelo.getCodificacaoCompleta(texto)
         
         self.assertEqual(len(saida), 7) # Dicionário possui 7 chaves   
@@ -89,8 +96,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getCodificacao_string(self):
         logger.info("Testando o getCodificacao(texto)")
         
+        # Valores de entrada
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getCodificacao(texto)
         
         # Testa o tamanho do dicionário
@@ -105,8 +114,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getCodificacao_granularidade_0(self):
         logger.info("Testando o getCodificacao(texto,granularidade_texto=0)")
         
+        # Valores de entrada
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getCodificacao(texto,granularidade_texto=0)
         
         # Testa o tamanho do dicionário
@@ -121,8 +132,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getCodificacaoToken_string(self):
         logger.info("Testando o getCodificacaoToken com strings")
         
+        # Valores de entrada
         texto = "Adoro sorvete de manga."
         
+        # Valores de saída
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Testa o tamanho do dicionário
@@ -142,8 +155,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getCodificacaoToken_lista_string(self):
         logger.info("Testando o getCodificacaoToken lista com strings")
         
+        # Valores de entrada
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
+        # Valores de saída
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Testa o tamanho do dicionário
@@ -169,9 +184,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getMedidasTexto(self):
         logger.info("Testando o getMedidasTexto(texto)")
         
+        # Valores de entrada
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
-        # Recupera as medida do texto
+        # Valores de saída
         saida = self.modelo.getMedidasTexto(texto)
         
         CcosEsperado = 0.7125453352928162                
@@ -192,9 +208,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getMedidasTexto_PalavraRelevante_0(self):
         logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0)")
         
+        # Valores de entrada
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
-        # Recupera as medida do texto
+        # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         CcosEsperado = 0.7125453352928162                
@@ -215,9 +232,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getMedidasTexto_PalavraRelevante_1(self):
         logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1)")
         
+        # Valores de entrada
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
-        # Recupera as medida do texto
+        # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         CcosEsperado = 0.726082324981689              
@@ -238,9 +256,10 @@ class TestTextTransformer(unittest.TestCase):
     def test_getMedidasTexto_PalavraRelevante_2(self):
         logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2)")
         
+        # Valores de entrada
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
-        # Recupera as medida do texto
+        # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=2)
         
         CcosEsperado = 0.0                
