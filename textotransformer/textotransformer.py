@@ -442,8 +442,8 @@ class TextoTransformer:
         
         # Converte para numpy
         if converte_para_numpy:
-            saida['token_embeddings'] = np.array([emb.numpy() for emb in saida['token_embeddings']],dtype=object)            
-            saida['all_layer_embeddings'] = np.array([emb for emb in [sentenca for sentenca in [camada for camada in saida['all_layer_embeddings']]]],dtype=object)            
+            saida['token_embeddings'] = [np.array(emb.numpy(), dtype=object) for emb in saida['token_embeddings']]
+            saida['all_layer_embeddings'] = [[np.array([emb.numpy() for emb in camada], dtype=object) for camada in sentenca] for sentenca in saida['all_layer_embeddings']]
             # Caso contrário deixa como lista de tensores.
 
         # Se é uma string remove a lista de lista

@@ -85,15 +85,13 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][0]), 10) # tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
-        # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))        
+        # Testa o tipo das saida dos valores das chaves                
         self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
         self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'],list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0],torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0],torch.Tensor))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))
                 
     # Testes getCodificacaoCompleta lista de string
     def test_getCodificacaoCompleta_list_string(self):
@@ -139,13 +137,16 @@ class TestTextTransformer(unittest.TestCase):
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['token_embeddings'], list))
         self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][1], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'][0][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'][1][0], torch.Tensor))
         
         self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][0], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0][0], torch.Tensor))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][1], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0][0], torch.Tensor))
             
     # Testes getCodificacao
     def test_getCodificacao_string(self):

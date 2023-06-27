@@ -56,11 +56,9 @@ class TestTextTransformerNumpy(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['token_embeddings'], numpy.ndarray))
-        self.assertTrue(isinstance(saida['token_embeddings'][0],  numpy.ndarray))        
-        self.assertTrue(isinstance(saida['token_embeddings'],  numpy.ndarray))
-        self.assertTrue(isinstance(saida['token_embeddings'][0],  numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][0], numpy.ndarray))        
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'],numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][0], numpy.ndarray))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], numpy.ndarray))
                 
@@ -104,18 +102,21 @@ class TestTextTransformerNumpy(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][0][0][0]), 768) # embeddings
         self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) # 11 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
-                
-        # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], numpy.ndarray))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], numpy.ndarray))
-        self.assertTrue(isinstance(saida['token_embeddings'][1], numpy.ndarray))
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], numpy.ndarray))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], numpy.ndarray))
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertTrue(isinstance(saida['token_embeddings'], list))
+        self.assertTrue(isinstance(saida['token_embeddings'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][0][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][1][0], numpy.ndarray))
+        
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], numpy.ndarray))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][1], list))
         self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0], numpy.ndarray))
-    
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0][0], numpy.ndarray))
+            
     # Testes getCodificacao
     def test_getCodificacao_string(self):
         logger.info("Testando o getCodificacao(texto)")
