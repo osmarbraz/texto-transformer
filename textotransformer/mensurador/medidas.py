@@ -13,7 +13,7 @@ from scipy.spatial.distance import cityblock
 logger = logging.getLogger(__name__)
 
 # ============================  
-def similaridadeCoseno(a: torch.Tensor, b: torch.Tensor):
+def similaridadeCosseno(a: torch.Tensor, b: torch.Tensor):
    '''
    Calcula a similaridade do cosseno de dois vetores(embeddgins de 1 dimensão).
     
@@ -35,7 +35,7 @@ def similaridadeCoseno(a: torch.Tensor, b: torch.Tensor):
     
    return similaridade
 
-def similaridadeCosenoMatriz(a: torch.Tensor, b: torch.Tensor):
+def similaridadeCossenoMatriz(a: torch.Tensor, b: torch.Tensor):
    '''
    Calcula a similaridade do cosseno entre duas matrizes com cos_sim(a[i], b[j]) para todo i e j.
     

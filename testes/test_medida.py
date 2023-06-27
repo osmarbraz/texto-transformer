@@ -8,7 +8,7 @@ import unittest
 import numpy
 
 # Bibliotecas próprias
-from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno, similaridadeCosenoMatriz
+from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno, similaridadeCossenoMatriz
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class TestMedida(unittest.TestCase):
         b = [1.0, 2.0, 3.0, 3.0]
                     
         # Valores de saída                        
-        saida = similaridadeCosenoMatriz(a, b)
+        saida = similaridadeCossenoMatriz(a, b)
                 
         # Saída esperada
         saidaEsperada = 0.9898030757904053
@@ -39,7 +39,7 @@ class TestMedida(unittest.TestCase):
         b = [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0, 5.0, 6.0]]
                     
         # Valores de saída                        
-        saida = similaridadeCosenoMatriz(a, b)
+        saida = similaridadeCossenoMatriz(a, b)
         
         # Arredonda para 5 casas decimais
         saida = numpy.round(saida, decimals=5)
@@ -64,7 +64,7 @@ class TestMedida(unittest.TestCase):
         b = [1, 2, 3, 3]
 
         # Valores de saída
-        saida = similaridadeCoseno(a, b)
+        saida = similaridadeCosseno(a, b)
         
         # Saída esperada
         saidaEsperada = 0.9898030839149452

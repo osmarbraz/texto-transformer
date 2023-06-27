@@ -10,7 +10,7 @@ import torch
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloarguments import ModeloArgumentos 
 from textotransformer.pln.pln import PLN
-from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCoseno
+from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas, EstrategiasPooling
 from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
@@ -98,7 +98,7 @@ class Mensurador:
         
         # Similaridade do cosseno entre os embeddings Si e Sj
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
-        Scos = similaridadeCoseno(media_embedding_si, media_embedding_sj)
+        Scos = similaridadeCosseno(media_embedding_si, media_embedding_sj)
         # Retorno: Número real
 
         # Distância euclidiana entre os embeddings Si e Sj
@@ -150,7 +150,7 @@ class Mensurador:
 
         # Similaridade do cosseno entre os embeddings Si e Sj
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
-        Scos = similaridadeCoseno(maior_embedding_si, maior_embedding_sj)
+        Scos = similaridadeCosseno(maior_embedding_si, maior_embedding_sj)
         # Retorno: Número real
 
         # Distância euclidiana entre os embeddings Si e Sj
