@@ -71,7 +71,7 @@ def similaridadeCosenoMatriz(a: torch.Tensor, b: torch.Tensor):
     
    # Se for uma matriz de 1 dimensão
    if sim.shape[0] == 1 and sim.shape[1] == 1:
-      return sim.item
+      return sim.item()
    else: 
       return sim.numpy()
 

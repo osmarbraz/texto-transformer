@@ -4,6 +4,8 @@
 import logging
 # Biblioteca de testes unitários
 import unittest
+# Biblioteca de aprendizado de máquina
+import torch 
 
 # Bibliotecas próprias
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
@@ -73,7 +75,7 @@ class TestTransformer(unittest.TestCase):
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("texto_original" in saida)
         
-        # Testa a saida das chaves
+        # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -105,7 +107,7 @@ class TestTransformer(unittest.TestCase):
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("texto_original" in saida)
         
-        # Testa a saida das chaves
+        # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -144,7 +146,7 @@ class TestTransformer(unittest.TestCase):
         self.assertTrue("texto_original" in saida)
         self.assertTrue("all_layer_embeddings" in saida)
         
-        # Testa a saida das chaves
+       # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['input_ids']), 1)
         self.assertEqual(len(saida['input_ids'][0]), 10)
         self.assertEqual(len(saida['token_type_ids']), 1)  
@@ -152,17 +154,25 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['attention_mask']), 1)    
         self.assertEqual(len(saida['attention_mask'][0]), 10)  
         self.assertEqual(len(saida['tokens_texto_mcl']), 1)   
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)                
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)        
         self.assertEqual(len(saida['texto_original']), 1)
         self.assertEqual(saida['texto_original'][0], texto)
         self.assertEqual(len(saida['token_embeddings']), 1)
         self.assertEqual(len(saida['token_embeddings'][0]), 10)
         self.assertEqual(len(saida['all_layer_embeddings']), 13) #Camadas
-        self.assertEqual(len(saida['all_layer_embeddings'][0]), 1)
-        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 10)
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 1) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 10) #Tokens
+        
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], tuple))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))                   
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))         
         
     # Testes getSaidaRede Lista de Strings
-    def test_getSaidaRede_list_string(self):
+    def test_getSaidaRede_lista_string(self):
         logger.info("Testando o getSaidaRede com lista de strings")
          
         # Valores de entrada       
@@ -183,7 +193,7 @@ class TestTransformer(unittest.TestCase):
         self.assertTrue("texto_original" in saida)
         self.assertTrue("all_layer_embeddings" in saida)
         
-        # Testa a saida das chaves
+        # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -201,12 +211,20 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1])        
         self.assertEqual(len(saida['token_embeddings']), 2)
         self.assertEqual(len(saida['token_embeddings'][0]), 11)
-        self.assertEqual(len(saida['token_embeddings'][1]), 11)        
+        self.assertEqual(len(saida['token_embeddings'][1]), 11)                
         self.assertEqual(len(saida['all_layer_embeddings']), 13) #Camadas
-        self.assertEqual(len(saida['all_layer_embeddings'][0]), 2)
-        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11)
-        self.assertEqual(len(saida['all_layer_embeddings'][1]),  2)
-        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11)                         
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 2) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11) #Tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1]), 2) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) #Tokens
+                
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], tuple))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))                   
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor)) 
 
     # Testes getSaidaRedeCamada String
     def test_getSaidaRedeCamada_string(self):
@@ -234,7 +252,7 @@ class TestTransformer(unittest.TestCase):
         self.assertTrue("embedding_extraido" in saida)
         self.assertTrue("abordagem_extracao_embeddings_camadas" in saida)
                 
-        # Testa a saida das chaves
+        # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['input_ids'][0]), 11)
         self.assertEqual(len(saida['input_ids'][1]), 11)
@@ -250,9 +268,11 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['texto_original']), 2)
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])        
+        
         self.assertEqual(len(saida['token_embeddings']), 2)
         self.assertEqual(len(saida['token_embeddings'][0]), 11)
         self.assertEqual(len(saida['token_embeddings'][1]), 11)        
+        
         self.assertEqual(len(saida['all_layer_embeddings']), 13) #13 Camadas
         self.assertEqual(len(saida['all_layer_embeddings'][0]), 2) # Dois textos
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11) # 11 tokens
@@ -265,7 +285,6 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['embedding_extraido'][1]), 11) # 11 tokens
         
         self.assertEqual(saida['abordagem_extracao_embeddings_camadas'], AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA) 
-        
       
 if "__main__" == __name__:
     logger = logging.getLogger()

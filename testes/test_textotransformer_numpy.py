@@ -6,13 +6,14 @@ import logging
 import unittest
 # Biblioteca de aprendizado de máquina
 import torch 
+import numpy
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
 
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer(unittest.TestCase):
+class TestTextTransformerNumpy(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
@@ -20,39 +21,7 @@ class TestTextTransformer(unittest.TestCase):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
         self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
-    
-    # Testes TextoTransformer   
-    def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer")
-                
-        self.assertIsNotNone(self.modelo)
-    
-    # Testes getSaidaRede 
-    def test_getSaidaRede(self):
-        logger.info("Testando o getSaidaRede")
-        
-        # Valores de entrada                
-        texto = "Adoro sorvete de manga."
-        
-        # Valores de saída
-        saida = self.modelo.getSaidaRede(texto)
-        
-        # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 7) 
-        
-    # Testes getSaidaRedeCamada
-    def test_getSaidaRedeCamada(self):
-        logger.info("Testando o getSaidaRedeCamada")
-         
-        # Valores de entrada       
-        texto = "Adoro sorvete de manga."
-        
-        # Valores de saída
-        saida = self.modelo.getSaidaRedeCamada(texto, 2) # Camada 2 - Ultima camada dos transformers
-        
-        # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 9)
-    
+       
     # Testes getCodificacaoCompleta string
     def test_getCodificacaoCompleta_string(self):
         logger.info("Testando o getCodificacaoCompleta com string")
@@ -60,7 +29,7 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de entrada        
         texto = "Adoro sorvete de manga."
 
-        saida = self.modelo.getCodificacaoCompleta(texto)
+        saida = self.modelo.getCodificacaoCompleta(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 7)
@@ -86,14 +55,14 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))        
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'], numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][0],  numpy.ndarray))        
+        self.assertTrue(isinstance(saida['token_embeddings'],  numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][0],  numpy.ndarray))
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'],list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0],torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0],torch.Tensor))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'],numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], numpy.ndarray))
                 
     # Testes getCodificacaoCompleta lista de string
     def test_getCodificacaoCompleta_list_string(self):
@@ -103,8 +72,8 @@ class TestTextTransformer(unittest.TestCase):
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
 
         # Valores de saída
-        saida = self.modelo.getCodificacaoCompleta(texto)
-        
+        saida = self.modelo.getCodificacaoCompleta(texto, converte_para_numpy=True)
+                
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 7)
         
@@ -137,16 +106,16 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
                 
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], list))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][1], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'], numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['token_embeddings'][1], numpy.ndarray))
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0], torch.Tensor))
-            
+        self.assertTrue(isinstance(saida['all_layer_embeddings'], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][1], numpy.ndarray))
+        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0], numpy.ndarray))
+    
     # Testes getCodificacao
     def test_getCodificacao_string(self):
         logger.info("Testando o getCodificacao(texto)")
@@ -173,7 +142,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = "Adoro sorvete de manga."
         
         # Valores de saída
-        saida = self.modelo.getCodificacao(texto,granularidade_texto=0)
+        saida = self.modelo.getCodificacao(texto,granularidade_texto=0, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 3) 
@@ -191,7 +160,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = "Adoro sorvete de manga."
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoTexto(texto)
+        saida = self.modelo.getCodificacaoTexto(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 4) 
@@ -211,8 +180,8 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'], torch.Tensor))        
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'], torch.Tensor))
+        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'], numpy.ndarray))
+        self.assertTrue(isinstance(saida['texto_embeddings_MAX'], numpy.ndarray))
         
     # Testes getCodificacaoTexto lista_string
     def test_getCodificacaoTexto_lista_string(self):
@@ -222,7 +191,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoTexto(texto)
+        saida = self.modelo.getCodificacaoTexto(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 4) 
@@ -244,12 +213,12 @@ class TestTextTransformer(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['texto_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][1], torch.Tensor))
+        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][1], numpy.ndarray))
         
         self.assertTrue(isinstance(saida['texto_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][1], torch.Tensor))        
+        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][1], numpy.ndarray))        
 
     # Testes getCodificacaoSentenca string
     def test_getCodificacaoSentenca_string(self):
@@ -259,7 +228,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = "Adoro sorvete de manga. Sujei a manga da camisa."
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoSentenca(texto)
+        saida = self.modelo.getCodificacaoSentenca(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 5) 
@@ -281,10 +250,10 @@ class TestTextTransformer(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0], numpy.ndarray))
         
         self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0], numpy.ndarray))
 
     # Testes getCodificacaoSentenca lista string
     def test_getCodificacaoSentenca_lista_string(self):
@@ -294,7 +263,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = ["Adoro sorvete de manga. Sujei a manga da camisa.","Bom dia."]
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoSentenca(texto)
+        saida = self.modelo.getCodificacaoSentenca(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 5) 
@@ -326,17 +295,17 @@ class TestTextTransformer(unittest.TestCase):
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'], list))
         self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][1], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][1], numpy.ndarray))
         self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][1], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][1][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][1][0], numpy.ndarray))
                 
         self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'], list))
         self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][1], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][0], numpy.ndarray))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][1], numpy.ndarray))
         self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][1], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][1][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][1][0], numpy.ndarray))
 
     # Testes getCodificacaoPalavra string
     def test_getCodificacaoPalavra_string(self):
@@ -346,7 +315,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = "Adoro sorvete de manga."
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoPalavra(texto)
+        saida = self.modelo.getCodificacaoPalavra(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 8) 
@@ -374,10 +343,10 @@ class TestTextTransformer(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0], numpy.ndarray))
         
         self.assertTrue(isinstance(saida['palavra_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0], numpy.ndarray))
         
     # Testes getCodificacaoPalavra lista de string
     def test_getCodificacaoPalavra_lista_string(self):
@@ -387,7 +356,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoPalavra(texto)
+        saida = self.modelo.getCodificacaoPalavra(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 8)
@@ -433,9 +402,9 @@ class TestTextTransformer(unittest.TestCase):
         # Tipo do segundo texto
         self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][1], list))
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0][0], numpy.ndarray))
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][1][0], torch.Tensor)) 
+        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][1][0], numpy.ndarray)) 
         # MAX
         self.assertTrue(isinstance(saida['palavra_embeddings_MAX'], list))
         # Tipo do primeiro texto
@@ -443,9 +412,9 @@ class TestTextTransformer(unittest.TestCase):
         # Tipo do segundo texto
         self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][1], list))
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0][0], numpy.ndarray))
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][1][0], torch.Tensor))          
+        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][1][0], numpy.ndarray))          
              
     # Testes getCodificacaoToken string
     def test_getCodificacaoToken_string(self):
@@ -455,7 +424,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = "Adoro sorvete de manga."
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoToken(texto)
+        saida = self.modelo.getCodificacaoToken(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 3) 
@@ -472,7 +441,7 @@ class TestTextTransformer(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertTrue(isinstance(saida['token_embeddings'], list))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))        
+        self.assertTrue(isinstance(saida['token_embeddings'][0], numpy.ndarray))        
         
     # Testes getCodificacaoToken lista de string
     def test_getCodificacaoToken_lista_string(self):
@@ -482,7 +451,7 @@ class TestTextTransformer(unittest.TestCase):
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
         # Valores de saída
-        saida = self.modelo.getCodificacaoToken(texto)
+        saida = self.modelo.getCodificacaoToken(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 3)
@@ -516,105 +485,9 @@ class TestTextTransformer(unittest.TestCase):
         # Tipo do segundo texto
         self.assertTrue(isinstance(saida['token_embeddings'][1], list))
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['token_embeddings'][0][0], torch.Tensor))
+        self.assertTrue(isinstance(saida['token_embeddings'][0][0], numpy.ndarray))
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['token_embeddings'][1][0], torch.Tensor))
-    
-    # Testes getMedidasTexto
-    def test_getMedidasTexto(self):
-        logger.info("Testando o getMedidasTexto(texto)")
-        
-        # Valores de entrada
-        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
-
-        # Valores de saída
-        saida = self.modelo.getMedidasTexto(texto)
-        
-        CcosEsperado = 0.7125453352928162                
-        CeucEsperado = 5.883016586303711
-        CmanEsperado = 125.89885711669922
-                       
-        # Testa o nome das chaves
-        self.assertTrue("cos" in saida)
-        self.assertTrue("euc" in saida)
-        self.assertTrue("man" in saida)
-                       
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
-        
-    # Testes getMedidasTextoPalavraRelevante_0
-    def test_getMedidasTexto_PalavraRelevante_0(self):
-        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0)")
-        
-        # Valores de entrada
-        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
-
-        # Valores de saída
-        saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
-        
-        CcosEsperado = 0.7125453352928162                
-        CeucEsperado = 5.883016586303711
-        CmanEsperado = 125.89885711669922
-                       
-        # Testa o nome das chaves
-        self.assertTrue("cos" in saida)
-        self.assertTrue("euc" in saida)
-        self.assertTrue("man" in saida)
-                       
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
-        
-    # Testes getMedidasTextoPalavraRelevante_1
-    def test_getMedidasTexto_PalavraRelevante_1(self):
-        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1)")
-        
-        # Valores de entrada
-        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
-
-        # Valores de saída
-        saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
-        
-        CcosEsperado = 0.726082324981689              
-        CeucEsperado = 5.497143745422363
-        CmanEsperado = 117.38613891601562
-                                              
-        # Testa o nome das chaves
-        self.assertTrue("cos" in saida)
-        self.assertTrue("euc" in saida)
-        self.assertTrue("man" in saida)
-                       
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
-
-    # Testes getMedidasTextoPalavraRelevante_2
-    def test_getMedidasTexto_PalavraRelevante_2(self):
-        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2)")
-        
-        # Valores de entrada
-        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
-
-        # Valores de saída
-        saida = self.modelo.getMedidasTexto(texto, palavra_relevante=2)
-        
-        CcosEsperado = 0.0                
-        CeucEsperado = 0.0
-        CmanEsperado = 0.0
-                       
-        # Testa o nome das chaves
-        self.assertTrue("cos" in saida)
-        self.assertTrue("euc" in saida)
-        self.assertTrue("man" in saida)
-                       
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))    
+        self.assertTrue(isinstance(saida['token_embeddings'][1][0], numpy.ndarray))
                        
 if "__main__" == __name__:
     logger = logging.getLogger()

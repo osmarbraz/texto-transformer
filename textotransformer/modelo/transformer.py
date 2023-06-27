@@ -5,6 +5,7 @@ import logging
 # Biblioteca de aprendizado de máquina
 from torch import nn 
 import torch 
+import numpy as np
 from torch import Tensor, device
 # Biblioteca do transformer
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
@@ -313,7 +314,10 @@ class Transformer(nn.Module):
             if len(outputs) < 3: #Alguns modelos apenas geram last_hidden_states e all_hidden_states
                 all_layer_idx = 1
 
+            # Recupera todos as camadas do transformer
+            # Tuplas com cada uma das camadas
             hidden_states = outputs[all_layer_idx]
+            
             # Adiciona os embeddings de todas as camadas na saída
             saida.update({'all_layer_embeddings': hidden_states})
 
@@ -601,8 +605,8 @@ class Transformer(nn.Module):
            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de pln.
            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
-           `palavra_embeddings_MEAN` - Uma lista com os embeddings com a estratégia MEAN.
-           `palavra_embeddings_MAX` - Uma lista com os embeddings com a estratégia MAX.
+           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
+           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
        
         # Guarda os tokens e embeddings de retorno
@@ -665,13 +669,22 @@ class Transformer(nn.Module):
                         #print("Calcula a média de :", pos_wj , "até", indice_token)
                         embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra:",embeddings_tokens_palavra.shape)
-                        # calcular a média dos embeddings dos tokens do MCL da palavra
-                        embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
+                        
+                        if isinstance(embeddings_tokens_palavra, torch.Tensor): 
+                            # calcular a média dos embeddings dos tokens do MCL da palavra
+                            embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
+                        else:
+                            embedding_estrategia_MEAN = np.mean(embeddings_tokens_palavra, axis=0)
+                            
                         #print("embedding_estrategia_MEAN:",embedding_estrategia_MEAN.shape)
                         lista_palavra_embeddings_MEAN.append(embedding_estrategia_MEAN)
-
-                        # calcular o máximo dos embeddings dos tokens do MCL da palavra
-                        embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
+                        
+                        if isinstance(embeddings_tokens_palavra, torch.Tensor): 
+                            # calcular o máximo dos embeddings dos tokens do MCL da palavra
+                            embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
+                        else:
+                            embedding_estrategia_MAX, linha = np.max(embeddings_tokens_palavra, axis=0)
+                        
                         #print("embedding_estrategia_MAX:",embedding_estrategia_MAX.shape)
                         lista_palavra_embeddings_MAX.append(embedding_estrategia_MAX)
                     else:
@@ -748,17 +761,25 @@ class Transformer(nn.Module):
                         embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra)
                         #print("embeddings_tokens_palavra2:",embeddings_tokens_palavra.shape)
-                  
-                        # calcular a média dos embeddings dos tokens do MCL da palavra
-                        embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)        
-                        #print("embedding_estrategia_MEAN:",embedding_estrategia_MEAN)
-                        #print("embedding_estrategia_MEAN.shape:",embedding_estrategia_MEAN.shape)      
+                        
+                        if isinstance(embeddings_tokens_palavra, torch.Tensor): 
+                            # calcular a média dos embeddings dos tokens do MCL da palavra
+                            embedding_estrategia_MEAN = torch.mean(embeddings_tokens_palavra, dim=0)
+                            #print("embedding_estrategia_MEAN:",embedding_estrategia_MEAN)
+                            #print("embedding_estrategia_MEAN.shape:",embedding_estrategia_MEAN.shape)      
+                        else:
+                            embedding_estrategia_MEAN = np.mean(embeddings_tokens_palavra, axis=0)      
+                              
                         lista_palavra_embeddings_MEAN.append(embedding_estrategia_MEAN)
                  
-                        # calcular o valor máximo dos embeddings dos tokens do MCL da palavra
-                        embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
-                        #print("embedding_estrategia_MAX:",embedding_estrategia_MAX)
-                        #print("embedding_estrategia_MAX.shape:",embedding_estrategia_MAX.shape)     
+                        if isinstance(embeddings_tokens_palavra, torch.Tensor): 
+                            # calcular o valor máximo dos embeddings dos tokens do MCL da palavra
+                            embedding_estrategia_MAX, linha = torch.max(embeddings_tokens_palavra, dim=0)
+                            #print("embedding_estrategia_MAX:",embedding_estrategia_MAX)
+                            #print("embedding_estrategia_MAX.shape:",embedding_estrategia_MAX.shape)     
+                        else:
+                             embedding_estrategia_MAX = np.max(embeddings_tokens_palavra, axis=0)
+                            
                         lista_palavra_embeddings_MAX.append(embedding_estrategia_MAX)
 
                     # Avança para o próximo token do spaCy
