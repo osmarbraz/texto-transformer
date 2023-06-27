@@ -38,14 +38,14 @@ model_args = ModeloArgumentos(
 class TextoTransformer:
     
     ''' 
-    Carrega e cria um objeto da classe TextoTransformer para manipular um modelo de linguagem baseado e transformer.
-    Manipula embeddings de tokens, palavras, sentenças e textos.
+    A classe carrega e cria um objeto para manipular um modelo de linguagem baseado e transformer. 
+    Permite recuperar e manipular embeddings recuperados de tokens, palavras, sentenças e textos.
      
     Parâmetros:
        `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
-       `modelo_spacy` - Nome do modelo a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.                       
-       `abordagem_extracao_embeddings_camadas` - Especifica a abordagem para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
-       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
+       `modelo_spacy` - Nome do modelo spaCy a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.
+       `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
+       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
     ''' 
     
     # Construtor da classe
@@ -78,11 +78,6 @@ class TextoTransformer:
         # Carrega o spaCy
         self.pln = PLN(modelo_args=model_args)
                         
-        # Constroi um mensurador
-        self.mensurador = Mensurador(modelo_args=model_args, 
-                                     transformer=self.transformer, 
-                                     pln=self.pln)        
-    
         # Verifica se é possível usar GPU
         if device is None:
             if torch.cuda.is_available():    
@@ -98,7 +93,14 @@ class TextoTransformer:
             self._target_device = torch.device(device)
         else:
             # Usa o device informado
+            logger.info("Usando dispositivo informado:\"{}\".".format(device))
             self._target_device = torch.device(device)
+            
+        # Constroi um mensurador
+        self.mensurador = Mensurador(modelo_args=model_args, 
+                                     transformer=self.transformer, 
+                                     pln=self.pln,
+                                     device=self._target_device)
 
         # Mensagem de carregamento da classe
         logger.info("Classe \"{}\" carregada com os parâmetros: \"{}\".".format(self.__class__.__name__, model_args))
@@ -168,14 +170,16 @@ class TextoTransformer:
     # ============================
     def getMedidasTexto(self, texto: str, 
                         estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
-                        palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
+                        palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL,
+                        converte_para_numpy: bool = True):
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
         Parâmetros:
            `texto` - Um texto a ser medido.           
            `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
-           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `palavra_relevante` - Estratégia de relevância das palavras do texto.
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno um dicionário com:
            `cos` - Medida de cos do do texto.
@@ -187,14 +191,16 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
+                                                          converte_para_numpy=converte_para_numpy)
           
         return saida
     
     # ============================
     def getMedidasTextoCosseno(self, texto: str, 
                                estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
-                               palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
+                               palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL,
+                               converte_para_numpy: bool = True):
         ''' 
         Retorna a medida do texto utilizando a medida de similaridade de cosseno.
         
@@ -202,6 +208,7 @@ class TextoTransformer:
            `texto` - Um texto a ser medido a coerência.           
            `estrategia_pooling` - Estratégia de pooling das camadas do transformer. 
            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno:
            `cos` - Medida de cos do do texto.            
@@ -211,14 +218,16 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
+                                                          converte_para_numpy=converte_para_numpy)
           
         return saida['cos']
     
     # ============================
     def getMedidasTextoEuclediana(self, texto: str, 
                                   estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
-                                  palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
+                                  palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL,
+                                  converte_para_numpy: bool = True):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Euclidiana.
                  
@@ -226,6 +235,7 @@ class TextoTransformer:
            `texto` - Um texto a ser mensurado.           
            `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno:
            `ceu` - Medida euc do texto.            
@@ -235,14 +245,16 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
 
         saida = self.mensurador.getMedidasComparacaoTexto(texto,
-                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
+                                                          converte_para_numpy=converte_para_numpy)
           
         return saida['euc']      
        
     # ============================
     def getMedidasTextoManhattan(self, texto: str, 
                                  estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN, 
-                                 palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
+                                 palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL,
+                                 converte_para_numpy: bool = True):
         ''' 
         Retorna a medida do texto utilizando a medida de distância de Manhattan.
                  
@@ -250,6 +262,7 @@ class TextoTransformer:
            `texto` - Um texto a ser mensurado.           
            `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno:
            `man` - Medida  Cman do do texto.            
@@ -259,7 +272,8 @@ class TextoTransformer:
         self._definePalavraRelevante(palavra_relevante)
         
         saida = self.mensurador.getMedidasComparacaoTexto(texto, 
-                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas)
+                                                          abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
+                                                          converte_para_numpy=converte_para_numpy)
           
         return saida['man']
     
@@ -321,7 +335,8 @@ class TextoTransformer:
            Os embeddings da camada para o texto.
         '''    
 
-        return self.getTransformer().getSaidaRedeCamada(texto, abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+        return self.getTransformer().getSaidaRedeCamada(texto, 
+                                                        abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
 
     # ============================
     def getCodificacaoCompleta(self, texto: Union[str, List[str]],
@@ -406,9 +421,6 @@ class TextoTransformer:
                 # Recupera a saída da rede
                 output_rede = self.getTransformer().getSaidaRede(lote_textos_tokenizados)
 
-                # Lista para os embeddings do texto
-                embeddings = []
-
                 # Percorre todas as saídas(textos) do lote                
                 for i, texto in enumerate(output_rede['texto_original']):      
                 
@@ -439,12 +451,25 @@ class TextoTransformer:
         saida['tokens_texto_mcl'] = [saida['tokens_texto_mcl'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['texto_original'] = [saida['texto_original'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['all_layer_embeddings'] = [saida['all_layer_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
-        
+                
+        # Se estiver usando GPU, copia os tensores para a memória do host.
+        if torch.cuda.is_available():
+            
+            # Copiando os tensores para a memória do host.
+            saida['token_embeddings'] = [emb.cpu() for emb in saida['token_embeddings']]
+            
+            # Copiando os tensores para a memória do host.
+            saida['all_layer_embeddings'] = [[[emb.cpu() for emb in camada] for camada in sentenca] for sentenca in saida['all_layer_embeddings']]
+            
         # Converte para numpy
         if converte_para_numpy:
+            
+            # Convertendo para numpy
             saida['token_embeddings'] = [np.array(emb.numpy(), dtype=object) for emb in saida['token_embeddings']]
+                        
+            # Convertendo para numpy
             saida['all_layer_embeddings'] = [[np.array([emb.numpy() for emb in camada], dtype=object) for camada in sentenca] for sentenca in saida['all_layer_embeddings']]
-            # Caso contrário deixa como lista de tensores.
+            # Caso contrário deixa como lista de tensores.            
 
         # Se é uma string remove a lista de lista
         if entrada_eh_string:
@@ -562,6 +587,8 @@ class TextoTransformer:
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
+            
+            
             return self.getCodificacaoTexto(texto,
                                             tamanho_lote=tamanho_lote,
                                             mostra_barra_progresso=mostra_barra_progresso,
@@ -651,7 +678,7 @@ class TextoTransformer:
             saida['tokens_texto_mcl'].append(tokens_texto_mcl)
             saida['texto_embeddings_MEAN'].append(embedding_documento_media)
             saida['texto_embeddings_MAX'].append(embedding_documento_maximo)
-
+            
         #Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
             saida['texto_original'] = saida['texto_original'][0]

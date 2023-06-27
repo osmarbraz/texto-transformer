@@ -34,8 +34,11 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de entrada                
         texto = "Adoro sorvete de manga."
         
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.getTransformer().tokenize(texto)
+        
         # Valores de saída
-        saida = self.modelo.getSaidaRede(texto)
+        saida = self.modelo.getSaidaRede(texto_tokenizado)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 7) 
@@ -47,8 +50,10 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de entrada       
         texto = "Adoro sorvete de manga."
         
+        texto_tokenizado = self.modelo.getTransformer().tokenize(texto)
+        
         # Valores de saída
-        saida = self.modelo.getSaidaRedeCamada(texto, 2) # Camada 2 - Ultima camada dos transformers
+        saida = self.modelo.getSaidaRedeCamada(texto_tokenizado, 2) # Camada 2 - Ultima camada dos transformers
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 9)

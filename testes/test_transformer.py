@@ -131,8 +131,11 @@ class TestTransformer(unittest.TestCase):
         # Valores de entrada        
         texto = "Adoro sorvete de manga."
         
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.tokenize(texto)
+        
         # Valores de saída
-        saida = self.modelo.getSaidaRede(texto)
+        saida = self.modelo.getSaidaRede(texto_tokenizado)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 7) 
@@ -178,8 +181,11 @@ class TestTransformer(unittest.TestCase):
         # Valores de entrada       
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.tokenize(texto)
+        
         # Valores de saída
-        saida = self.modelo.getSaidaRede(texto)
+        saida = self.modelo.getSaidaRede(texto_tokenizado)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 7) 
@@ -233,10 +239,13 @@ class TestTransformer(unittest.TestCase):
         # Valores de entrada        
         texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.tokenize(texto)
+        
         # Valores de saída
         # Abordagem extração de embeddings das camadas
         # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
-        saida = self.modelo.getSaidaRedeCamada(texto, 2)
+        saida = self.modelo.getSaidaRedeCamada(texto_tokenizado, 2)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 9) 

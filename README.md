@@ -100,7 +100,20 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 **Os exemplos podem ser executados através deste notebook no GoogleColab [ExemplosTextoTransformer.ipynb](https://github.com/osmarbraz/texto-transformer/blob/main/notebooks/ExemplosTextoTransformer.ipynb).**
 
-## Métodos principais
+## Classe principal
+
+A classe **TextoTransformer** carrega e cria um objeto para manipular um modelo de linguagem baseado e transformer. Permite recuperar e manipular embeddings recuperados de tokens, palavras, sentenças e textos.
+     
+### Parâmetros inicialização
+
+Aqui os parâmetros a serem especificados para instanciar a classe TextoTransformer.
+
+- `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: `neuralmind/bert-base-portuguese-cased`.
+- `modelo_spacy` - Nome do modelo spaCy a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.
+- `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
+- `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
+    
+### Métodos principais
 
 Aqui os métodos principais para recuperar embeddings de textos, sentenças, palavras e tokens. Os métodos para recuperar os embeddings de textos, sentenças e palavras consolidados podem utilizar as estratégias de pooling média (MEAN) e máximo (MAX) dos embeddings de seus tokens.
 
@@ -139,7 +152,6 @@ A lista completa dos modelos de linguagem pré-treiandos podem ser consultados n
 - torch==2.0.1
 - scipy==1.10.1
 - numpy==1.22.4
-- scikit-learn=1.2.2
 
 ## Licença
 

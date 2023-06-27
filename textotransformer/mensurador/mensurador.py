@@ -27,12 +27,14 @@ class Mensurador:
        `modelo_args` - Parâmetros do modelo de linguagem.
        `transformer` - Modelo de linguagem carregado.
        `pln` - Processador de linguagem natural.
+       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
     ''' 
 
     # Construtor da classe
     def __init__(self, modelo_args: ModeloArgumentos,
                  transformer: Transformer, 
-                 pln: PLN):
+                 pln: PLN,
+                 device: str = None):
     
         # Parâmetros do modelo
         self.model_args = modelo_args
@@ -49,6 +51,9 @@ class Mensurador:
         # Recupera a classe PLN
         self.pln = pln
         
+        # Recupera o dispositivo
+        self._target_device = device
+                
         logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
     # ============================   
@@ -395,35 +400,82 @@ class Mensurador:
                 else:
                     logger.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
     
-    
     # ============================
-    def getEmbeddingTextoCamada(self, texto, 
-                                abordagem_extracao_embeddings_camadas):
+    def getSaidaRedeMensurador(self, texto,
+                               abordagem_extracao_embeddings_camadas,
+                               device: str = None):
+        
         '''
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
            `texto` - Texto a ser recuperado os embeddings.
            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+           `device` - Qual torch.device usar para a computação.
+
+        Retorno:
+           Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
+        '''
+        
+        # Coloca o modelo em modo avaliação
+        self.model.eval()
+        
+        # Se o texto não estiver tokenizado, tokeniza
+        if not isinstance(texto, dict):
+            texto = self.getTransformer().tokenize(texto)
+            
+        # Se não foi especificado um dispositivo, use-o defaul
+        if device is None:
+            device = self._target_device
+     
+        # Adiciona um dispositivo ao modelo
+        self.model.to(device)            
+
+        # Adiciona ao device gpu ou cpu
+        lote_textos_tokenizados = self.getTransformer().batchToDevice(texto, device)            
+        
+        # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
+        with torch.no_grad():
+            
+            # Recupera a saída da rede
+            saida = self.getTransformer().getSaidaRedeCamada(lote_textos_tokenizados,
+                                                             abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+        
+        return saida
+        
+    # ============================
+    def getEmbeddingTextoCamada(self, texto, 
+                                abordagem_extracao_embeddings_camadas,
+                                converte_para_numpy: bool = True):
+        '''
+        Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
+        
+        Parâmetros:
+           `texto` - Texto a ser recuperado os embeddings.
+           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
 
         Retorno:
            Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
         '''
         
         # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
-        with torch.no_grad():
-        
-            saida = self.getTransformer().getSaidaRedeCamada(texto,
-                                                            abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+        saida = self.getSaidaRedeMensurador(texto,
+                                            abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
         
         # Remove o lote com [0]
         embedding_texto = saida['embedding_extraido'][0]
+        
+        # Desconecta
+        if converte_para_numpy:
+            embedding_texto = embedding_texto.cpu()
         
         return embedding_texto
 
     # ============================
     def getMedidasComparacaoTexto(self, texto, 
-                                  abordagem_extracao_embeddings_camadas):        
+                                  abordagem_extracao_embeddings_camadas,
+                                  converte_para_numpy: bool = True):
         '''
         Retorna as medidas do texto.
         Considera somente sentenças com pelo menos uma palavra.
@@ -432,7 +484,8 @@ class Mensurador:
         
         Parâmetros:
            `texto` - Texto a ser realizado as comparações.
-         'abordagem_extracao_embeddings_camadas' - Camada de onde deve ser recupera os embeddings.
+           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
                  
         Retorno um dicionário com:
            `cos` - Medida de cos do do texto.
@@ -456,24 +509,25 @@ class Mensurador:
 
         # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada          
         embedding_texto = self.getEmbeddingTextoCamada(string_texto,
-                                                       abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
+                                                       abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas,
+                                                       converte_para_numpy=converte_para_numpy)
         #print('embedding_texto=', embedding_texto.shape)
 
         # Acumuladores das medidas entre as sentenças  
-        somaScos = 0
-        somaSeuc = 0
-        somaSman = 0
+        soma_Scos = 0
+        soma_Seuc = 0
+        soma_Sman = 0
 
         # Seleciona os pares de sentença a serem avaliados
-        posSi = 0
-        posSj = posSi + 1
+        pos_si = 0
+        pos_sj = pos_si + 1
 
         #Enquanto o indíce da sentneça posSj(2a sentença) não chegou ao final da quantidade de sentenças
-        while posSj <= (n-1):  
+        while pos_sj <= (n-1):  
 
             # Seleciona as sentenças do texto  
-            Si = texto[posSi]
-            Sj = texto[posSj]
+            Si = texto[pos_si]
+            Sj = texto[pos_sj]
 
             # Recupera os embedding das sentenças Si e Sj do embedding do texto      
             embedding_si = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Si)
@@ -486,26 +540,26 @@ class Mensurador:
                 ajustado_embedding_si, ajustado_embedding_sj, Scos, Seuc, Sman = self.getMedidasSentencasEmbedding(embedding_si, embedding_sj)
 
                 # Acumula as medidas
-                somaScos = somaScos + Scos
-                somaSeuc = somaSeuc + Seuc
-                somaSman = somaSman + Sman
+                soma_Scos = soma_Scos + Scos
+                soma_Seuc = soma_Seuc + Seuc
+                soma_Sman = soma_Sman + Sman
 
                 # avança para o próximo par de sentenças
-                posSi = posSj
-                posSj = posSj + 1
+                pos_si = pos_sj
+                pos_sj = pos_sj + 1
             else:
                 # Reduz um da quantidade de sentenças pois uma delas está vazia
                 divisor = divisor - 1
                 # Se embedding_si igual a None avanca pos1 e pos2
                 if embedding_si == None:
                     # Avança a posição da sentença posSi para a posSj
-                    posSi = posSj
+                    pos_si = pos_sj
                     # Avança para a próxima sentença de posSj
-                    posSj = posSj + 1        
+                    pos_sj = pos_sj + 1        
                 else:          
                     # Se embeddingSj = None avança somente posJ para a próxima sentença
                     if embedding_sj == None:
-                        posSj = posSj + 1
+                        pos_sj = pos_sj + 1
 
         # Calcula a medida 
         Ccos = 0
@@ -513,9 +567,9 @@ class Mensurador:
         Cman = 0
 
         if divisor != 0:
-            Ccos = float(somaScos) / float(divisor)
-            Ceuc = float(somaSeuc) / float(divisor)
-            Cman = float(somaSman) / float(divisor)
+            Ccos = float(soma_Scos) / float(divisor)
+            Ceuc = float(soma_Seuc) / float(divisor)
+            Cman = float(soma_Sman) / float(divisor)
 
         # Retorna as medidas em um dicionário
         saida = {}

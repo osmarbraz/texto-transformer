@@ -246,16 +246,16 @@ class Transformer(nn.Module):
         return saida
         
     # ============================           
-    def getSaidaRede(self, texto: Union[str, dict]):
+    def getSaidaRede(self, texto: dict):
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings dos tokens do texto. 
+        De um texto preparado(tokenizado) retorna os embeddings dos tokens do texto. 
         O retorno é um dicionário com token_embeddings, input_ids, attention_mask, token_type_ids, 
         tokens_texto_mcl, texto_original  e all_layer_embeddings.
         
         Retorna os embeddings de todas as camadas de um texto.
     
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+           `texto` - Um texto tokenizado a ser recuperado os embeddings do modelo de linguagem
     
         Retorna um dicionário com as seguintes chaves:
            `token_embeddings` - Uma lista com os embeddings da última camada.
@@ -268,8 +268,8 @@ class Transformer(nn.Module):
         '''
 
         # Se o texto não estiver tokenizado, tokeniza
-        if not isinstance(texto, dict):
-            texto = self.tokenize(texto)
+        #if not isinstance(texto, dict):
+        #   texto = self.tokenize(texto)
     
         # Recupera o texto preparado pelo tokenizador para envio ao modelo
         dic_texto_tokenizado = {'input_ids': texto['input_ids'],                                 
