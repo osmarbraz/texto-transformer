@@ -19,6 +19,7 @@ import os
 # Bibliotecas próprias
 from textotransformer.modelo.modeloarguments import ModeloArgumentos
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
+from textotransformer.pln.pln import PLN
 from textotransformer.util.utilconstantes import LISTATIPOCAMADA_NOME
 
 logger = logging.getLogger(__name__)
@@ -65,18 +66,18 @@ class Transformer(nn.Module):
                          cache_dir)
 
         # Carrega o tokenizador
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
+        self.auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
 
         # Se max_seq_length não foi especificado, tenta inferir do modelo
         if self.modelo_args.max_seq_len is None:
-            if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.tokenizer, "model_max_length"):
+            if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.auto_tokenizer, "model_max_length"):
                 self.modelo_args.max_seq_len = min(self.auto_model.config.max_position_embeddings,
-                                     self.tokenizer.model_max_length)
+                                                   self.auto_tokenizer.model_max_length)
 
         # Define a classe do tokenizador
         if tokenizer_name_or_path is not None:
-            self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
-            
+            self.auto_model.config.tokenizer_class = self.auto_tokenizer.__class__.__name__
+                   
         logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
     # ============================   
@@ -89,7 +90,7 @@ class Transformer(nn.Module):
                                                                                                                                       self.modelo_args.pretrained_model_name_or_path,
                                                                                                                                       self.config.__class__.__name__,
                                                                                                                                       self.auto_model.__class__.__name__,
-                                                                                                                                      self.tokenizer.__class__.__name__)
+                                                                                                                                      self.auto_tokenizer.__class__.__name__)
 
     # ============================   
     def _load_model(self, 
@@ -162,7 +163,7 @@ class Transformer(nn.Module):
                                                           cache_dir=cache_dir)
    
     # ============================      
-    def getTextoTokenizado(self, texto : str):
+    def getTextoTokenizado(self, texto : str) -> str:
         '''
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
         
@@ -177,13 +178,13 @@ class Transformer(nn.Module):
         texto_marcado = '[CLS] ' + texto + ' [SEP]'
 
         # Tokeniza o texto
-        texto_tokenizado = self.tokenizer.tokenize(texto_marcado)
+        texto_tokenizado = self.auto_tokenizer.tokenize(texto_marcado)
 
         return texto_tokenizado
 
     # ============================    
 
-    def tokenize(self, texto: Union[str, List[str]]):
+    def tokenize(self, texto: Union[str, List[str]]) -> dict:
         '''        
         Tokeniza um texto para submeter ao modelo de linguagem. 
         Retorna um dicionário listas de mesmo tamanho para garantir o processamento em lote.
@@ -219,21 +220,22 @@ class Transformer(nn.Module):
 
         # Se for para colocar para minúsculo usa Lowercase nos textos
         if self.modelo_args.do_lower_case:
-           to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
+            # Convertendo todos os tokens para minúsculo
+            to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
         # Tokeniza o texto
-        # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strings
-        saida.update(self.tokenizer(*to_tokenize,  # Texto a ser codificado.
-                                     add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'
-                                     padding=True, # Preenche o texto até max_length
-                                     truncation='longest_first',  # Trunca o texto no maior texto
+        # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strings.
+        saida.update(self.auto_tokenizer(*to_tokenize,  # Texto a ser codificado. O '*' remove a lista de listas de to_tokenize.
+                                     add_special_tokens=True, # Adiciona os tokens especiais '[CLS]' e '[SEP]'.
+                                     padding=True, # Preenche o texto até max_length.
+                                     truncation='longest_first',  # Trunca o texto no maior texto.
                                      return_tensors="pt",  # Retorna os dados como tensores pytorch.
                                      max_length=self.modelo_args.max_seq_len # Define o tamanho máximo para preencheer ou truncar.
                                     ) 
                     )
                         
         # Gera o texto tokenizado convertendo os ids para os respectivos tokens           
-        saida['tokens_texto_mcl'] = [[self.tokenizer.convert_ids_to_tokens(s.item()) for s in col] for col in saida['input_ids']]
+        saida['tokens_texto_mcl'] = [[self.auto_tokenizer.convert_ids_to_tokens(s.item()) for s in col] for col in saida['input_ids']]
 
         # Guarda o texto original        
         saida['texto_original'] = [[s for s in col] for col in to_tokenize][0]     
@@ -246,7 +248,7 @@ class Transformer(nn.Module):
         return saida
         
     # ============================           
-    def getSaidaRede(self, texto: dict):
+    def getSaidaRede(self, texto: dict) -> dict:
         '''
         De um texto preparado(tokenizado) retorna os embeddings dos tokens do texto. 
         O retorno é um dicionário com token_embeddings, input_ids, attention_mask, token_type_ids, 
@@ -266,10 +268,6 @@ class Transformer(nn.Module):
            `texto_origina`l - Uma lista com os textos originais.
            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
-
-        # Se o texto não estiver tokenizado, tokeniza
-        #if not isinstance(texto, dict):
-        #   texto = self.tokenize(texto)
     
         # Recupera o texto preparado pelo tokenizador para envio ao modelo
         dic_texto_tokenizado = {'input_ids': texto['input_ids'],                                 
@@ -291,10 +289,11 @@ class Transformer(nn.Module):
 
         # Retorno de model quando ´output_hidden_states=True´ é setado:    
         # outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
-        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.
         
+        # hidden_states é uma lista python, e cada elemento um tensor pytorch no formado <lote> x <qtde_tokens> x <768 ou 1024>.        
         # 0-texto_tokenizado, 1-input_ids, 2-attention_mask, 3-token_type_ids, 4-outputs(0=last_hidden_state,1=pooler_output,2=hidden_states)
         
+        # Recupera a última camada de embeddings da saida do modelo
         last_hidden_state = outputs[0]
 
         # Adiciona os embeddings da última camada e os dados do texto preparado na saída
@@ -307,7 +306,7 @@ class Transformer(nn.Module):
                       'texto_original': texto['texto_original']
                       })
 
-        # output_hidden_states == True existem embeddings nas camadas ocultas
+        # Se output_hidden_states == True existem embeddings nas camadas ocultas
         if self.auto_model.config.output_hidden_states:
             # 2 é o índice da saída com todos os embeddings em outputs
             all_layer_idx = 2
@@ -339,7 +338,7 @@ class Transformer(nn.Module):
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)          
         resultado = saida_rede['all_layer_embeddings'][0]
         # Retorno: (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
-        print('resultado=',resultado.size())
+        #print('resultado=',resultado.size())
 
         return resultado
 
@@ -429,10 +428,12 @@ class Transformer(nn.Module):
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
         # Lista com os tensores a serem concatenados
         lista_concatenada = []
-        # Percorre os 4 últimos
+        
+        # Percorre os 4 últimos tensores da lista(camadas)
         for i in [-1, -2, -3, -4]:
             # Concatena da lista
             lista_concatenada.append(saida_rede['all_layer_embeddings'][i])
+            
         # Retorno: Entrada: List das camadas(4) (<1(lote)> x <qtde_tokens> <768 ou 1024>)  
         #print('lista_concatenada=',len(lista_concatenada))
 
@@ -538,10 +539,22 @@ class Transformer(nn.Module):
     # getTokensEmbeddingsPOStexto
     # Gera os tokens, POS e embeddings de cada texto.
     
-    # Dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do BERT em relação ao spaCy
-    # A tokenização do BERT gera mais tokens que a tokenização das palavras do spaCy
-    _dic_excecao_maior = {"":-1,
-                         }
+    def _inicializaDicionarioExcecao(self,
+                                     dic_excecao_maior = None, 
+                                     dic_excecao_menor = None):
+        
+        # Dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy
+        # A tokenização do modelo de linguagem gera mais tokens que a tokenização das palavras do spaCy
+        #self._dic_excecao_maior = {"":-1,
+        #                    }
+        self._dic_excecao_maior = dic_excecao_maior
+        
+        # Dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy
+        # A tokenização do modelo de linguagem gera menos tokens que a tokenização das palavras do spaCy
+        #self._dic_excecao_menor = {"1°":1,
+        #                  }
+        self._dic_excecao_menor = dic_excecao_menor
+        
                              
     def _getExcecaoDicMaior(self, token: str):   
         '''
@@ -560,11 +573,6 @@ class Transformer(nn.Module):
         else:
             return -1                             
     
-    # Dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do BERT em relação ao spaCy
-    # A tokenização do BERT gera menos tokens que a tokenização das palavras do spaCy
-    _dic_excecao_menor = {"1°":1,
-                          }
-    
     def _getExcecaoDicMenor(self, token: str): 
         '''
         Retorna o deslocamento do token no texto para considerar menos tokens do BERT em relação ao spaCy.
@@ -582,11 +590,13 @@ class Transformer(nn.Module):
         else:
             return -1
 
-    def getTokensEmbeddingsPOSTexto(self, 
-                                    embeddings_texto, 
-                                    tokens_texto_mcl,                                       
-                                    tokens_texto_concatenado,
-                                    pln):
+    def getTokensPalavrasEmbeddingsTexto(self, 
+                                         embeddings_texto, 
+                                         tokens_texto_mcl,
+                                         tokens_texto_concatenado: str,
+                                         pln: PLN,
+                                         dic_excecao_maior:dict = {"":-1,},
+                                         dic_excecao_menor:dict = {"1°":1,}) -> dict:
         '''
         De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
         Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -600,7 +610,9 @@ class Transformer(nn.Module):
            `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
            `tokens_texto_concatenado` - Os tokens do texto concatenado gerados pelo método getEmbeddingsTexto
            `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-    
+           `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
+           `dic_excecao_menor` = Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
+               
         Retorna um dicionário com as seguintes chaves:          
            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de pln.
@@ -608,6 +620,9 @@ class Transformer(nn.Module):
            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
+
+        # Inicializa os dicionários de exceção
+        self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -801,11 +816,12 @@ class Transformer(nn.Module):
             logger.info("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
             logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
        
+        # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
         del tokens_texto_mcl
         del lista_tokens_texto_pln
 
-        # Retorna as medidas em um dicionário
+        # Retorna os tokens de palavras e os embeddings em um dicionário
         saida = {}
         saida.update({'tokens_texto' : lista_tokens,
                       'pos_texto_pln' : lista_pos_texto_pln,
@@ -813,7 +829,6 @@ class Transformer(nn.Module):
                       'palavra_embeddings_MEAN' : lista_palavra_embeddings_MEAN,
                       'palavra_embeddings_MAX' : lista_palavra_embeddings_MAX})
 
-        #return lista_tokens, lista_pos_texto_pln, lista_tokens_OOV_mcl, lista_embeddings_MEAN, lista_embeddings_MAX
         return saida
 
     # ============================   
@@ -834,13 +849,13 @@ class Transformer(nn.Module):
         '''
 
         self.auto_model.save_pretrained(output_path)
-        self.tokenizer.save_pretrained(output_path)
+        self.auto_tokenizer.save_pretrained(output_path)
 
         with open(os.path.join(output_path, 'modelo_linguagem_config.json'), 'w') as fOut:
             json.dump(self.get_config_dict(), fOut, indent=2)
 
     # ============================   
-    def getAutoMmodel(self):
+    def getAutoModel(self):
         '''
         Recupera o modelo.
         '''
@@ -848,15 +863,16 @@ class Transformer(nn.Module):
         return self.auto_model
 
     # ============================   
-    def getTokenizer(self):
+    def getAutoTokenizer(self):
         '''
         Recupera o tokenizador.
         '''
 
-        return self.tokenizer
+        return self.auto_tokenizer
 
     # ============================   
-    def batchToDevice(self, lote, target_device: device):
+    def batchToDevice(self, lote, 
+                      target_device: device):
         '''
         Envia lote pytorch batch para um dispositivo (CPU/GPU)
 

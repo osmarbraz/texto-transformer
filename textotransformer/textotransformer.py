@@ -64,10 +64,10 @@ class TextoTransformer:
         self.transformer = Transformer(modelo_args=model_args)
     
         # Recupera o modelo de linguagem.
-        self.model = self.transformer.getAutoMmodel()
+        self.auto_model = self.transformer.getAutoModel()
     
         # Recupera o tokenizador.     
-        self.tokenizer = self.transformer.getTokenizer()
+        self.auto_tokenizer = self.transformer.getAutoTokenizer()
         
         # Especifica a abordagem para a extração dos embeddings das camadas do transformer.         
         logger.info("Utilizando abordagem para extração dos embeddings das camadas do transfomer \"{}\" camada(s).".format(AbordagemExtracaoEmbeddingsCamadas.converteInt(model_args.abordagem_extracao_embeddings_camadas).getStr()))
@@ -77,9 +77,10 @@ class TextoTransformer:
       
         # Carrega o spaCy
         self.pln = PLN(modelo_args=model_args)
-                        
-        # Verifica se é possível usar GPU
+        
+        # Se não foi especificado um dispositivo
         if device is None:
+            # Verifica se é possível usar GPU
             if torch.cuda.is_available():    
                 device = "cuda"
                 logger.info("Existem\"{}\" GPU(s) disponíveis.".format(torch.cuda.device_count()))
@@ -92,11 +93,11 @@ class TextoTransformer:
             # Diz ao PyTorch para usar o dispositvo (GPU ou CPU)
             self._target_device = torch.device(device)
         else:
-            # Usa o device informado
+            # Usa o dipositivo informado
             logger.info("Usando dispositivo informado:\"{}\".".format(device))
             self._target_device = torch.device(device)
             
-        # Constroi um mensurador
+        # Instância o mensurador
         self.mensurador = Mensurador(modelo_args=model_args, 
                                      transformer=self.transformer, 
                                      pln=self.pln,
@@ -343,7 +344,7 @@ class TextoTransformer:
                                tamanho_lote: int = 32, 
                                mostra_barra_progresso: bool = False,
                                converte_para_numpy: bool = False,
-                               device: str = None):
+                               device: str = None) -> dict:
 
         '''
         Retorna a codificação completa do texto utilizando o modelo de linguagem.
@@ -366,7 +367,7 @@ class TextoTransformer:
         '''
         
         # Coloca o modelo em modo avaliação
-        self.model.eval()
+        self.auto_model.eval()
 
         # Verifica se a entrada é uma string ou uma lista de strings
         entrada_eh_string = False
@@ -380,7 +381,7 @@ class TextoTransformer:
             device = self._target_device
 
         # Adiciona um dispositivo ao modelo
-        self.model.to(device)
+        self.auto_model.to(device)
 
         # Dicionário com a saída
         saida = {}
@@ -610,7 +611,7 @@ class TextoTransformer:
                             tamanho_lote: int = 32, 
                             mostra_barra_progresso: bool = False,                     
                             converte_para_numpy: bool = False,
-                            device: str = None):
+                            device: str = None) -> dict:
         '''                
         De um texto (string ou uma lista de strings) retorna a codificação do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX.         
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
@@ -694,7 +695,7 @@ class TextoTransformer:
                              mostra_barra_progresso: bool = False,
                              converte_para_numpy: bool = False,
                              device: str = None,
-                             estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
+                             estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN) -> list:
         '''        
         De um texto (string ou uma lista de strings) retorna os embeddings das sentenças do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX. 
         O texto ou a lista de textos é sentenciado utilizando a ferramenta de PLN. 
@@ -744,7 +745,7 @@ class TextoTransformer:
                                tamanho_lote: int = 32, 
                                mostra_barra_progresso: bool = False,
                                converte_para_numpy: bool = False,
-                               device: str = None):      
+                               device: str = None) -> dict:      
         '''        
         De um texto (string ou uma lista de strings) retorna a codificação das sentenças do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX. 
         O texto ou a lista de textos é sentenciado utilizando a ferramenta de PLN. 
@@ -861,7 +862,7 @@ class TextoTransformer:
                             mostra_barra_progresso: bool = False,
                             converte_para_numpy: bool = False,
                             device: str = None, 
-                            estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
+                            estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN) -> list:
         
         '''
         De um texto (string ou uma lista de strings) retorna os embeddings das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -981,10 +982,10 @@ class TextoTransformer:
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
 
             # Recupera os embeddings e tokens de palavra            
-            saidaEmbeddingPalavra = self.getTransformer().getTokensEmbeddingsPOSTexto(embeddings_texto,
-                                                                                      tokens_texto_mcl,
-                                                                                      tokens_texto_concatenado,
-                                                                                      self.getPln())
+            saidaEmbeddingPalavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto,
+                                                                                           tokens_texto_mcl,
+                                                                                           tokens_texto_concatenado,
+                                                                                           self.getPln())
 
             # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
@@ -1016,7 +1017,7 @@ class TextoTransformer:
                           tamanho_lote: int = 32,
                           mostra_barra_progresso: bool = False,
                           converte_para_numpy: bool = False,
-                          device: str = None):
+                          device: str = None) -> list:
         '''
         Recebe um texto (string ou uma lista de strings) e retorna os embeddings dos tokens gerados pelo tokenizador modelo de linguagem.                  
                     
@@ -1042,7 +1043,7 @@ class TextoTransformer:
                             tamanho_lote: int = 32, 
                             mostra_barra_progresso: bool = False,
                             converte_para_numpy: bool = False,
-                            device: str = None):
+                            device: str = None) -> dict:
         '''        
         De um texto (string ou uma lista de strings) retorna a codificação dos tokens do texto utilizando o modelo de linguagem.
                 
@@ -1104,21 +1105,36 @@ class TextoTransformer:
         return saida
     
     # ============================
-    def getModel(self):
-        return self.model
+    def getAutoModel(self):
+        '''
+        Recupera o modelo.
+        '''        
+        return self.auto_model
 
     # ============================
-    def getTokenizer(self):
-        return self.tokenizer
+    def getAutoTokenizer(self):
+        '''
+        Recupera o tokenizador.
+        '''
+        return self.auto_tokenizer
 
     # ============================
-    def getTransformer(self):
+    def getTransformer(self) -> Transformer:
+        '''
+        Recupera o transformer.
+        '''
         return self.transformer
 
     # ============================    
-    def getMensurador(self):
+    def getMensurador(self) -> Mensurador:
+        '''
+        Recupera o mensurador.
+        '''
         return self.mensurador        
         
     # ============================        
-    def getPln(self):
+    def getPln(self) -> PLN:
+        '''
+        Recupera o PLN.
+        '''
         return self.pln

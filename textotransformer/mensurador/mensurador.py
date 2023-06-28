@@ -43,10 +43,10 @@ class Mensurador:
         self.transformer = transformer
     
         # Recupera o modelo.
-        self.model = transformer.getAutoMmodel()
+        self.auto_model = transformer.getAutoModel()
     
         # Recupera o tokenizador.     
-        self.tokenizer = transformer.getTokenizer()
+        self.auto_tokenizer = transformer.getAutoTokenizer()
         
         # Recupera a classe PLN
         self.pln = pln
@@ -63,8 +63,8 @@ class Mensurador:
         '''
         
         return "Classe (\"{}\") com  Transformer: \"{}\", tokenizador: \"{}\" e NLP: \"{}\" ".format(self.__class__.__name__,
-                                                                                                     self.model.__class__.__name__,
-                                                                                                     self.tokenizer.__class__.__name__,
+                                                                                                     self.auto_model.__class__.__name__,
+                                                                                                     self.auto_tokenizer.__class__.__name__,
                                                                                                      self.pln.__class__.__name__)
 
     # ============================
@@ -418,7 +418,7 @@ class Mensurador:
         '''
         
         # Coloca o modelo em modo avaliação
-        self.model.eval()
+        self.auto_model.eval()
         
         # Se o texto não estiver tokenizado, tokeniza
         if not isinstance(texto, dict):
@@ -429,7 +429,7 @@ class Mensurador:
             device = self._target_device
      
         # Adiciona um dispositivo ao modelo
-        self.model.to(device)            
+        self.auto_model.to(device)            
 
         # Adiciona ao device gpu ou cpu
         lote_textos_tokenizados = self.getTransformer().batchToDevice(texto, device)            
@@ -580,17 +580,29 @@ class Mensurador:
         return saida
     
     # ============================
-    def getTransformer(self):
+    def getTransformer(self) -> Transformer:
+        '''
+        Recupera o transformer.
+        '''
         return self.transformer
     
     # ============================
-    def getModel(self):
-        return self.model
+    def getAutoModel(self):
+        '''
+        Recupera o modelo.
+        '''
+        return self.auto_model
 
     # ============================
-    def getTokenizer(self):
-        return self.tokenizer
+    def getAutoTokenizer(self):
+        '''
+        Recupera o tokenizador.
+        '''
+        return self.auto_tokenizer
 
     # ============================        
-    def getPln(self):
+    def getPln(self) -> PLN:
+        '''
+        Recupera o pln.
+        '''
         return self.pln
