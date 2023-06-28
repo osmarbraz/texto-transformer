@@ -71,7 +71,7 @@ texto = "Você gosta de sorvete de manga? Sim, adoro muito."
 
 # Recupera os embeddings consolidados do texto
 embeddings_texto = modelo.getEmbeddingTexto(texto)
-print("Um texto de tamanho      :",len(embeddings_texto))
+print("Um embedding de tamanho  :",len(embeddings_texto))
 
 # Recupera os embeddings consolidados das sentenças do texto
 embeddings_sentenca = modelo.getEmbeddingSentenca(texto)
@@ -89,7 +89,7 @@ print("Quantidade de tokens     :",len(embeddings_token))
 print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 #Resultado
-#Um texto de tamanho      : 768
+#Um embedding de tamanho  : 768
 #Quantidade de sentenças  : 2
 #Cada sentença de tamanho : 768
 #Quantidade de palavras   : 12
