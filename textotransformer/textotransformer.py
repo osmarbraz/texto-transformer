@@ -172,7 +172,7 @@ class TextoTransformer:
     def getMedidasTexto(self, texto: str, 
                         estrategia_pooling: EstrategiasPooling = EstrategiasPooling.MEAN, 
                         palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL,
-                        converte_para_numpy: bool = True):
+                        converte_para_numpy: bool = True) -> dict:
         ''' 
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
@@ -279,7 +279,7 @@ class TextoTransformer:
         return saida['man']
     
     # ============================
-    def tokenize(self, texto: Union[str, List[str]]):
+    def tokenize(self, texto: Union[str, List[str]])-> dict:
         '''
         Tokeniza um texto para submeter ao modelo de linguagem. 
         Retorna um dicionário listas de mesmo tamanho para garantir o processamento em lote.
@@ -300,7 +300,7 @@ class TextoTransformer:
         return self.getTransformer().tokenize(texto)
         
     # ============================
-    def getSaidaRede(self, texto: Union[str, dict]):
+    def getSaidaRede(self, texto: Union[str, dict]) :
         '''
         De um texto preparado(tokenizado) ou não, retorna token_embeddings, input_ids, attention_mask, token_type_ids, 
         tokens_texto, texto_original  e all_layer_embeddings em um dicionário.
@@ -324,7 +324,7 @@ class TextoTransformer:
 
     # ============================
     def getSaidaRedeCamada(self, texto: Union[str, dict], 
-                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
+                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA) -> dict:
         '''
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
@@ -358,9 +358,9 @@ class TextoTransformer:
     
         Retorna um dicionário com as seguintes chaves:
            `token_embeddings` - Uma lista com os embeddings da última camada.
-           `input_ids` - Uma lista com os textos indexados.            
+           `input_ids` - Uma lista com os textos indexados.
            `attention_mask` - Uma lista com os as máscaras de atenção
-           `token_type_ids` - Uma lista com os tipos dos tokens.            
+           `token_type_ids` - Uma lista com os tipos dos tokens.
            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
            `texto_original` - Uma lista com os textos originais.
            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
@@ -490,7 +490,7 @@ class TextoTransformer:
                        tamanho_lote: int = 32,
                        mostra_barra_progresso: bool = False,
                        converte_para_numpy: bool = False,
-                       device: str = None):
+                       device: str = None) -> dict:
        
         '''
         Retorna a codificação do texto utilizando o modelo de linguagem de acordo com o tipo codificação do texto.
@@ -560,7 +560,7 @@ class TextoTransformer:
                           mostra_barra_progresso: bool = False,
                           converte_para_numpy: bool = False,
                           device: str = None,
-                          estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN):
+                          estrategia_pooling: Union[int, EstrategiasPooling] = EstrategiasPooling.MEAN) -> list:
         '''
         De um texto (string ou uma lista de strings) retorna os embeddings do texto consolidados dos tokens utilizando estratégia pooling MEAN e MAX.         
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
@@ -913,7 +913,7 @@ class TextoTransformer:
                               tamanho_lote: int = 32, 
                               mostra_barra_progresso: bool = False,
                               converte_para_numpy: bool = False,
-                              device: str = None):      
+                              device: str = None) -> dict:      
         
         '''                
         De um texto (string ou uma lista de strings) retorna a codificação das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -1057,6 +1057,7 @@ class TextoTransformer:
         Retorna um dicionário com as seguintes chaves:
            `texto_original` - Uma lista com os textos originais.  
            `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
+           `input_ids` - Uma lista com os textos indexados.
            `token_embeddings` - Uma lista com os embeddings dos tokens.
         '''
 
@@ -1076,7 +1077,8 @@ class TextoTransformer:
         # Acumula a saída do método
         saida = {}
         saida.update({'texto_original' : [],
-                      'tokens_texto_mcl' : [],                      
+                      'tokens_texto_mcl' : [],
+                      'input_ids' : [],
                       'token_embeddings': []
                      }
         )
@@ -1088,11 +1090,15 @@ class TextoTransformer:
             lista_token_embeddings = texto_embeddings['token_embeddings'][i][1:-1]
 
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+            lista_input_ids = texto_embeddings['input_ids'][i][1:-1]
+
+            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
+            lista_tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
 
             # Acumula a saída do método             
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
-            saida['tokens_texto_mcl'].append(tokens_texto_mcl)
+            saida['tokens_texto_mcl'].append(lista_tokens_texto_mcl)
+            saida['input_ids'].append(lista_input_ids)
             # Converte o tensor de 2 dimensões(token x embeddings) para uma lista de token de embeddings
             saida['token_embeddings'].append([emb for emb in lista_token_embeddings])
 
@@ -1100,19 +1106,20 @@ class TextoTransformer:
         if entrada_eh_string:
             saida['texto_original'] = saida['texto_original'][0]
             saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
+            saida['input_ids'] = saida['input_ids'][0]
             saida['token_embeddings'] = saida['token_embeddings'][0]
 
         return saida
     
     # ============================
-    def getAutoModel(self):
+    def getModel(self):
         '''
         Recupera o modelo.
         '''        
         return self.auto_model
 
     # ============================
-    def getAutoTokenizer(self):
+    def getTokenizer(self):
         '''
         Recupera o tokenizador.
         '''

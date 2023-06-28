@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 class TestMedida(unittest.TestCase):
 
-    # Testes similaridadeCosenoMatriz_1D
-    def test_similaridadeCosenoMatriz_1D(self):
-        logger.info("Testando o similaridadeCosenoMatriz_1D")
+    # Testes similaridadeCossenoMatriz_1D
+    def test_similaridadeCossenoMatriz_1D(self):
+        logger.info("Testando o similaridadeCossenoMatriz_1D")
         
         # Valores de entrada
         a = [1.0, 2.0, 3.0, 4.0]
@@ -28,11 +28,12 @@ class TestMedida(unittest.TestCase):
         # Saída esperada
         saidaEsperada = 0.9898030757904053
         
+        # Testa a saída e a saída esperada
         self.assertEqual(saidaEsperada, saida)
         
-    # Testes similaridadeCosenoMatriz_2D
-    def test_similaridadeCosenoMatriz_2D(self):
-        logger.info("Testando o similaridadeCosenoMatriz_2D")
+    # TestessimilaridadeCossenoMatriz_2D
+    def test_similaridadeCossenoMatriz_2D(self):
+        logger.info("Testando o similaridadeCossenoMatriz_2D")
         
         # Valores de entrada
         a = [[1.0, 2.0, 3.0, 4.0],[1.0, 2.0 ,5.0, 6.0]]
@@ -52,12 +53,13 @@ class TestMedida(unittest.TestCase):
         
         # Converte todos os valores para float32
         saidaEsperada = saidaEsperada.astype(numpy.float32)
-                
+          
+        # Testa a saída e a saída esperada      
         self.assertTrue((saida == saidaEsperada).all())
                 
-    # Testes similaridadeCoseno
-    def test_similaridadeCoseno(self):
-        logger.info("Testando o similaridadeCoseno(a, b)")
+    # Testes similaridadeCosseno
+    def test_similaridadeCosseno(self):
+        logger.info("Testando o similaridadeCosseno(a, b)")
         
         # Valores de entrada
         a = [1, 2, 3, 4]
@@ -69,6 +71,7 @@ class TestMedida(unittest.TestCase):
         # Saída esperada
         saidaEsperada = 0.9898030839149452
         
+        # Testa a saída e a saída esperada
         self.assertEqual(saidaEsperada, saida)
 
     # Testes distanciaEuclidiana
@@ -84,7 +87,8 @@ class TestMedida(unittest.TestCase):
         
         # Saída esperada
         saidaEsperada = 2.
-                
+        
+        # Testa a saída e a saída esperada   
         self.assertEqual(saidaEsperada, saida)        
 
     # Testes distanciaManhattan
@@ -101,6 +105,7 @@ class TestMedida(unittest.TestCase):
         # Saída esperada
         saidaEsperada = 2
         
+        # Testa a saída e a saída esperada
         self.assertEqual(saidaEsperada, saida)             
    
    

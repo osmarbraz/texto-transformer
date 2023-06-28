@@ -60,7 +60,7 @@ def removeTags(texto: str):
       `texto` - Texto com tags a serem removidas.
     
     Retorno:
-       O texto sem as tags.      
+       O texto sem as tags.
     '''
      
     texto_limpo = re.compile('<.*?>')
@@ -170,7 +170,7 @@ def limpezaTexto(texto: str):
         
     return texto
 
-# ============================    
+# ============================
 def tamanhoTexto(texto: Union[List[int], List[List[int]]]):
     '''                
     Função de ajuda para obter o comprimento do texto. O texto pode ser uma lista de ints (o que significa um único texto como entrada) ou uma tupla de lista de ints (representando várias entradas de texto para o modelo).
@@ -195,4 +195,27 @@ def tamanhoTexto(texto: Union[List[int], List[List[int]]]):
                 return len(texto)
             else:
                 # Soma do comprimento de strings individuais
-                return sum([len(t) for t in texto])      
+                return sum([len(t) for t in texto])
+
+def getIndexTokenTexto(lista_tokens: List[str], token : str) -> List[int]:
+    '''
+    Recupera os indíces do token especificado token na lista de tokens.
+    
+    Parâmetros:
+       `lista_tokens` - Uma lista de string(token).
+       `token` - Um token a ser procurado na lista.
+    
+    Retorno:
+       `lista_index` - Uma lista as posições do token na lista.
+    '''
+    # Lista com os índices do token na lista
+    lista_index = []
+
+    # Percorre a lista de tokens
+    for i, token_lista in enumerate(lista_tokens):
+        # Se o token for igual ao token da lista
+        if token_lista == token:
+            # Adiciona o índice na lista
+            lista_index.append(i)
+    
+    return lista_index            

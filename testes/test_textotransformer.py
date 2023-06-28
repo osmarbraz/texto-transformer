@@ -9,7 +9,8 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
-from textotransformer.mensurador.medidas import similaridadeCosseno
+from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
+from textotransformer.util.utiltexto import getIndexTokenTexto
 
 logger = logging.getLogger(__name__)
 
@@ -165,11 +166,12 @@ class TestTextTransformer(unittest.TestCase):
         saida = self.modelo.getCodificacao(texto)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
        # Testa a saida dos valores das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
     
     # Testes getCodificacaoGranularidade0
@@ -183,11 +185,12 @@ class TestTextTransformer(unittest.TestCase):
         saida = self.modelo.getCodificacao(texto,granularidade_texto=0)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
         # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
 
     # Testes getCodificacaoTexto string
@@ -465,16 +468,18 @@ class TestTextTransformer(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
         # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
         
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['tokens_texto_mcl']), 8)
         self.assertEqual(len(saida['token_embeddings']), 8)
+        self.assertEqual(len(saida['input_ids']), 8)
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
@@ -492,11 +497,12 @@ class TestTextTransformer(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3)
+        self.assertEqual(len(saida), 4)
                 
          # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
         
         # Testa a saida dos valores das chaves
@@ -505,6 +511,11 @@ class TestTextTransformer(unittest.TestCase):
         # Testa a quantidde de tokens das textos
         self.assertEqual(len(saida['tokens_texto_mcl'][0]), 8)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 9)
+        # Testa a quantidade de ids
+        self.assertEqual(len(saida['input_ids']), 2)
+        # Testa a quantidde de tokens das textos
+        self.assertEqual(len(saida['input_ids'][0]), 8)
+        self.assertEqual(len(saida['input_ids'][1]), 9)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['token_embeddings']), 2)
         # Testa a quantidde de tokens das textos
@@ -547,10 +558,11 @@ class TestTextTransformer(unittest.TestCase):
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
     # Testes getMedidasTextoPalavraRelevante_0
     def test_getMedidasTexto_PalavraRelevante_0(self):
@@ -572,10 +584,11 @@ class TestTextTransformer(unittest.TestCase):
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
     # Testes getMedidasTextoPalavraRelevante_1
     def test_getMedidasTexto_PalavraRelevante_1(self):
@@ -597,10 +610,11 @@ class TestTextTransformer(unittest.TestCase):
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+        # Compara somente n casas decimais
+        casas_decimais = 5        
+        self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
 
     # Testes getMedidasTextoPalavraRelevante_2
     def test_getMedidasTexto_PalavraRelevante_2(self):
@@ -622,13 +636,14 @@ class TestTextTransformer(unittest.TestCase):
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
-        # Compara somente 5 casas decimais
-        self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
-        self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
-
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
+        
     # Testes getEmbeddingTexto e similaridadeCosseno
-    def test_getgetEmbeddingTexto_similaridadeCosseno(self):
+    def test_getEmbeddingTexto_similaridadeCosseno(self):
         logger.info("Rodando .getEmbeddingTexto(texto) e similaridadeCosseno(embedding1, embedding2))")
         
         # Valores de entrada
@@ -637,24 +652,130 @@ class TestTextTransformer(unittest.TestCase):
         texto3 = "Sujei a manga da camisa."
 
         # Valores de saída
+        # Recupera os embeddings dos textos
         embeddingTexto1 = self.modelo.getEmbeddingTexto(texto1)
         embeddingTexto2 = self.modelo.getEmbeddingTexto(texto2)
         embeddingTexto3 = self.modelo.getEmbeddingTexto(texto3)
 
+        # Avalia a similaridade entre os embeddings dos textos
         sim12 = similaridadeCosseno(embeddingTexto1, embeddingTexto2)
         sim13 = similaridadeCosseno(embeddingTexto1, embeddingTexto3)
         sim23 = similaridadeCosseno(embeddingTexto2, embeddingTexto3)
         
         # Valores esperados
-        sim12Espeperado = 0.7183282375335693
-        sim13Espeperado = 0.5837799310684204
-        sim23Espeperado = 0.6247625350952148
+        sim12Esperado = 0.7183282375335693
+        sim13Esperado = 0.5837799310684204
+        sim23Esperado = 0.6247625350952148
         
-        #Compara somente 5 casas decimais
-        self.assertEqual(round(sim12,5), round(sim12Espeperado,5))
-        self.assertEqual(round(sim13,5), round(sim13Espeperado,5))
-        self.assertEqual(round(sim23,5), round(sim23Espeperado,5))    
+        #Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
         
+       
+    # Testes getCodificacaoToken e similaridadeCosseno
+    def test_getCodificacaoToken_similaridadeCosseno(self):
+        logger.info("Rodando .getCodificacaoToken(texto) e similaridadeCosseno(embedding1, embedding2))")
+        
+        # Valores de entrada
+        texto = "Depois de roubar o cofre do banco, o ladrão de banco foi visto sentado no banco da praça central."
+
+        # Valores de saída
+        saida = self.modelo.getCodificacaoToken(texto)
+        
+        # Recupera os indices do token "banco" no texto (7,13,18)
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "banco")
+                
+        # Recupera os embeddings da saída do método de acordo com os índices
+        embedToken1 = saida['token_embeddings'][idx_tokens[0]]
+        embedToken2 = saida['token_embeddings'][idx_tokens[1]]
+        embedToken3 = saida['token_embeddings'][idx_tokens[2]]
+        
+        # Mensura a similaridade do cosseno
+        sim12 = similaridadeCosseno(embedToken1,embedToken2)
+        sim13 = similaridadeCosseno(embedToken1,embedToken3)
+        sim23 = similaridadeCosseno(embedToken2,embedToken3)
+                        
+        # Valores esperados
+        sim12Esperado = 0.8817520141601562
+        sim13Esperado = 0.7598233222961426
+        sim23Esperado = 0.7125182151794434
+        
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
+        
+    # Testes getCodificacaoToken e distanciaEuclidiana
+    def test_getCodificacaoToken_distanciaEuclidiana(self):
+        logger.info("Rodando .getCodificacaoToken(texto) e distanciaEuclidiana(embedding1, embedding2))")
+        
+        # Valores de entrada
+        texto = "Depois de roubar o cofre do banco, o ladrão de banco foi visto sentado no banco da praça central."
+
+        # Valores de saída
+        saida = self.modelo.getCodificacaoToken(texto)
+        
+        # Recupera os indices do token "banco" no texto (7,13,18)
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "banco")
+                
+        # Recupera os embeddings da saída do método de acordo com os índices
+        embedToken1 = saida['token_embeddings'][idx_tokens[0]]
+        embedToken2 = saida['token_embeddings'][idx_tokens[1]]
+        embedToken3 = saida['token_embeddings'][idx_tokens[2]]
+        
+        # Mensura a distância Euclidiana
+        dif12 = distanciaEuclidiana(embedToken1,embedToken2)
+        dif13 = distanciaEuclidiana(embedToken1,embedToken3)
+        dif23 = distanciaEuclidiana(embedToken2,embedToken3)
+                        
+        # Valores esperados
+        dif12Esperado = 5.9522786140441895
+        dif13Esperado = 8.741547584533691
+        dif23Esperado = 9.756644248962402
+        
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 
+       
+
+    # Testes getCodificacaoToken e distanciaManhattan
+    def test_getCodificacaoToken_distanciaManhattan(self):
+        logger.info("Rodando .getCodificacaoToken(texto) e distanciaManhattan(embedding1, embedding2))")
+        
+        # Valores de entrada
+        texto = "Depois de roubar o cofre do banco, o ladrão de banco foi visto sentado no banco da praça central."
+
+        # Valores de saída
+        saida = self.modelo.getCodificacaoToken(texto)
+        
+        # Recupera os indices do token "banco" no texto (7,13,18)
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "banco")
+                
+        # Recupera os embeddings da saída do método de acordo com os índices
+        embedToken1 = saida['token_embeddings'][idx_tokens[0]]
+        embedToken2 = saida['token_embeddings'][idx_tokens[1]]
+        embedToken3 = saida['token_embeddings'][idx_tokens[2]]
+        
+        # Mensura a distância Euclidiana
+        dif12 = distanciaManhattan(embedToken1,embedToken2)
+        dif13 = distanciaManhattan(embedToken1,embedToken3)
+        dif23 = distanciaManhattan(embedToken2,embedToken3)
+                        
+        # Valores esperados
+        dif12Esperado = 132.10959
+        dif13Esperado = 190.75372
+        dif23Esperado = 215.54535
+        
+        # Compara somente n casas decimais
+        casas_decimais = 4
+        self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 
                        
 if "__main__" == __name__:
     logger = logging.getLogger()

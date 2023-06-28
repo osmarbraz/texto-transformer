@@ -323,7 +323,7 @@ class Transformer(nn.Module):
         return saida
 
     # ============================
-    def getEmbeddingPrimeiraCamadaRede(self, saida_rede: dict):
+    def getEmbeddingPrimeiraCamadaRede(self, saida_rede: dict) -> list:
         '''
         Retorna os embeddings extraído da primeira camada do transformer.
 
@@ -343,7 +343,7 @@ class Transformer(nn.Module):
         return resultado
 
     # ============================
-    def getEmbeddingPenultimaCamada(self, saida_rede: dict):
+    def getEmbeddingPenultimaCamada(self, saida_rede: dict) -> list:
         '''
         Retorna os embeddings extraído da penúltima camada do transformer.
         
@@ -362,7 +362,7 @@ class Transformer(nn.Module):
         return resultado
 
     # ============================
-    def getEmbeddingUltimaCamada(self, saida_rede: dict):
+    def getEmbeddingUltimaCamada(self, saida_rede: dict) -> list:
         '''
         Retorna os embeddings extraído da última camada do transformer.
         
@@ -381,7 +381,7 @@ class Transformer(nn.Module):
         return resultado        
 
      # ============================
-    def getEmbeddingSoma4UltimasCamadas(self, saida_rede: dict):
+    def getEmbeddingSoma4UltimasCamadas(self, saida_rede: dict) -> list:
         '''        
         Retorna a soma dos embeddings extraído das 4 últimas camada do transformer.
      
@@ -413,7 +413,7 @@ class Transformer(nn.Module):
         return resultado
 
     # ============================
-    def getEmbeddingConcat4UltimasCamadas(self, saida_rede: dict):
+    def getEmbeddingConcat4UltimasCamadas(self, saida_rede: dict) -> list:
         '''        
         Retorna a concatenação dos embeddings das 4 últimas camadas do transformer.
              
@@ -446,7 +446,7 @@ class Transformer(nn.Module):
         return resultado
 
     # ============================
-    def getEmbeddingSomaTodasAsCamada(self, saida_rede: dict):
+    def getEmbeddingSomaTodasAsCamada(self, saida_rede: dict) -> list:
         '''
         Retorna a soma dos embeddings extraído de todas as camadas do transformer.
                    
@@ -479,7 +479,7 @@ class Transformer(nn.Module):
 
     # ============================
     def getSaidaRedeCamada(self, texto: Union[str, dict], 
-                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA):
+                           abordagem_extracao_embeddings_camadas: Union[int, AbordagemExtracaoEmbeddingsCamadas] = AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA) -> dict:
         '''
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
@@ -613,7 +613,7 @@ class Transformer(nn.Module):
            `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
            `dic_excecao_menor` = Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
                
-        Retorna um dicionário com as seguintes chaves:          
+        Retorna um dicionário com as seguintes chaves: 
            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de pln.
            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.

@@ -128,11 +128,12 @@ class TestTextTransformerNumpy(unittest.TestCase):
         saida = self.modelo.getCodificacao(texto)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
        # Testa a saida dos valores das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
     
     # Testes getCodificacaoGranularidade0
@@ -146,11 +147,12 @@ class TestTextTransformerNumpy(unittest.TestCase):
         saida = self.modelo.getCodificacao(texto,granularidade_texto=0, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
         # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
 
     # Testes getCodificacaoTexto string
@@ -428,16 +430,18 @@ class TestTextTransformerNumpy(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3) 
+        self.assertEqual(len(saida), 4) 
         
         # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
         
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['tokens_texto_mcl']), 8)
         self.assertEqual(len(saida['token_embeddings']), 8)
+        self.assertEqual(len(saida['input_ids']), 8)
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
@@ -455,11 +459,12 @@ class TestTextTransformerNumpy(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto, converte_para_numpy=True)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 3)
+        self.assertEqual(len(saida), 4)
                 
          # Testa o nome das chaves
         self.assertTrue("tokens_texto_mcl" in saida)
         self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
         self.assertTrue("texto_original" in saida)
         
         # Testa a saida dos valores das chaves
@@ -468,6 +473,11 @@ class TestTextTransformerNumpy(unittest.TestCase):
         # Testa a quantidde de tokens das textos
         self.assertEqual(len(saida['tokens_texto_mcl'][0]), 8)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 9)
+        # Testa a quantidade de ids
+        self.assertEqual(len(saida['input_ids']), 2)
+        # Testa a quantidde de tokens das textos
+        self.assertEqual(len(saida['input_ids'][0]), 8)
+        self.assertEqual(len(saida['input_ids'][1]), 9)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['token_embeddings']), 2)
         # Testa a quantidde de tokens das textos
