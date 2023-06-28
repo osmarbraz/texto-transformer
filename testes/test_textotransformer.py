@@ -9,6 +9,7 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
+from textotransformer.mensurador.medidas import similaridadeCosseno
 
 logger = logging.getLogger(__name__)
 
@@ -536,6 +537,7 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de saída
         saida = self.modelo.getMedidasTexto(texto)
         
+        # Valores esperados
         CcosEsperado = 0.7125453352928162                
         CeucEsperado = 5.883016586303711
         CmanEsperado = 125.89885711669922
@@ -560,6 +562,7 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
+        # Valores esperados
         CcosEsperado = 0.7125453352928162                
         CeucEsperado = 5.883016586303711
         CmanEsperado = 125.89885711669922
@@ -584,6 +587,7 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
+        # Valores esperados
         CcosEsperado = 0.726082324981689              
         CeucEsperado = 5.497143745422363
         CmanEsperado = 117.38613891601562
@@ -608,6 +612,7 @@ class TestTextTransformer(unittest.TestCase):
         # Valores de saída
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=2)
         
+        # Valores esperados
         CcosEsperado = 0.0                
         CeucEsperado = 0.0
         CmanEsperado = 0.0
@@ -620,7 +625,36 @@ class TestTextTransformer(unittest.TestCase):
         # Compara somente 5 casas decimais
         self.assertEqual(round(saida['cos'],5), round(CcosEsperado,5))
         self.assertEqual(round(saida['euc'],5), round(CeucEsperado,5))
-        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))    
+        self.assertEqual(round(saida['man'],5), round(CmanEsperado,5))
+
+    # Testes getEmbeddingTexto e similaridadeCosseno
+    def test_getgetEmbeddingTexto_similaridadeCosseno(self):
+        logger.info("Rodando .getEmbeddingTexto(texto) e similaridadeCosseno(embedding1, embedding2))")
+        
+        # Valores de entrada
+        texto1 = "Adoro sorvete de manga."
+        texto2 = "A manga é uma fruta doce."
+        texto3 = "Sujei a manga da camisa."
+
+        # Valores de saída
+        embeddingTexto1 = self.modelo.getEmbeddingTexto(texto1)
+        embeddingTexto2 = self.modelo.getEmbeddingTexto(texto2)
+        embeddingTexto3 = self.modelo.getEmbeddingTexto(texto3)
+
+        sim12 = similaridadeCosseno(embeddingTexto1, embeddingTexto2)
+        sim13 = similaridadeCosseno(embeddingTexto1, embeddingTexto3)
+        sim23 = similaridadeCosseno(embeddingTexto2, embeddingTexto3)
+        
+        # Valores esperados
+        sim12Espeperado = 0.7183282375335693
+        sim13Espeperado = 0.5837799310684204
+        sim23Espeperado = 0.6247625350952148
+        
+        #Compara somente 5 casas decimais
+        self.assertEqual(round(sim12,5), round(sim12Espeperado,5))
+        self.assertEqual(round(sim13,5), round(sim13Espeperado,5))
+        self.assertEqual(round(sim23,5), round(sim23Espeperado,5))    
+        
                        
 if "__main__" == __name__:
     logger = logging.getLogger()
