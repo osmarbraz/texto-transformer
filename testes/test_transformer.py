@@ -167,12 +167,12 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 10) #Tokens
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], tuple))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))                   
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))         
+        self.assertIsInstance(saida['all_layer_embeddings'], tuple)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], torch.Tensor)                 
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)       
         
     # Testes getSaidaRede Lista de Strings
     def test_getSaidaRede_lista_string(self):
@@ -225,12 +225,12 @@ class TestTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) #Tokens
                 
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], tuple))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))                   
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor)) 
+        self.assertIsInstance(saida['all_layer_embeddings'], tuple)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], torch.Tensor)                 
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)
 
     # Testes getSaidaRedeCamada String
     def test_getSaidaRedeCamada_string(self):

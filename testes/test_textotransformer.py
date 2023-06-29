@@ -93,12 +93,12 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
         # Testa o tipo das saida dos valores das chaves                
-        self.assertTrue(isinstance(saida['token_embeddings'], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))
+        self.assertIsInstance(saida['all_layer_embeddings'], list)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], torch.Tensor)
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)
                 
     # Testes getCodificacaoCompleta lista de string
     def test_getCodificacaoCompleta_list_string(self):
@@ -142,18 +142,18 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
                 
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], list))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['token_embeddings'][1][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'], list)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0][0], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][1][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['all_layer_embeddings'], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][0][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1], list))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['all_layer_embeddings'][1][0][0], torch.Tensor))
+        self.assertIsInstance(saida['all_layer_embeddings'], list)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], list)
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0][0], torch.Tensor)
+        self.assertIsInstance(saida['all_layer_embeddings'][1], list)
+        self.assertIsInstance(saida['all_layer_embeddings'][1][0], torch.Tensor)
+        self.assertIsInstance(saida['all_layer_embeddings'][1][0][0], torch.Tensor)
             
     # Testes getCodificacao
     def test_getCodificacao_string(self):
@@ -221,8 +221,8 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'], torch.Tensor))        
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'], torch.Tensor))
+        self.assertIsInstance(saida['texto_embeddings_MEAN'], torch.Tensor)        
+        self.assertIsInstance(saida['texto_embeddings_MAX'], torch.Tensor)
         
     # Testes getCodificacaoTexto lista_string
     def test_getCodificacaoTexto_lista_string(self):
@@ -253,13 +253,13 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1])
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['texto_embeddings_MEAN'][1], torch.Tensor))
+        self.assertIsInstance(saida['texto_embeddings_MEAN'], list)
+        self.assertIsInstance(saida['texto_embeddings_MEAN'][0], torch.Tensor)
+        self.assertIsInstance(saida['texto_embeddings_MEAN'][1], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['texto_embeddings_MAX'][1], torch.Tensor))        
+        self.assertIsInstance(saida['texto_embeddings_MAX'], list)
+        self.assertIsInstance(saida['texto_embeddings_MAX'][0], torch.Tensor)
+        self.assertIsInstance(saida['texto_embeddings_MAX'][1], torch.Tensor)        
 
     # Testes getCodificacaoSentenca string
     def test_getCodificacaoSentenca_string(self):
@@ -290,11 +290,11 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0], torch.Tensor))
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0], torch.Tensor))
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][0], torch.Tensor)
 
     # Testes getCodificacaoSentenca lista string
     def test_getCodificacaoSentenca_lista_string(self):
@@ -334,19 +334,19 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][0][1], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][1], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MEAN'][1][0], torch.Tensor))
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][0], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][0][0], torch.Tensor)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][0][1], torch.Tensor)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][1], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MEAN'][1][0], torch.Tensor)
                 
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][0], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][0][1], torch.Tensor))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][1], list))
-        self.assertTrue(isinstance(saida['sentenca_embeddings_MAX'][1][0], torch.Tensor))
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][0], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][0][0], torch.Tensor)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][0][1], torch.Tensor)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][1], list)
+        self.assertIsInstance(saida['sentenca_embeddings_MAX'][1][0], torch.Tensor)
 
     # Testes getCodificacaoPalavra string
     def test_getCodificacaoPalavra_string(self):
@@ -383,11 +383,11 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'], list))
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0], torch.Tensor))
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][0], torch.Tensor)
         
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'], list))
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0], torch.Tensor))
+        self.assertIsInstance(saida['palavra_embeddings_MAX'], list)
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][0], torch.Tensor)
         
     # Testes getCodificacaoPalavra lista de string
     def test_getCodificacaoPalavra_lista_string(self):
@@ -437,25 +437,25 @@ class TestTextTransformer(unittest.TestCase):
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'], list))
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
         # Tipo do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0], list))
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][0], list)
         # Tipo do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][1], list))
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][1], list)
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][0][0], torch.Tensor))
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][0][0], torch.Tensor)
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MEAN'][1][0], torch.Tensor)) 
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][1][0], torch.Tensor) 
         # MAX
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'], list))
+        self.assertIsInstance(saida['palavra_embeddings_MAX'], list)
         # Tipo do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0], list))
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][0], list)
         # Tipo do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][1], list))
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][1], list)
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][0][0], torch.Tensor))
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][0][0], torch.Tensor)
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['palavra_embeddings_MAX'][1][0], torch.Tensor))          
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][1][0], torch.Tensor)          
              
     # Testes getCodificacaoToken string
     def test_getCodificacaoToken_string(self):
@@ -483,8 +483,8 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], list))
-        self.assertTrue(isinstance(saida['token_embeddings'][0], torch.Tensor))        
+        self.assertIsInstance(saida['token_embeddings'], list)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)        
         
     # Testes getCodificacaoToken lista de string
     def test_getCodificacaoToken_lista_string(self):
@@ -528,15 +528,15 @@ class TestTextTransformer(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1])
         
         # Testa o tipo das saida dos valores das chaves        
-        self.assertTrue(isinstance(saida['token_embeddings'], list))
+        self.assertIsInstance(saida['token_embeddings'], list)
         # Tipo do primeiro texto
-        self.assertTrue(isinstance(saida['token_embeddings'][0], list))
+        self.assertIsInstance(saida['token_embeddings'][0], list)
         # Tipo do segundo texto
-        self.assertTrue(isinstance(saida['token_embeddings'][1], list))
+        self.assertIsInstance(saida['token_embeddings'][1], list)
         # Tipo dos elementos da lista do primeiro texto
-        self.assertTrue(isinstance(saida['token_embeddings'][0][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'][0][0], torch.Tensor)
         # Tipo dos elementos da lista do segundo texto
-        self.assertTrue(isinstance(saida['token_embeddings'][1][0], torch.Tensor))
+        self.assertIsInstance(saida['token_embeddings'][1][0], torch.Tensor)
     
     # Testes getMedidasTexto
     def test_getMedidasTexto(self):
