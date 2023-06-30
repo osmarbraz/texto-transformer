@@ -144,6 +144,8 @@ Aqui os métodos principais para recuperar embeddings de textos, sentenças, pal
 
 A lista completa dos modelos de linguagem pré-treiandos podem ser consultados no site da [Huggingface](https://huggingface.co/models).
 
+A lista completa dos modelos da ferramenta de PLN podem ser consultados no site do [spaCy](hhttps://spacy.io/models).
+
 ## Dependências
 
 - transformers==4.26.1

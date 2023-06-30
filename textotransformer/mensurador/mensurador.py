@@ -218,9 +218,9 @@ class Mensurador:
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
         #print(sentenca_tokenizada)
+        
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada.remove('[CLS]')
-        sentenca_tokenizada.remove('[SEP]')    
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
 
         # Localiza os índices dos tokens da sentença no texto
@@ -263,16 +263,15 @@ class Mensurador:
         #print(sentenca_tokenizada_sem_stopword)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada_sem_stopword.remove('[CLS]')
-        sentenca_tokenizada_sem_stopword.remove('[SEP]')    
+        sentenca_tokenizada_sem_stopword = self.transformer.removeTokensEspeciais(sentenca_tokenizada_sem_stopword)        
+        #print(sentenca_tokenizada_sem_stopword)      
         #print(len(sentenca_tokenizada_sem_stopword))
 
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada.remove('[CLS]')
-        sentenca_tokenizada.remove('[SEP]')  
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
 
@@ -332,8 +331,7 @@ class Mensurador:
         sentenca_tokenizada_somente_relevante =  self.transformer.getTextoTokenizado(sentenca_somente_relevante)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada_somente_relevante.remove('[CLS]')
-        sentenca_tokenizada_somente_relevante.remove('[SEP]')  
+        sentenca_tokenizada_somente_relevante = self.transformer.removeTokensEspeciais(sentenca_tokenizada_somente_relevante)
         #print(sentenca_tokenizada_somente_relevante)
         #print(len(sentenca_tokenizada_somente_relevante))
 
@@ -341,8 +339,7 @@ class Mensurador:
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada.remove('[CLS]')
-        sentenca_tokenizada.remove('[SEP]')  
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
 

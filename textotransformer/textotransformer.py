@@ -45,6 +45,7 @@ class TextoTransformer:
        `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
        `modelo_spacy` - Nome do modelo spaCy a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.
        `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
+       `do_lower_case` - Se True, converte todas as letras para minúsculas antes da tokenização. Valor default 'False'.
        `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
     ''' 
     
@@ -52,6 +53,7 @@ class TextoTransformer:
     def __init__(self, pretrained_model_name_or_path: str ="neuralmind/bert-base-portuguese-cased", 
                        modelo_spacy: str ="pt_core_news_lg",
                        abordagem_extracao_embeddings_camadas: int = 2,
+                       do_lower_case: bool = False,
                        device = None):
                        
         # Parâmetro recebido para o modelo de linguagem
@@ -59,6 +61,9 @@ class TextoTransformer:
                
         # Parâmetro recebido para o modelo da ferramenta de pln
         model_args.modelo_spacy = modelo_spacy
+        
+         # Parâmetro recebido para o modelo do_lower_case
+        model_args.do_lower_case = do_lower_case
                 
         # Carrega o modelo de linguagem da classe transformador
         self.transformer = Transformer(modelo_args=model_args)
@@ -388,7 +393,7 @@ class TextoTransformer:
         saida.update({'token_embeddings': [],                        
                       'input_ids': [],
                       'attention_mask': [],
-                      'token_type_ids': [],        
+                      #'token_type_ids': [],        
                       'tokens_texto_mcl': [],
                       'texto_original': [],
                       'all_layer_embeddings': []
@@ -437,7 +442,7 @@ class TextoTransformer:
                     saida['token_embeddings'].append(output_rede['token_embeddings'][i][0:ultimo_mask_id+1])
                     saida['input_ids'].append(output_rede['input_ids'][i][0:ultimo_mask_id+1])
                     saida['attention_mask'].append(output_rede['attention_mask'][i][0:ultimo_mask_id+1])                    
-                    saida['token_type_ids'].append(output_rede['token_type_ids'][i][0:ultimo_mask_id+1])
+                    #saida['token_type_ids'].append(output_rede['token_type_ids'][i][0:ultimo_mask_id+1])
                     saida['tokens_texto_mcl'].append(output_rede['tokens_texto_mcl'][i][0:ultimo_mask_id+1])
                     saida['texto_original'].append(output_rede['texto_original'][i])
                     
@@ -448,7 +453,7 @@ class TextoTransformer:
         saida['token_embeddings'] = [saida['token_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['input_ids'] = [saida['input_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['attention_mask'] = [saida['attention_mask'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
-        saida['token_type_ids'] = [saida['token_type_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
+        #saida['token_type_ids'] = [saida['token_type_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['tokens_texto_mcl'] = [saida['tokens_texto_mcl'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['texto_original'] = [saida['texto_original'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['all_layer_embeddings'] = [saida['all_layer_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
@@ -477,12 +482,13 @@ class TextoTransformer:
             saida['token_embeddings'] = saida['token_embeddings'][0]
             saida['input_ids'] = saida['input_ids'][0]
             saida['attention_mask'] = saida['attention_mask'][0]
-            saida['token_type_ids'] = saida['token_type_ids'][0]
+            #saida['token_type_ids'] = saida['token_type_ids'][0]
             saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
             saida['texto_original'] = saida['texto_original'][0]
             saida['all_layer_embeddings'] = saida['all_layer_embeddings'][0]
 
         return saida
+
 
     # ============================
     def getCodificacao(self, texto: Union[str, List[str]],
@@ -814,15 +820,16 @@ class TextoTransformer:
                 sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
                 
                 # Remove os tokens de início e fim da sentença
-                sentenca_tokenizada.remove('[CLS]')
-                sentenca_tokenizada.remove('[SEP]')    
+                sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
                 #print(len(sentenca_tokenizada))
 
                 # Localiza os índices dos tokens da sentença no texto
                 inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
+                #print("inicio:", inicio, "   fim:", fim)
 
                 # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
                 embedding_sentenca = embeddings_texto[inicio:fim + 1]
+                #print("len(embedding_sentenca):", len(embedding_sentenca))
 
                 if isinstance(embedding_sentenca, torch.Tensor): 
                     # Calcula a média dos embeddings dos tokens das sentenças do texto
@@ -982,22 +989,22 @@ class TextoTransformer:
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
 
             # Recupera os embeddings e tokens de palavra            
-            saidaEmbeddingPalavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto,
-                                                                                           tokens_texto_mcl,
-                                                                                           tokens_texto_concatenado,
-                                                                                           self.getPln())
+            saida_embedding_palavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto,
+                                                                                             tokens_texto_mcl,
+                                                                                             tokens_texto_concatenado,
+                                                                                             self.getPln())
 
             # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
-            saida['tokens_texto'].append(saidaEmbeddingPalavra['tokens_texto'])
+            saida['tokens_texto'].append(saida_embedding_palavra['tokens_texto'])
             saida['tokens_texto_mcl'].append(tokens_texto_mcl)
-            saida['tokens_oov_texto_mcl'].append(saidaEmbeddingPalavra['tokens_oov_texto_mcl'])            
+            saida['tokens_oov_texto_mcl'].append(saida_embedding_palavra['tokens_oov_texto_mcl'])            
             saida['tokens_texto_pln'].append(lista_tokens_texto_pln)
-            saida['pos_texto_pln'].append(saidaEmbeddingPalavra['pos_texto_pln'])
+            saida['pos_texto_pln'].append(saida_embedding_palavra['pos_texto_pln'])
             # Lista dos embeddings de palavras com a média dos embeddings dos tokens que formam a palavra
-            saida['palavra_embeddings_MEAN'].append(saidaEmbeddingPalavra['palavra_embeddings_MEAN'])
+            saida['palavra_embeddings_MEAN'].append(saida_embedding_palavra['palavra_embeddings_MEAN'])
             # Lista dos embeddings de palavras com o máximo dos embeddings dos tokens que formam a palavra
-            saida['palavra_embeddings_MAX'].append(saidaEmbeddingPalavra['palavra_embeddings_MAX'])
+            saida['palavra_embeddings_MAX'].append(saida_embedding_palavra['palavra_embeddings_MAX'])
         
         # Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
