@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from torch import Tensor, device
 # Biblioteca do transformer
-from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config, BertModel, AlbertModel, DistilBertModel
+from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config, BertModel, AlbertModel, DistilBertModel, RobertaModel
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
@@ -548,7 +548,7 @@ class Transformer(nn.Module):
                             if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.TODAS_AS_CAMADAS:
                                 embedding_extraido_abordagem = self.getEmbeddingSomaTodasAsCamada(saida_rede)
                             else:                                
-                                logger.info("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
+                                logger.error("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
         
         # Verifica se foi realizado a extração
         if embedding_extraido_abordagem != None:
@@ -556,7 +556,7 @@ class Transformer(nn.Module):
           saida_rede.update({'embedding_extraido': embedding_extraido_abordagem,  # Embeddings extraídos usando abordagem de extração
                              'abordagem_extracao_embeddings_camadas': abordagem_extracao_embeddings_camadas})  # Tipo da abordagem da extração  dos embeddings
         else:
-          logger.info("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
+          logger.error("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
           saida_rede = None  
 
         return saida_rede
@@ -614,10 +614,13 @@ class Transformer(nn.Module):
                                                                    dic_excecao_maior = dic_excecao_maior,
                                                                    dic_excecao_menor = dic_excecao_menor)
             else:
-                # Tokenização padrão Distilbert
+                # Tokenização padrão Robert
                 if "Ġ" in tokens_texto_mcl:
                     # TODO: Implementar tokenização de palavra padrão Roberta
                     return None
+                else:
+                    logger.error("Não encontrei um tokenizador de palavras para o modelo {}.".format(self.auto_model)) 
+                    return  None 
 
 
     def _inicializaDicionarioExcecao(self,
@@ -894,16 +897,16 @@ class Transformer(nn.Module):
         # Verificação se as listas estão com o mesmo tamanho
         #if (len(lista_tokens) != len(lista_tokens_texto_pln)) or (len(lista_palavra_embeddings_MEAN) != len(texto_token)):
         if len(lista_tokens) !=  len(lista_tokens_texto_pln):
-            logger.info("texto                      :{}.".format(tokens_texto_concatenado))            
-            logger.info("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
-            logger.info("lista_pos_texto_pln        :{}.".format(lista_pos_texto_pln))
-            logger.info("texto_tokenizado_mcl       :{}.".format(tokens_texto_mcl))
-            logger.info("lista_tokens               :{}.".format(lista_tokens))
-            logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logger.info("lista_embeddings_MEAN      :{}.".format(lista_palavra_embeddings_MEAN))
-            logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_palavra_embeddings_MEAN)))
-            logger.info("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
-            logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
+            logger.error("texto                      :{}.".format(tokens_texto_concatenado))            
+            logger.error("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
+            logger.error("lista_pos_texto_pln        :{}.".format(lista_pos_texto_pln))
+            logger.error("texto_tokenizado_mcl       :{}.".format(tokens_texto_mcl))
+            logger.error("lista_tokens               :{}.".format(lista_tokens))
+            logger.error("len(lista_tokens)          :{}.".format(len(lista_tokens)))
+            logger.error("lista_embeddings_MEAN      :{}.".format(lista_palavra_embeddings_MEAN))
+            logger.error("len(lista_embeddings_MEAN) :{}.".format(len(lista_palavra_embeddings_MEAN)))
+            logger.error("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
+            logger.error("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -954,7 +957,7 @@ class Transformer(nn.Module):
            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
-        print("Rodando padrão albert")
+
         # Inicializa os dicionários de exceção
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
        
@@ -1149,16 +1152,16 @@ class Transformer(nn.Module):
         # Verificação se as listas estão com o mesmo tamanho
         #if (len(lista_tokens) != len(lista_tokens_texto_pln)) or (len(lista_palavra_embeddings_MEAN) != len(texto_token)):
         if len(lista_tokens) !=  len(lista_tokens_texto_pln):
-            logger.info("texto                      :{}.".format(tokens_texto_concatenado))            
-            logger.info("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
-            logger.info("lista_pos_texto_pln        :{}.".format(lista_pos_texto_pln))
-            logger.info("texto_tokenizado_mcl       :{}.".format(tokens_texto_mcl))
-            logger.info("lista_tokens               :{}.".format(lista_tokens))
-            logger.info("len(lista_tokens)          :{}.".format(len(lista_tokens)))
-            logger.info("lista_embeddings_MEAN      :{}.".format(lista_palavra_embeddings_MEAN))
-            logger.info("len(lista_embeddings_MEAN) :{}.".format(len(lista_palavra_embeddings_MEAN)))
-            logger.info("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
-            logger.info("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
+            logger.error("texto                      :{}.".format(tokens_texto_concatenado))            
+            logger.error("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
+            logger.error("lista_pos_texto_pln        :{}.".format(lista_pos_texto_pln))
+            logger.error("texto_tokenizado_mcl       :{}.".format(tokens_texto_mcl))
+            logger.error("lista_tokens               :{}.".format(lista_tokens))
+            logger.error("len(lista_tokens)          :{}.".format(len(lista_tokens)))
+            logger.error("lista_embeddings_MEAN      :{}.".format(lista_palavra_embeddings_MEAN))
+            logger.error("len(lista_embeddings_MEAN) :{}.".format(len(lista_palavra_embeddings_MEAN)))
+            logger.error("lista_embeddings_MAX       :{}.".format(lista_palavra_embeddings_MAX))
+            logger.error("len(lista_embeddings_MAX)  :{}.".format(len(lista_palavra_embeddings_MAX)))
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto

@@ -144,7 +144,7 @@ class TextoTransformer:
             if estrategia_pooling == EstrategiasPooling.MAX:
                 model_args.estrategia_pooling = EstrategiasPooling.MAX.value            
             else:
-                logger.info("Não foi especificado uma estratégia de pooling válida.") 
+                logger.error("Não foi especificado uma estratégia de pooling válida.") 
     
     # ============================
     def _definePalavraRelevante(self, palavra_relevante: Union[int, PalavraRelevante] = PalavraRelevante.ALL):
@@ -171,7 +171,7 @@ class TextoTransformer:
                 if palavra_relevante == PalavraRelevante.NOUN:
                     model_args.palavra_relevante = PalavraRelevante.NOUN.value                    
                 else:
-                    logger.info("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
+                    logger.error("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
     # ============================
     def getMedidasTexto(self, texto: str, 
@@ -557,7 +557,7 @@ class TextoTransformer:
                                                         device=device)
                     
                     else:
-                        logger.info("Granularidade de texto inválida.")
+                        logger.error("Granularidade de texto inválida.")
                         return None
 
     # ============================
@@ -609,7 +609,7 @@ class TextoTransformer:
                                                 converte_para_numpy=converte_para_numpy,
                                                 device=device)['texto_embeddings_MAX']
             else:              
-                logger.info("Não foi especificado uma estratégia de pooling válida.") 
+                logger.error("Não foi especificado uma estratégia de pooling válida.") 
                 return None  
 
     # ============================
@@ -743,7 +743,7 @@ class TextoTransformer:
                                                    converte_para_numpy=converte_para_numpy,
                                                    device=device)['sentenca_embeddings_MAX']
             else:              
-                logger.info("Não foi especificado uma estratégia de pooling válida.") 
+                logger.error("Não foi especificado uma estratégia de pooling válida.") 
                 return None
 
     # ============================    
@@ -912,7 +912,7 @@ class TextoTransformer:
                                                   converte_para_numpy=converte_para_numpy,
                                                   device=device)['palavra_embeddings_MAX']
             else:              
-                logger.info("Não foi especificado uma estratégia de pooling válida.") 
+                logger.error("Não foi especificado uma estratégia de pooling válida.") 
                 return None
             
     # ============================
