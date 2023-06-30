@@ -68,11 +68,11 @@ class TestTransformer(unittest.TestCase):
         # 10 tokens
         
         # Valores de saída
-        saida1 = self.modelo.removeTokensEspeciais(texto1)
+        self.modelo.removeTokensEspeciais(texto1)
         saida2 = self.modelo.removeTokensEspeciais(texto2)
         
         # Testa as saídas
-        self.assertEqual(len(saida1), 8)
+        self.assertEqual(len(texto1), 8)
         self.assertEqual(len(saida2), 8)
     
     #Testes tokenize string

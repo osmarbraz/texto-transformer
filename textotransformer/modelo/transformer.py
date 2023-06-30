@@ -184,7 +184,7 @@ class Transformer(nn.Module):
         return texto_tokenizado
 
     # ============================    
-    def removeTokensEspeciais(self, lista_tokens: List[str]):
+    def removeTokensEspeciais(self, lista_tokens: List[str]) -> List[str]:
         '''
         Remove os tokens especiais '[CLS]' e '[SEP]' ou '<s>' e '</s>' da lista de tokens.
         
@@ -195,13 +195,13 @@ class Transformer(nn.Module):
               Uma lista de tokens sem os tokens especiais '[CLS]' e '[SEP]' ou '<s>' e '</s>'.
         
         '''
-        # BERT e outros
-        if '[CLS]' in lista_tokens:
+        # BERT, DistilBert, Albert e outros        
+        if "[CLS]" in lista_tokens:
             lista_tokens.remove('[CLS]')
             lista_tokens.remove('[SEP]')
         else:
-            # Roberta
-            if '<s>' in lista_tokens:
+            # Roberta            
+            if "<s>" in lista_tokens:
                 lista_tokens.remove('<s>')
                 lista_tokens.remove('</s>')
 
@@ -565,7 +565,7 @@ class Transformer(nn.Module):
     # ============================  
     def getTokensPalavrasEmbeddingsTexto(self, 
                                          embeddings_texto, 
-                                         tokens_texto_mcl,
+                                         tokens_texto_mcl: list[str],
                                          tokens_texto_concatenado: str,
                                          pln: PLN,
                                          dic_excecao_maior:dict = {"":-1,},
@@ -614,7 +614,7 @@ class Transformer(nn.Module):
                                                                    dic_excecao_maior = dic_excecao_maior,
                                                                    dic_excecao_menor = dic_excecao_menor)
             else:
-                # Tokenização padrão Robert
+                # Tokenização padrão Roberta
                 if "Ġ" in tokens_texto_mcl:
                     # TODO: Implementar tokenização de palavra padrão Roberta
                     return None
@@ -680,7 +680,7 @@ class Transformer(nn.Module):
     
     def getTokensPalavrasEmbeddingsTextoBERT(self, 
                                              embeddings_texto, 
-                                             tokens_texto_mcl,
+                                             tokens_texto_mcl: list[str],
                                              tokens_texto_concatenado: str,
                                              pln: PLN,
                                              dic_excecao_maior:dict = {"":-1,},
@@ -895,7 +895,6 @@ class Transformer(nn.Module):
                     pos_wj = indice_token
         
         # Verificação se as listas estão com o mesmo tamanho
-        #if (len(lista_tokens) != len(lista_tokens_texto_pln)) or (len(lista_palavra_embeddings_MEAN) != len(texto_token)):
         if len(lista_tokens) !=  len(lista_tokens_texto_pln):
             logger.error("texto                      :{}.".format(tokens_texto_concatenado))            
             logger.error("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
@@ -929,7 +928,7 @@ class Transformer(nn.Module):
     # Gera os tokens, POS e embeddings de cada texto.
     def getTokensPalavrasEmbeddingsTextoAlbert(self,
                                                embeddings_texto, 
-                                               tokens_texto_mcl,
+                                               tokens_texto_mcl: list[str],
                                                tokens_texto_concatenado: str,
                                                pln: PLN,
                                                dic_excecao_maior:dict = {"":-1,},
@@ -1094,15 +1093,14 @@ class Transformer(nn.Module):
                     
                     # Remove os caracteres SEPARADOR_PALAVRA("_") do token
                     if SEPARADOR_TOKEN in wj:
-                        # Remove os caracteres SEPARADOR_PALAVRA("##") do token
                         palavra_POS = wj[1:]
                     else:                
                         palavra_POS = wj                    
                     
                     indice_token = pos_wj + 1                 
-                    while  ((palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
+                    while ((SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
                        
-                        # Separa a parte do token
+                        # Separa o token
                         parte = tokens_texto_mcl[indice_token]
                   
                         # Concatena com a palavra

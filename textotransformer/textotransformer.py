@@ -393,7 +393,6 @@ class TextoTransformer:
         saida.update({'token_embeddings': [],                        
                       'input_ids': [],
                       'attention_mask': [],
-                      #'token_type_ids': [],        
                       'tokens_texto_mcl': [],
                       'texto_original': [],
                       'all_layer_embeddings': []
@@ -442,7 +441,6 @@ class TextoTransformer:
                     saida['token_embeddings'].append(output_rede['token_embeddings'][i][0:ultimo_mask_id+1])
                     saida['input_ids'].append(output_rede['input_ids'][i][0:ultimo_mask_id+1])
                     saida['attention_mask'].append(output_rede['attention_mask'][i][0:ultimo_mask_id+1])                    
-                    #saida['token_type_ids'].append(output_rede['token_type_ids'][i][0:ultimo_mask_id+1])
                     saida['tokens_texto_mcl'].append(output_rede['tokens_texto_mcl'][i][0:ultimo_mask_id+1])
                     saida['texto_original'].append(output_rede['texto_original'][i])
                     
@@ -453,7 +451,6 @@ class TextoTransformer:
         saida['token_embeddings'] = [saida['token_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['input_ids'] = [saida['input_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['attention_mask'] = [saida['attention_mask'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
-        #saida['token_type_ids'] = [saida['token_type_ids'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['tokens_texto_mcl'] = [saida['tokens_texto_mcl'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['texto_original'] = [saida['texto_original'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
         saida['all_layer_embeddings'] = [saida['all_layer_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
@@ -482,13 +479,11 @@ class TextoTransformer:
             saida['token_embeddings'] = saida['token_embeddings'][0]
             saida['input_ids'] = saida['input_ids'][0]
             saida['attention_mask'] = saida['attention_mask'][0]
-            #saida['token_type_ids'] = saida['token_type_ids'][0]
             saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
             saida['texto_original'] = saida['texto_original'][0]
             saida['all_layer_embeddings'] = saida['all_layer_embeddings'][0]
 
         return saida
-
 
     # ============================
     def getCodificacao(self, texto: Union[str, List[str]],
