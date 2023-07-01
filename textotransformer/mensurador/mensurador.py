@@ -10,7 +10,7 @@ from transformers import RobertaModel
 
 # Bibliotecas próprias
 from textotransformer.modelo.transformer import Transformer
-from textotransformer.modelo.modeloarguments import ModeloArgumentos 
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos 
 from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante

@@ -8,7 +8,7 @@ import unittest
 import torch 
 
 # Bibliotecas próprias
-from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 

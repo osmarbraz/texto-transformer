@@ -17,10 +17,11 @@ from typing import List, Dict, Optional, Union
 import os
 
 # Bibliotecas próprias
-from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.pln.pln import PLN
 
+# Constantes da classe
 PALAVRA_FORA_DO_VOCABULARIO = 1
 PALAVRA_DENTRO_DO_VOCABULARIO = 0
 
@@ -1509,11 +1510,5 @@ class Transformer(nn.Module):
             #tokens_texto_mcl = [tokens_texto_mcl[0][1:]] + tokens_texto_mcl[1:]
             tokens_texto_mcl = [SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
             #print("tokens_texto_mcl 1 :", tokens_texto_mcl)
-        
-        # Se o primeiro token é o TOKEN_ESPECIAL_INICIO e o segundo token tem caracter inicial igual ao separador, remove
-        
-        #if TOKEN_ESPECIAL_INICIO == tokens_texto_mcl[0] and SEPARADOR_TOKEN == tokens_texto_mcl[1][0]:
-        #    tokens_texto_mcl =  [tokens_texto_mcl[0]] + [tokens_texto_mcl[1][1:]] + tokens_texto_mcl[2:]
-        #    #print("tokens_texto_mcl 2 :", tokens_texto_mcl)
         
         return tokens_texto_mcl

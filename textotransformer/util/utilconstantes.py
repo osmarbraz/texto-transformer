@@ -1,5 +1,5 @@
 # Diretório do pacote
-DIRETORIO_TEXTO_TRANSFORMER = 'modelo_linguagem'
+DIRETORIO_TEXTO_TRANSFORMER = 'textotransformer'
 
 # Os nomes do tipo da camada pré-definidos.
 #  - 0 - Primeira                    

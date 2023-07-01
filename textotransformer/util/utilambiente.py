@@ -5,7 +5,7 @@ import logging
 import subprocess
 
 # Bibliotecas próprias
-from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 
 logger = logging.getLogger(__name__)
 

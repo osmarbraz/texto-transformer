@@ -16,7 +16,7 @@ from transformers import RobertaModel
 from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
-from textotransformer.modelo.modeloarguments import ModeloArgumentos
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.modeloenum import EstrategiasPooling, GranularidadeTexto
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
