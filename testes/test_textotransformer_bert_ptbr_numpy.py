@@ -21,6 +21,12 @@ class TestTextTransformer_BERT_ptbr_Numpy(unittest.TestCase):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
         self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
+
+    # Testes TextoTransformer_BERT   
+    def test_textotransformer(self):
+        logger.info("Testando o construtor de TextoTransformer_BERT")
+                
+        self.assertIsNotNone(self.modelo)
        
     # Testes getCodificacaoCompleta string
     def test_getCodificacaoCompleta_string(self):
@@ -60,7 +66,6 @@ class TestTextTransformer_BERT_ptbr_Numpy(unittest.TestCase):
         self.assertIsInstance(saida['all_layer_embeddings'][0], numpy.ndarray)
         self.assertIsInstance(saida['all_layer_embeddings'][0][0], numpy.ndarray)
                 
-    # Testes getCodificacaoCompleta lista de string
     def test_getCodificacaoCompleta_list_string(self):
         logger.info("Testando o getCodificacaoCompleta com lista de strings")
         
@@ -504,6 +509,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformerNumpy")
+    logger.info("Teste TextoTransformer_BERT_Numpy")
     unittest.main()
     

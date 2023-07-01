@@ -25,9 +25,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
                                        modelo_spacy="en_core_web_sm", 
                                        do_lower_case=True) 
     
-    # Testes TextoTransformer   
+    # Testes TextoTransformer_Albert
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer")
+        logger.info("Testando o construtor de TextoTransformer_Albert")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -379,7 +379,10 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 8)
         self.assertEqual(len(saida['palavra_embeddings_MAX']), 8)
+        # Testa o valor dos texto
         self.assertEqual(saida['texto_original'], texto.lower())
+        # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -437,6 +440,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         # Testa o valor dos textos
         self.assertEqual(saida['texto_original'][0], texto[0].lower())
         self.assertEqual(saida['texto_original'][1], texto[1].lower())
+        # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
+        self.assertEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
@@ -784,6 +790,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformerAlbert")
+    logger.info("Teste TextoTransformer_Albert")
     unittest.main()
     

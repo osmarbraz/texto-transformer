@@ -23,9 +23,9 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
         self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
     
-    # Testes TextoTransformer   
+    # Testes TextoTransformer_BERT   
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer")
+        logger.info("Testando o construtor de TextoTransformer_BERT")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -376,7 +376,10 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 5)
         self.assertEqual(len(saida['palavra_embeddings_MAX']), 5)
+        # Testa o valor do texto
         self.assertEqual(saida['texto_original'], texto)
+        # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'], [1, 1, 0, 1, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -434,6 +437,9 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         # Testa o valor dos textos
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])
+         # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [1, 1, 0, 1, 0])
+        self.assertEqual(saida['tokens_oov_texto_mcl'][1], [1, 0, 1, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
@@ -781,6 +787,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer")
+    logger.info("Teste TextoTransformer_BERT")
     unittest.main()
     

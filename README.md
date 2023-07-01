@@ -44,7 +44,6 @@ embeddings_texto = modelo.getEmbeddingTexto(textos)
 for texto, embedding in zip(textos, embeddings_texto):
     print("Texto:", texto)
     print("Embedding:", embedding)
-    print("")
 
 #Resultado
 #Texto: Bom Dia, professor.

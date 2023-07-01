@@ -5,6 +5,8 @@ import logging
 
 # Biblioteca de aprendizado de máquina
 import torch 
+# Biblioteca do transformer
+from transformers import RobertaModel
 
 # Bibliotecas próprias
 from textotransformer.modelo.transformer import Transformer
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 class Mensurador:
 
     ''' 
-    Realiza mensurações em textos.
+    Realiza mensurações de embeddings em textos.
      
     Parâmetros:
        `modelo_args` - Parâmetros do modelo de linguagem.
@@ -197,8 +199,9 @@ class Mensurador:
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoALL(self, embedding_texto, 
-                                              texto, 
-                                              sentenca):
+                                              texto: str, 
+                                              sentenca: str,
+                                              posicao_sentenca: int):
         '''
         Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         
@@ -206,15 +209,16 @@ class Mensurador:
            `embedding_texto` - Embeddings do texto.
            `texto` - Texto.
            `sentenca` - Sentença.
+           `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
            Uma lista com os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         '''
-            
+                   
         # Tokeniza o texto
         texto_tokenizado =  self.transformer.getTextoTokenizado(texto)
         #print(texto_tokenizado)
-
+        
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
         #print(sentenca_tokenizada)
@@ -222,10 +226,18 @@ class Mensurador:
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
-
+        
+        # Se for o modelo RoBERTaModel
+        if isinstance(self.auto_model, RobertaModel):
+            # Se não é a primeira sentença
+            if posicao_sentenca != 0:
+                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
+        
         # Localiza os índices dos tokens da sentença no texto
-        inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
-        #print(inicio,fim) 
+        inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)        
+        #print("inicio:", inicio, "   fim:", fim)
+        if inicio == -1 or fim == -1:            
+            logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
         # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
         embedding_sentenca = embedding_texto[inicio:fim + 1]
@@ -236,8 +248,9 @@ class Mensurador:
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoCLEAN(self, embedding_texto, 
-                                                texto, 
-                                                sentenca):
+                                                texto: str, 
+                                                sentenca: str,
+                                                posicao_sentenca: int):
         '''
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         
@@ -245,6 +258,7 @@ class Mensurador:
           `embedding_texto` - Embeddings do texto.
           `texto` - Texto.
           `sentenca` - Sentença.
+          `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
            Uma lista com os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
@@ -269,15 +283,23 @@ class Mensurador:
 
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
-
+        
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
+        
+        # Se for o modelo RoBERTaModel
+        if isinstance(self.auto_model, RobertaModel):
+            # Se não é a primeira sentença
+            if posicao_sentenca != 0:
+                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
-        #print('Sentença inicia em:', inicio, 'até', fim) 
+        #print("inicio:", inicio, "   fim:", fim)
+        if inicio == -1 or fim == -1:
+           logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
         # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
         embedding_sentenca = embedding_texto[inicio:fim + 1]
@@ -305,8 +327,9 @@ class Mensurador:
 
     # ============================
     def getEmbeddingSentencaEmbeddingTextoNOUN(self, embedding_texto, 
-                                               texto, 
-                                               sentenca):
+                                               texto: str, 
+                                               sentenca: str,
+                                               posicao_sentenca: int):
         '''
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         
@@ -314,6 +337,7 @@ class Mensurador:
            `embedding_texto` - Embeddings do texto.
            `texto` - Texto.
            `sentenca` - Sentença.
+           `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
            Uma lista com os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
@@ -342,10 +366,18 @@ class Mensurador:
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
+        
+        # Se for o modelo RoBERTaModel
+        if isinstance(self.auto_model, RobertaModel):
+            # Se não é a primeira sentença
+            if posicao_sentenca != 0:
+                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
-        #print('Sentença inicia em:', inicio, 'até', fim) 
+        #print("inicio:", inicio, "   fim:", fim)
+        if inicio == -1 or fim == -1:
+            logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
         # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
         embedding_sentenca = embedding_texto[inicio:fim + 1]
@@ -372,8 +404,9 @@ class Mensurador:
 
     # ============================
     def getEmbeddingSentencaEmbeddingTexto(self, embedding_texto, 
-                                           texto, 
-                                           sentenca):
+                                           texto: str, 
+                                           sentenca: str,
+                                           posicao_sentenca: int):
         '''
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         
@@ -381,19 +414,29 @@ class Mensurador:
            `embedding_texto` - Embeddings do texto.
            `texto` - Texto.
            `sentenca` - Sentença.
+           `posicao_sentenca' - Posição da sentença no texto.
         
         Retorno:
            Uma lista com os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.
         '''
 
         if self.model_args.palavra_relevante == PalavraRelevante.ALL.value:
-            return self.getEmbeddingSentencaEmbeddingTextoALL(embedding_texto, texto, sentenca)
+            return self.getEmbeddingSentencaEmbeddingTextoALL(embedding_texto, 
+                                                              texto=texto, 
+                                                              sentenca=sentenca, 
+                                                              posicao_sentenca=posicao_sentenca)
         else:
             if self.model_args.palavra_relevante == PalavraRelevante.CLEAN.value:                
-                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embedding_texto, texto, sentenca)
+                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embedding_texto, 
+                                                                    texto=texto, 
+                                                                    sentenca=sentenca, 
+                                                                    posicao_sentenca=posicao_sentenca)
             else:
                 if self.model_args.palavra_relevante == PalavraRelevante.NOUN.value:
-                    return self.getEmbeddingSentencaEmbeddingTextoNOUN(embedding_texto, texto, sentenca)
+                    return self.getEmbeddingSentencaEmbeddingTextoNOUN(embedding_texto, 
+                                                                       texto=texto, 
+                                                                       sentenca=sentenca, 
+                                                                       posicao_sentenca=posicao_sentenca)
                 else:
                     logger.info("Nenhuma estratégia de relevância de palavras foi especificada.") 
     
@@ -527,8 +570,8 @@ class Mensurador:
             Sj = texto[pos_sj]
 
             # Recupera os embedding das sentenças Si e Sj do embedding do texto      
-            embedding_si = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Si)
-            embedding_sj = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Sj)
+            embedding_si = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Si, pos_si)
+            embedding_sj = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Sj, pos_sj)
 
             # Verifica se os embeddings sentenças estão preenchidos
             if embedding_si != None and embedding_sj != None:

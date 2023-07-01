@@ -93,8 +93,9 @@ def encontrarIndiceSubLista(lista: List, sublista: List):
         else:
             indice_inicio = i - n + 1
             indice_fim = indice_inicio + len(sublista)-1
+            
             return indice_inicio, indice_fim
-        
+    # Não encontrou a sublista na lista   
     return -1, -1
     
 # ============================

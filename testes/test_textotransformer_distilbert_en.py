@@ -14,18 +14,19 @@ from textotransformer.util.utiltexto import getIndexTokenTexto
 
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_Distilbert_en(unittest.TestCase):
+class TestTextTransformer_DistilBERT_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("distilbert-base-cased", modelo_spacy="en_core_web_sm") 
+        self.modelo = TextoTransformer("distilbert-base-cased", 
+                                       modelo_spacy="en_core_web_sm") 
     
     # Testes TextoTransformer   
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer")
+        logger.info("Testando o construtor de TextoTransformer_DistilBERT")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -376,7 +377,10 @@ class TestTextTransformer_Distilbert_en(unittest.TestCase):
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 8)
         self.assertEqual(len(saida['palavra_embeddings_MAX']), 8)
+        # Testa o valor do texto
         self.assertEqual(saida['texto_original'], texto)
+        # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -434,6 +438,9 @@ class TestTextTransformer_Distilbert_en(unittest.TestCase):
         # Testa o valor dos textos
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])
+        # Testa as palavras fora do vocabulário
+        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
+        self.assertEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
@@ -781,6 +788,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformerAlbert")
+    logger.info("Teste TextoTransformerDistilBERT")
     unittest.main()
     
