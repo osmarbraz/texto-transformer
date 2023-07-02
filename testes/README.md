@@ -1,3 +1,3 @@
-# Testes do Texto-Transformer com unittest
+# Testes unitários do Texto-Transformer
 
-Foram realizados testes unitários dos modelos BertModel, AlbertModel, DistilBertModel, RobertaModel e XLNetModel.
+Foram realizados testes unitários com unittest dos modelos BertModel, AlbertModel, DistilBertModel, RobertaModel e XLNetModel.
