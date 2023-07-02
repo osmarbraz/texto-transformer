@@ -10,7 +10,7 @@ import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
 # Biblioteca do transformer
-from transformers import RobertaModel
+from transformers import RobertaModel, XLNetModel
 
 # Biblioteca próprias
 from textotransformer.pln.pln import PLN
@@ -112,6 +112,16 @@ class TextoTransformer:
                                      transformer=self.transformer, 
                                      pln=self.pln,
                                      device=self._target_device)
+
+
+        # A maioria dos modelos a posição do token de início é 1 e o token separador é -1
+        self.POSICAO_TOKEN_INICIO = 1 # Token de início, o token de classificação [CLS]
+        self.POSICAO_TOKEN_FINAL = -1 # Token final, o token separador [SEP]
+        
+        # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
+        if isinstance(self.auto_model, XLNetModel):
+            self.POSICAO_TOKEN_INICIO = 0
+            self.POSICAO_TOKEN_FINAL = -2
 
         # Mensagem de carregamento da classe
         logger.info("Classe \"{}\" carregada com os parâmetros: \"{}\".".format(self.__class__.__name__, model_args))
@@ -386,6 +396,12 @@ class TextoTransformer:
             texto = [texto]
             entrada_eh_string = True
 
+        # Padding é o preenchimento do texto para que fiquem do mesmo tamanho nos lotes.
+        # A maioria do modelso preenche a direita(0), mas alguns preenchem a esquerda(1)
+        padding_side = 1
+        if isinstance(self.auto_model, XLNetModel):
+            padding_side = 0
+
         # Se não foi especificado um dispositivo, use-o defaul
         if device is None:
             device = self._target_device
@@ -434,23 +450,44 @@ class TextoTransformer:
                 # Percorre todas as saídas(textos) do lote                
                 for i, texto in enumerate(output_rede['texto_original']):      
                 
-                    #ultimo_mask_id = len(attention_mask)-1
+                    # Recupera o último token que não foi preenchido
                     ultimo_mask_id = len(output_rede['attention_mask'][i])-1
                     
-                    # Localiza o último token de "attention_mask" igual a 1                    
-                    while ultimo_mask_id > 0 and output_rede['attention_mask'][i][ultimo_mask_id].item() == 0:                        
-                      ultimo_mask_id -= 1                        
-                    
-                    # Recupera os embeddings do primeiro(0) até o último token que "attention_mask" seja 1                        
-                    # Concatena a lista dos embeddings do texto a lista já existente                     
-                    saida['token_embeddings'].append(output_rede['token_embeddings'][i][0:ultimo_mask_id+1])
-                    saida['input_ids'].append(output_rede['input_ids'][i][0:ultimo_mask_id+1])
-                    saida['attention_mask'].append(output_rede['attention_mask'][i][0:ultimo_mask_id+1])                    
-                    saida['tokens_texto_mcl'].append(output_rede['tokens_texto_mcl'][i][0:ultimo_mask_id+1])
-                    saida['texto_original'].append(output_rede['texto_original'][i])
-                    
-                    # Percorre as camadas da segunda camada até o fim adicionando o lote especifico e descartando os tokens válidos
-                    saida['all_layer_embeddings'].append([camada[i][0:ultimo_mask_id+1] for camada in output_rede['all_layer_embeddings'][1:]])
+                    # Padding_side = 1 o preenchimento foi realizado no lado direito
+                    if padding_side == 1:
+                        # Localiza o último token de "attention_mask" igual a 1                    
+                        while ultimo_mask_id > 0 and output_rede['attention_mask'][i][ultimo_mask_id].item() == 0:                        
+                            ultimo_mask_id -= 1
+                        
+                        # Recupera os embeddings do primeiro(0) até o último token que "attention_mask" seja 1                        
+                        # Concatena a lista dos embeddings do texto a lista já existente                     
+                        saida['token_embeddings'].append(output_rede['token_embeddings'][i][0:ultimo_mask_id+1])
+                        saida['input_ids'].append(output_rede['input_ids'][i][0:ultimo_mask_id+1])
+                        saida['attention_mask'].append(output_rede['attention_mask'][i][0:ultimo_mask_id+1])                    
+                        saida['tokens_texto_mcl'].append(output_rede['tokens_texto_mcl'][i][0:ultimo_mask_id+1])
+                        saida['texto_original'].append(output_rede['texto_original'][i])
+                        
+                        # Percorre as camadas da segunda camada até o fim adicionando o lote especifico e descartando os tokens válidos
+                        saida['all_layer_embeddings'].append([camada[i][0:ultimo_mask_id+1] for camada in output_rede['all_layer_embeddings'][1:]])
+                        
+                    else:   
+                        # Preenchimento foi realizado no lado esquerdo
+                        # Localiza o último token de "attention_mask" igual a 0
+                        ultimo_mask_id = 0
+                        quantidade_tokens =  len(output_rede['attention_mask'][i])
+                        while ultimo_mask_id < quantidade_tokens and output_rede['attention_mask'][i][ultimo_mask_id].item() == 0:                        
+                            ultimo_mask_id += 1
+
+                        # Recupera os embeddings do primeiro(0) até o último token que "attention_mask" seja 1                        
+                        # Concatena a lista dos embeddings do texto a lista já existente                     
+                        saida['token_embeddings'].append(output_rede['token_embeddings'][i][ultimo_mask_id:])
+                        saida['input_ids'].append(output_rede['input_ids'][i][ultimo_mask_id:])
+                        saida['attention_mask'].append(output_rede['attention_mask'][i][ultimo_mask_id:])                    
+                        saida['tokens_texto_mcl'].append(output_rede['tokens_texto_mcl'][i][ultimo_mask_id:])
+                        saida['texto_original'].append(output_rede['texto_original'][i])
+                        
+                        # Percorre as camadas da segunda camada até o fim adicionando o lote especifico e descartando os tokens válidos
+                        saida['all_layer_embeddings'].append([camada[i][ultimo_mask_id:] for camada in output_rede['all_layer_embeddings'][1:]])
                    
         # Reorganiza as listas
         saida['token_embeddings'] = [saida['token_embeddings'][idx] for idx in np.argsort(indice_tamanho_ordenado)]
@@ -664,10 +701,10 @@ class TextoTransformer:
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
             # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
             
             if isinstance(embeddings_texto, torch.Tensor): 
                 # Calcula a média dos embeddings dos tokens das sentenças do texto
@@ -801,10 +838,10 @@ class TextoTransformer:
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
             # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
 
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
             
             # Recupera as sentenças do texto
             lista_sentencas_texto = self.getPln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
@@ -825,12 +862,12 @@ class TextoTransformer:
                 
                 # Se for do tipo Roberta Model, adiciona o token de separação no início da sentença
                 if j != 0:
-                    if isinstance(self.auto_model, RobertaModel):                    
+                    if isinstance(self.auto_model, RobertaModel):
                         sentenca_tokenizada = self.getTransformer().trataListaTokensRoberta(sentenca_tokenizada)
                         
                 # Localiza os índices dos tokens da sentença no texto
                 inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
-                #print("inicio:", inicio, "   fim:", fim)
+                #print("inicio:", inicio, "  fim:", fim)
                 if inicio == -1 or fim == -1:
                     logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, tokens_texto_mcl))
 
@@ -953,7 +990,7 @@ class TextoTransformer:
            `palavra_embeddings_MEAN` - Uma lista com os embeddings das palavras com a estratégia MEAN.
            `palavra_embeddings_MAX` - Uma lista com os embeddings das palavras com a estratégia MAX.
         '''
-        
+                
         # Se o texto é uma string, coloca em uma lista de comprimento 1
         entrada_eh_string = False
         if isinstance(texto, str) or not hasattr(texto, '__len__'):             
@@ -987,15 +1024,16 @@ class TextoTransformer:
             lista_tokens_texto_pln = self.getPln().getTokensTexto(texto_embeddings['texto_original'][i])
             
             # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][1:-1]
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
             
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
             
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
+            # print("tokens_texto_concatenado:", tokens_texto_concatenado)
 
-            # Recupera os embeddings e tokens de palavra            
+            # Recupera os embeddings dos tokens das palavras
             saida_embedding_palavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto,
                                                                                              tokens_texto_mcl,
                                                                                              tokens_texto_concatenado,
@@ -1100,14 +1138,14 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):    
 
-            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            lista_token_embeddings = texto_embeddings['token_embeddings'][i][1:-1]
+            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP             
+            lista_token_embeddings = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
 
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            lista_input_ids = texto_embeddings['input_ids'][i][1:-1]
+            lista_input_ids = texto_embeddings['input_ids'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
 
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            lista_tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][1:-1]
+            lista_tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
 
             # Acumula a saída do método             
             saida['texto_original'].append(texto_embeddings['texto_original'][i])

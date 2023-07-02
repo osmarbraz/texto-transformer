@@ -8,7 +8,8 @@ import torch
 import numpy as np
 from torch import Tensor, device
 # Biblioteca do transformer
-from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config, BertModel, AlbertModel, DistilBertModel, RobertaModel
+from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
+from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel 
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
@@ -195,7 +196,7 @@ class Transformer(nn.Module):
            `lista_tokens` - Uma lista de tokens.
         
         Retorno:
-              Uma lista de tokens sem os tokens especiais '[CLS]' e '[SEP]' ou '<s>' e '</s>'.
+              Uma lista de tokens sem os tokens especiais '[CLS]' e '[SEP]', '<s>' e '</s>' ou '<cls>' e '<sep>'.
         
         '''
         # BERT, DistilBert, Albert e outros        
@@ -203,10 +204,17 @@ class Transformer(nn.Module):
             lista_tokens.remove('[CLS]')
             lista_tokens.remove('[SEP]')
         else:
-            # Roberta            
+            # Roberta
             if "<s>" in lista_tokens:
                 lista_tokens.remove('<s>')
                 lista_tokens.remove('</s>')
+            else:
+                 # XLNet           
+                if "<cls>" in lista_tokens:
+                    lista_tokens.remove('<cls>')
+                    lista_tokens.remove('<sep>')
+                else:
+                    logger.error("Não removi os tokens expeciais da lista de tokens: {}.".format(lista_tokens))
 
         return lista_tokens
 
@@ -599,7 +607,7 @@ class Transformer(nn.Module):
            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         ''' 
         
-        # Tokenização Wordpiece para BERT, DistilBert
+        # Tokenização Wordpiece (Separador, ##) para BERT, DistilBert
         if isinstance(self.auto_model, (BertModel, DistilBertModel)):
             return self.getTokensPalavrasEmbeddingsTextoWordPiece(embeddings_texto = embeddings_texto,
                                                                   tokens_texto_mcl = tokens_texto_mcl,
@@ -608,8 +616,8 @@ class Transformer(nn.Module):
                                                                   dic_excecao_maior = dic_excecao_maior,
                                                                   dic_excecao_menor = dic_excecao_menor)
         else:
-            # Tokenização SentencePiece Albert
-            if isinstance(self.auto_model, AlbertModel):
+            # Tokenização SentencePiece (Separador, _) Albert, XLNet
+            if isinstance(self.auto_model, (AlbertModel, XLNetModel)):
                 return self.getTokensPalavrasEmbeddingsTextoSentencePiece(embeddings_texto = embeddings_texto,
                                                                           tokens_texto_mcl = tokens_texto_mcl,
                                                                           tokens_texto_concatenado = tokens_texto_concatenado,
@@ -617,7 +625,7 @@ class Transformer(nn.Module):
                                                                           dic_excecao_maior = dic_excecao_maior,
                                                                           dic_excecao_menor = dic_excecao_menor)
             else:
-                # Tokenização BPE para o Roberta
+                # Tokenização BPE (Separador, Ġ) para o Roberta
                 if isinstance(self.auto_model, RobertaModel):
                     return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto = embeddings_texto,
                                                                     tokens_texto_mcl = tokens_texto_mcl,

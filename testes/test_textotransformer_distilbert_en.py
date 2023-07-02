@@ -30,6 +30,22 @@ class TestTextTransformer_DistilBERT_en(unittest.TestCase):
                 
         self.assertIsNotNone(self.modelo)
     
+    # Testes removeTokensEspeciais
+    def test_removeTokensEspeciais(self):
+        logger.info("Testando o removeTokensEspeciais")
+        
+        # Valores de entrada                
+        lista_tokens = ['<cls>', 'I', 'like', 'mango', 'ice', 'cream', '.', '<sep>']
+        
+        # Valores de saída
+        lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)
+        
+        # Lista esperada
+        lista_tokens_esperado = ['I', 'like', 'mango', 'ice', 'cream', '.']
+        
+        # Testa as listas
+        self.assertListEqual(lista_tokens_saida, lista_tokens_esperado) 
+    
     # Testes getSaidaRede 
     def test_getSaidaRede(self):
         logger.info("Testando o getSaidaRede")

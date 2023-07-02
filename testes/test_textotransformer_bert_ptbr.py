@@ -29,6 +29,22 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
                 
         self.assertIsNotNone(self.modelo)
     
+    # Testes removeTokensEspeciais
+    def test_removeTokensEspeciais(self):
+        logger.info("Testando o removeTokensEspeciais")
+        
+        # Valores de entrada                
+        lista_tokens = ['[CLS]', 'Adoro', 'sorvete', 'de', 'manga', '.', '[SEP]']
+        
+        # Valores de saída
+        lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)
+        
+        # Lista esperada
+        lista_tokens_esperado = ['Adoro', 'sorvete', 'de', 'manga', '.']
+        
+        # Testa as listas
+        self.assertListEqual(lista_tokens_saida, lista_tokens_esperado) 
+        
     # Testes getSaidaRede 
     def test_getSaidaRede(self):
         logger.info("Testando o getSaidaRede")
