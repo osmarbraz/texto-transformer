@@ -231,7 +231,7 @@ class Mensurador:
         if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
         
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)        
@@ -293,7 +293,7 @@ class Mensurador:
         if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
@@ -371,7 +371,7 @@ class Mensurador:
         if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)

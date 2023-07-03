@@ -107,101 +107,103 @@ class Transformer(nn.Module):
     # ============================   
     def defineTokensEspeciais(self):
         '''
-        Define os tokens especiais e separadores considerando o modelo.
+        Define os tokens especiais e separadores considerando o modelo instânciado.
         
         # A maioria dos modelos a posição do token de início é 1 e o token separador é -1
         # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
         '''
+        
+        # Verifica a instãncia do modelo.
         if isinstance(self.auto_model, BertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "##" # WordPiece
+            self.SEPARADOR_TOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
             self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1
+            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1
+            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_PADDING = "[PAD]" # O token de padding.
             self.TOKEN_MASCARA = "[MASK]"
             self.TOKEN_DESCONHECIDO = "[UNK]"
-            self.PADDING_SIDE = 1 # 0: left, 1: right
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
             
         elif isinstance(self.auto_model, AlbertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "▁" # SentencePiece
+            self.SEPARADOR_TOKEN = "▁" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
             self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1
+            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1
+            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_PADDING = "<pad>" # O token de padding.
             self.TOKEN_MASCARA = "[MASK]"
             self.TOKEN_DESCONHECIDO = "<unk>"
-            self.PADDING_SIDE = 1 # 0: left, 1: right
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
         
         elif isinstance(self.auto_model, DistilBertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "##" # WordPiece
+            self.SEPARADOR_TOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
             self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1
+            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1
+            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_PADDING = "[PAD]" # O token de padding.
             self.TOKEN_MASCARA = "[MASK]"
             self.TOKEN_DESCONHECIDO = "<unk>"
-            self.PADDING_SIDE = 1 # 0: left, 1: right
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
         
         elif isinstance(self.auto_model, RobertaModel):
             # Uma sentença simples: <s> X </s>
             # Um par de sentenças: <s> A </s></s> B </s>
-            self.SEPARADOR_TOKEN = "Ġ" # BPE
+            self.SEPARADOR_TOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
             self.TOKEN_INICIO = "<s>"
-            self.POSICAO_TOKEN_INICIO = 1
+            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "</s>"
-            self.POSICAO_TOKEN_FINAL = -1
+            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "</s>"
             self.TOKEN_CLASSIFICACAO = "<s>"
-            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_PADDING = "<pad>" # O token de padding.
             self.TOKEN_MASCARA = "<mask>"
             self.TOKEN_DESCONHECIDO = "Â"
-            self.PADDING_SIDE = 1 # 0: left, 1: right
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
             
         elif isinstance(self.auto_model, XLNetModel):
             # Uma sentença simples: X <sep> <cls>
             # Um par de sentenças: A <sep> B <sep> <cls>
-            self.SEPARADOR_TOKEN = "▁"  # SentencePiece
+            self.SEPARADOR_TOKEN = "▁"  # Caracter que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
             self.TOKEN_INICIO = "<s>"
             # O token de início está no final da sentença junto como separador
-            self.POSICAO_TOKEN_INICIO = 0
+            self.POSICAO_TOKEN_INICIO = 0 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "</s>"
-            self.POSICAO_TOKEN_FINAL = -2
+            self.POSICAO_TOKEN_FINAL = -2 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "<sep>"
             self.TOKEN_CLASSIFICACAO = "<cls>"
-            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_PADDING = "<pad>" # O token de padding.
             self.TOKEN_MASCARA = "<mask>"
             self.TOKEN_DESCONHECIDO = "<unk>"
-            self.PADDING_SIDE = 0 # 0: left, 1: right
+            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
 
         elif isinstance(self.auto_model, GPT2Model):
             # Uma sentença simples: X
             # Um par de sentenças: A ,B
-            self.SEPARADOR_TOKEN = "Ġ" # BPE
-            self.TOKEN_INICIO = None
-            self.POSICAO_TOKEN_INICIO = None
-            self.TOKEN_FIM = None
-            self.POSICAO_TOKEN_FINAL = None
+            self.SEPARADOR_TOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.TOKEN_INICIO = None  # Não existe token de início
+            self.POSICAO_TOKEN_INICIO = None    # Não existe token de início
+            self.TOKEN_FIM = None # Não existe token de fim
+            self.POSICAO_TOKEN_FINAL = None # Não existe token de fim
             self.TOKEN_SEPARADOR = None
             self.TOKEN_CLASSIFICACAO = None
-            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_PADDING = "[PAD]" # O token de padding.
             self.TOKEN_MASCARA = None
             self.TOKEN_DESCONHECIDO = None
-            self.PADDING_SIDE = 0 # 0: left, 1: right
+            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
 
         else:
             # Sem um modelo especificado
@@ -215,14 +217,30 @@ class Transformer(nn.Module):
             self.TOKEN_PADDING = None
             self.TOKEN_MASCARA = None
             self.TOKEN_DESCONHECIDO = None
-            self.PADDING_SIDE = 1 # 0: left, 1: right            
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.           
             
             logger.info("Não foi definido os tokens especiais para o modelo {}.".format(self.auto_model.__class__.__name__))
     
-    def getPosicaoTokenInicio(self):
+    # ============================ 
+    def getPosicaoTokenInicio(self) -> int:
+        '''
+        Recupera a posição do token de início válido da lista de tokens.
+
+        Retorna:
+           Um inteiro com a posição do token de início válido da lista de tokens.
+        '''
+        
         return self.POSICAO_TOKEN_INICIO
     
-    def getPosicaoTokenFinal(self):
+    # ============================ 
+    def getPosicaoTokenFinal(self) -> int:
+        '''
+        Recupera a posição do token de fim válido da lista de tokens.
+
+        Retorna:
+           Um inteiro com a posição do token de fim válido da lista de tokens.
+        '''
+        
         return self.POSICAO_TOKEN_FINAL
     
     # ============================   
@@ -1646,9 +1664,9 @@ class Transformer(nn.Module):
         return lote
     
     # ============================   
-    def trataListaTokensBPE(self, tokens_texto_mcl):    
+    def trataListaTokensEspeciais(self, tokens_texto_mcl):    
         '''
-        Trata a lista de tokens do tokenizador BPE
+        Trata a lista de tokens tokenizador do MCL.
 
         Parâmetros:
            `tokens_texto_mcl` - Lista dos tokens gerados pelo tokenizador.
@@ -1656,11 +1674,9 @@ class Transformer(nn.Module):
         Retorno:
            Lista de tokens tratada.        
         '''  
-        #SEPARADOR_TOKEN = 'Ġ'
-        #TOKEN_ESPECIAL_INICIO = '<s>'
         
         # Se o primeiro token não for o TOKEN_INICIO e o token tem caracter inicial igual ao separador, remove
-        if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
+        if (self.TOKEN_INICIO != None) and (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
         
             tokens_texto_mcl = [self.SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
             #print("tokens_texto_mcl:", tokens_texto_mcl)

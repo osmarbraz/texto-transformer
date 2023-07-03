@@ -60,15 +60,15 @@ class TextoTransformer:
                        
         # Parâmetro recebido para o modelo de linguagem
         model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
-        logger.info("Especificado parâmetro \"pretrained_model_name_or_path\": {}".format(pretrained_model_name_or_path))
+        logger.info("Especificado parâmetro \"pretrained_model_name_or_path\": {}.".format(pretrained_model_name_or_path))
                
         # Parâmetro recebido para o modelo da ferramenta de pln
         model_args.modelo_spacy = modelo_spacy
-        logger.info("Especificado parâmetro \"modelo_spacy\":{}".format(modelo_spacy))
+        logger.info("Especificado parâmetro \"modelo_spacy\": {}.".format(modelo_spacy))
         
          # Parâmetro recebido para o modelo do_lower_case
         model_args.do_lower_case = do_lower_case
-        logger.info("Especificado parâmetro \"do_lower_case\": {}".format(do_lower_case))
+        logger.info("Especificado parâmetro \"do_lower_case\": {}.".format(do_lower_case))
                 
         # Carrega o modelo de linguagem da classe transformador
         self.transformer = Transformer(modelo_args=model_args)
@@ -94,7 +94,7 @@ class TextoTransformer:
             if torch.cuda.is_available():    
                 device = "cuda"
                 logger.info("Existem\"{}\" GPU(s) disponíveis.".format(torch.cuda.device_count()))
-                logger.info("Iremos usar a GPU:\"{}\".".format(torch.cuda.get_device_name(0)))
+                logger.info("Iremos usar a GPU: \"{}\".".format(torch.cuda.get_device_name(0)))
 
             else:                
                 device = "cpu"
@@ -104,7 +104,7 @@ class TextoTransformer:
             self._target_device = torch.device(device)
         else:
             # Usa o dipositivo informado
-            logger.info("Usando dispositivo informado:\"{}\".".format(device))
+            logger.info("Usando dispositivo informado: \"{}\".".format(device))
             self._target_device = torch.device(device)
             
         # Instância o mensurador
@@ -853,7 +853,7 @@ class TextoTransformer:
                 # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
                 if j != 0:
                     if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
-                        sentenca_tokenizada = self.getTransformer().trataListaTokensBPE(sentenca_tokenizada)
+                        sentenca_tokenizada = self.getTransformer().trataListaTokensEspeciais(sentenca_tokenizada)
                         
                 # Localiza os índices dos tokens da sentença no texto
                 inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
