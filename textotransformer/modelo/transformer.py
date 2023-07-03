@@ -349,27 +349,19 @@ class Transformer(nn.Module):
         # Se possui token de início e faz parte da lista
         if self.TOKEN_INICIO != None and self.TOKEN_INICIO in lista_tokens:
              lista_tokens.remove(self.TOKEN_INICIO)
-        else:
-           logger.info("Não removi o token especial início (\"{}\") da lista de tokens: {}.".format(self.TOKEN_INICIO, lista_tokens))
-
+    
         # Se possui token de início e faz parte da lista
         if self.TOKEN_FIM != None and self.TOKEN_FIM in lista_tokens:
              lista_tokens.remove(self.TOKEN_FIM)
-        else:
-           logger.info("Não removi o token especial fim (\"{}\") da lista de tokens: {}.".format(self.TOKEN_FIM, lista_tokens))
 
         # Se possui token de separação da lista
         if self.TOKEN_SEPARADOR != None and self.TOKEN_SEPARADOR in lista_tokens:
              lista_tokens.remove(self.TOKEN_SEPARADOR)
-        else:
-           logger.info("Não removi o token especial separador (\"{}\") da lista de tokens: {}.".format(self.TOKEN_SEPARADOR, lista_tokens))
            
         # Se possui token de separação da lista
         if self.TOKEN_CLASSIFICACAO != None and self.TOKEN_CLASSIFICACAO in lista_tokens:
              lista_tokens.remove(self.TOKEN_CLASSIFICACAO)
-        else:
-           logger.info("Não removi o token especial de classificação (\"{}\") da lista de tokens: {}.".format(self.TOKEN_CLASSIFICACAO, lista_tokens))           
-            
+        
         return lista_tokens
 
     # ============================ 
@@ -1676,7 +1668,7 @@ class Transformer(nn.Module):
         '''  
         
         # Se o primeiro token não for o TOKEN_INICIO e o token tem caracter inicial igual ao separador, remove
-        if (self.TOKEN_INICIO != None) and (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
+        if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
         
             tokens_texto_mcl = [self.SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
             #print("tokens_texto_mcl:", tokens_texto_mcl)
