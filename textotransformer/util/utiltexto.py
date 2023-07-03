@@ -198,7 +198,8 @@ def tamanhoTexto(texto: Union[List[int], List[List[int]]]):
                 # Soma do comprimento de strings individuais
                 return sum([len(t) for t in texto])
 
-def getIndexTokenTexto(lista_tokens: List[str], token : str) -> List[int]:
+def getIndexTokenTexto(lista_tokens: List[str], 
+                       token : str) -> List[int]:
     '''
     Recupera os indíces do token especificado token na lista de tokens.
     

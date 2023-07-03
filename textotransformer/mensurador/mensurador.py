@@ -6,7 +6,7 @@ import logging
 # Biblioteca de aprendizado de máquina
 import torch 
 # Biblioteca do transformer
-from transformers import RobertaModel
+from transformers import RobertaModel, GPT2Model
 
 # Bibliotecas próprias
 from textotransformer.modelo.transformer import Transformer
@@ -228,10 +228,10 @@ class Mensurador:
         #print(len(sentenca_tokenizada))
         
         # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, RobertaModel):
+        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
         
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)        
@@ -290,10 +290,10 @@ class Mensurador:
         #print(len(sentenca_tokenizada))
         
         # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, RobertaModel):
+        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
@@ -368,10 +368,10 @@ class Mensurador:
         #print(len(sentenca_tokenizada))
         
         # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, RobertaModel):
+        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensRoberta(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensBPE(sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)

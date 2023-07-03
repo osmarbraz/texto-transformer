@@ -9,7 +9,7 @@ import numpy as np
 from torch import Tensor, device
 # Biblioteca do transformer
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel 
+from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel, GPT2Model
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
@@ -22,11 +22,11 @@ from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.pln.pln import PLN
 
+logger = logging.getLogger(__name__)
+
 # Constantes da classe
 PALAVRA_FORA_DO_VOCABULARIO = 1
 PALAVRA_DENTRO_DO_VOCABULARIO = 0
-
-logger = logging.getLogger(__name__)
 
 class Transformer(nn.Module):
     '''
@@ -71,6 +71,11 @@ class Transformer(nn.Module):
 
         # Carrega o tokenizador
         self.auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
+        
+        # Se não possuir um token de preenchimento, adiciona um
+        if self.auto_tokenizer.pad_token is None:
+            self.auto_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            self.auto_model.resize_token_embeddings(len(self.auto_tokenizer))
 
         # Se max_seq_length não foi especificado, tenta inferir do modelo
         if self.modelo_args.max_seq_len is None:
@@ -81,7 +86,11 @@ class Transformer(nn.Module):
         # Define a classe do tokenizador
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.auto_tokenizer.__class__.__name__
-                   
+
+
+        # Define os tokens especiais e separadores 
+        self.defineTokensEspeciais()
+                           
         logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
     # ============================   
@@ -95,7 +104,127 @@ class Transformer(nn.Module):
                                                                                                                                       self.auto_config.__class__.__name__,
                                                                                                                                       self.auto_model.__class__.__name__,
                                                                                                                                       self.auto_tokenizer.__class__.__name__)
+    # ============================   
+    def defineTokensEspeciais(self):
+        '''
+        Define os tokens especiais e separadores considerando o modelo.
+        
+        # A maioria dos modelos a posição do token de início é 1 e o token separador é -1
+        # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
+        '''
+        if isinstance(self.auto_model, BertModel):
+            # Uma sentença simples: [CLS] X [SEP]
+            # Um par de sentenças: [CLS] A [SEP] B [SEP]
+            self.SEPARADOR_TOKEN = "##" # WordPiece
+            self.TOKEN_INICIO = "[CLS]"
+            self.POSICAO_TOKEN_INICIO = 1
+            self.TOKEN_FIM = "[SEP]"
+            self.POSICAO_TOKEN_FINAL = -1
+            self.TOKEN_SEPARADOR = "[SEP]"
+            self.TOKEN_CLASSIFICACAO = "[CLS]"
+            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_MASCARA = "[MASK]"
+            self.TOKEN_DESCONHECIDO = "[UNK]"
+            self.PADDING_SIDE = 1 # 0: left, 1: right
+            
+        elif isinstance(self.auto_model, AlbertModel):
+            # Uma sentença simples: [CLS] X [SEP]
+            # Um par de sentenças: [CLS] A [SEP] B [SEP]
+            self.SEPARADOR_TOKEN = "▁" # SentencePiece
+            self.TOKEN_INICIO = "[CLS]"
+            self.POSICAO_TOKEN_INICIO = 1
+            self.TOKEN_FIM = "[SEP]"
+            self.POSICAO_TOKEN_FINAL = -1
+            self.TOKEN_SEPARADOR = "[SEP]"
+            self.TOKEN_CLASSIFICACAO = "[CLS]"
+            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_MASCARA = "[MASK]"
+            self.TOKEN_DESCONHECIDO = "<unk>"
+            self.PADDING_SIDE = 1 # 0: left, 1: right
+        
+        elif isinstance(self.auto_model, DistilBertModel):
+            # Uma sentença simples: [CLS] X [SEP]
+            # Um par de sentenças: [CLS] A [SEP] B [SEP]
+            self.SEPARADOR_TOKEN = "##" # WordPiece
+            self.TOKEN_INICIO = "[CLS]"
+            self.POSICAO_TOKEN_INICIO = 1
+            self.TOKEN_FIM = "[SEP]"
+            self.POSICAO_TOKEN_FINAL = -1
+            self.TOKEN_SEPARADOR = "[SEP]"
+            self.TOKEN_CLASSIFICACAO = "[CLS]"
+            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_MASCARA = "[MASK]"
+            self.TOKEN_DESCONHECIDO = "<unk>"
+            self.PADDING_SIDE = 1 # 0: left, 1: right
+        
+        elif isinstance(self.auto_model, RobertaModel):
+            # Uma sentença simples: <s> X </s>
+            # Um par de sentenças: <s> A </s></s> B </s>
+            self.SEPARADOR_TOKEN = "Ġ" # BPE
+            self.TOKEN_INICIO = "<s>"
+            self.POSICAO_TOKEN_INICIO = 1
+            self.TOKEN_FIM = "</s>"
+            self.POSICAO_TOKEN_FINAL = -1
+            self.TOKEN_SEPARADOR = "</s>"
+            self.TOKEN_CLASSIFICACAO = "<s>"
+            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_MASCARA = "<mask>"
+            self.TOKEN_DESCONHECIDO = "Â"
+            self.PADDING_SIDE = 1 # 0: left, 1: right
+            
+        elif isinstance(self.auto_model, XLNetModel):
+            # Uma sentença simples: X <sep> <cls>
+            # Um par de sentenças: A <sep> B <sep> <cls>
+            self.SEPARADOR_TOKEN = "▁"  # SentencePiece
+            self.TOKEN_INICIO = "<s>"
+            # O token de início está no final da sentença junto como separador
+            self.POSICAO_TOKEN_INICIO = 0
+            self.TOKEN_FIM = "</s>"
+            self.POSICAO_TOKEN_FINAL = -2
+            self.TOKEN_SEPARADOR = "<sep>"
+            self.TOKEN_CLASSIFICACAO = "<cls>"
+            self.TOKEN_PADDING = "<pad>"
+            self.TOKEN_MASCARA = "<mask>"
+            self.TOKEN_DESCONHECIDO = "<unk>"
+            self.PADDING_SIDE = 0 # 0: left, 1: right
 
+        elif isinstance(self.auto_model, GPT2Model):
+            # Uma sentença simples: X
+            # Um par de sentenças: A ,B
+            self.SEPARADOR_TOKEN = "Ġ" # BPE
+            self.TOKEN_INICIO = None
+            self.POSICAO_TOKEN_INICIO = None
+            self.TOKEN_FIM = None
+            self.POSICAO_TOKEN_FINAL = None
+            self.TOKEN_SEPARADOR = None
+            self.TOKEN_CLASSIFICACAO = None
+            self.TOKEN_PADDING = "[PAD]"
+            self.TOKEN_MASCARA = None
+            self.TOKEN_DESCONHECIDO = None
+            self.PADDING_SIDE = 0 # 0: left, 1: right
+
+        else:
+            # Sem um modelo especificado
+            self.SEPARADOR_TOKEN = None
+            self.TOKEN_INICIO = None
+            self.POSICAO_TOKEN_INICIO = None
+            self.TOKEN_FIM = None
+            self.POSICAO_TOKEN_FINAL = None
+            self.TOKEN_SEPARADOR = None
+            self.TOKEN_CLASSIFICACAO = None
+            self.TOKEN_PADDING = None
+            self.TOKEN_MASCARA = None
+            self.TOKEN_DESCONHECIDO = None
+            self.PADDING_SIDE = 1 # 0: left, 1: right            
+            
+            logger.info("Não foi definido os tokens especiais para o modelo {}.".format(self.auto_model.__class__.__name__))
+    
+    def getPosicaoTokenInicio(self):
+        return self.POSICAO_TOKEN_INICIO
+    
+    def getPosicaoTokenFinal(self):
+        return self.POSICAO_TOKEN_FINAL
+    
     # ============================   
     def _carregar_modelo(self,
                          model_name_or_path: str, 
@@ -190,32 +319,39 @@ class Transformer(nn.Module):
     # ============================    
     def removeTokensEspeciais(self, lista_tokens: List[str]) -> List[str]:
         '''
-        Remove os tokens especiais '[CLS]' e '[SEP]' ou '<s>' e '</s>' da lista de tokens.
+        Remove os tokens especiais de início, fim, separador e classificação  da lista de tokens.
         
         Parâmetros:
            `lista_tokens` - Uma lista de tokens.
         
         Retorno:
-              Uma lista de tokens sem os tokens especiais '[CLS]' e '[SEP]', '<s>' e '</s>' ou '<cls>' e '<sep>'.
-        
+              Uma lista de tokens sem os tokens especiais.
         '''
-        # BERT, DistilBert, Albert e outros        
-        if "[CLS]" in lista_tokens:
-            lista_tokens.remove('[CLS]')
-            lista_tokens.remove('[SEP]')
+        
+        # Se possui token de início e faz parte da lista
+        if self.TOKEN_INICIO != None and self.TOKEN_INICIO in lista_tokens:
+             lista_tokens.remove(self.TOKEN_INICIO)
         else:
-            # Roberta
-            if "<s>" in lista_tokens:
-                lista_tokens.remove('<s>')
-                lista_tokens.remove('</s>')
-            else:
-                 # XLNet           
-                if "<cls>" in lista_tokens:
-                    lista_tokens.remove('<cls>')
-                    lista_tokens.remove('<sep>')
-                else:
-                    logger.error("Não removi os tokens expeciais da lista de tokens: {}.".format(lista_tokens))
+           logger.info("Não removi o token especial início (\"{}\") da lista de tokens: {}.".format(self.TOKEN_INICIO, lista_tokens))
 
+        # Se possui token de início e faz parte da lista
+        if self.TOKEN_FIM != None and self.TOKEN_FIM in lista_tokens:
+             lista_tokens.remove(self.TOKEN_FIM)
+        else:
+           logger.info("Não removi o token especial fim (\"{}\") da lista de tokens: {}.".format(self.TOKEN_FIM, lista_tokens))
+
+        # Se possui token de separação da lista
+        if self.TOKEN_SEPARADOR != None and self.TOKEN_SEPARADOR in lista_tokens:
+             lista_tokens.remove(self.TOKEN_SEPARADOR)
+        else:
+           logger.info("Não removi o token especial separador (\"{}\") da lista de tokens: {}.".format(self.TOKEN_SEPARADOR, lista_tokens))
+           
+        # Se possui token de separação da lista
+        if self.TOKEN_CLASSIFICACAO != None and self.TOKEN_CLASSIFICACAO in lista_tokens:
+             lista_tokens.remove(self.TOKEN_CLASSIFICACAO)
+        else:
+           logger.info("Não removi o token especial de classificação (\"{}\") da lista de tokens: {}.".format(self.TOKEN_CLASSIFICACAO, lista_tokens))           
+            
         return lista_tokens
 
     # ============================ 
@@ -229,7 +365,7 @@ class Transformer(nn.Module):
 
         Parâmetros:
            `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
-           `addicionar_tokens_especiais` - Adiciona os tokens especiais '[CLS]' e '[SEP]' ou '<s>' e '</s>' no início e fim do texto.
+           `addicionar_tokens_especiais` - Adiciona os tokens especiais de início e separação no texto.
                           
         Retorna um dicionário com as seguintes chaves:
            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
@@ -263,12 +399,12 @@ class Transformer(nn.Module):
         # Tokeniza o texto
         # Faz o mesmo que o método encode_plus com uma string e o mesmo que batch_encode_plus com uma lista de strings.
         saida.update(self.auto_tokenizer(*to_tokenize,  # Texto a ser codificado. O '*' remove a lista de listas de to_tokenize.
-                                     add_special_tokens=addicionar_tokens_especiais, # Adiciona os tokens especiais '[CLS]' e '[SEP]'.
-                                     padding=True, # Preenche o texto até max_length.
-                                     truncation='longest_first',  # Trunca o texto no maior texto.
-                                     return_tensors="pt",  # Retorna os dados como tensores pytorch.
-                                     max_length=self.modelo_args.max_seq_len # Define o tamanho máximo para preencheer ou truncar.
-                                    ) 
+                                         add_special_tokens=addicionar_tokens_especiais, # Adiciona os tokens especiais '[CLS]' e '[SEP]'.
+                                         padding=True, # Preenche o texto até max_length.
+                                         truncation='longest_first',  # Trunca o texto no maior texto.
+                                         return_tensors="pt",  # Retorna os dados como tensores pytorch.
+                                         max_length=self.modelo_args.max_seq_len # Define o tamanho máximo para preencheer ou truncar.
+                                        ) 
                     )
                         
         # Gera o texto tokenizado convertendo os ids para os respectivos tokens           
@@ -341,7 +477,8 @@ class Transformer(nn.Module):
                       'attention_mask': texto['attention_mask'],
                       'tokens_texto_mcl': texto['tokens_texto_mcl'],
                       'texto_original': texto['texto_original']
-                      })
+                      }
+                    )
 
         # Se output_hidden_states == True existem embeddings nas camadas ocultas
         if self.auto_model.config.output_hidden_states:
@@ -625,8 +762,8 @@ class Transformer(nn.Module):
                                                                           dic_excecao_maior = dic_excecao_maior,
                                                                           dic_excecao_menor = dic_excecao_menor)
             else:
-                # Tokenização BPE (Separador, Ġ) para o Roberta
-                if isinstance(self.auto_model, RobertaModel):
+                # Tokenização BPE (Separador, Ġ) para o Roberta e GPT2
+                if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
                     return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto = embeddings_texto,
                                                                     tokens_texto_mcl = tokens_texto_mcl,
                                                                     tokens_texto_concatenado = tokens_texto_concatenado,
@@ -728,8 +865,8 @@ class Transformer(nn.Module):
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
        
         # Constantes tokens especiais
-        SEPARADOR_TOKEN = "##"
-        TOKEN_DESCONHECIDO = "[UNK]"
+        #self.SEPARADOR_TOKEN = "##"
+        #self.TOKEN_DESCONHECIDO = "[UNK]"
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -757,7 +894,7 @@ class Transformer(nn.Module):
         pos2 = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
-        while pos_wj < len(tokens_texto_mcl):  
+        while (pos_wj < len(tokens_texto_mcl)):  
 
             # Seleciona os tokens da sentença
             wi = lista_tokens_texto_pln[pos_wi] # Recupera o token da palavra gerado pelo spaCy
@@ -779,7 +916,7 @@ class Transformer(nn.Module):
             pos = self._getExcecaoDicMaior(wi)  
             #print("Exceção pos:", pos)
                 
-            if pos != -1 or pos2 != -1:      
+            if (pos != -1) or (pos2 != -1):      
                 if pos != -1:
                     #print("Adiciona 1 Exceção palavra == wi:", wi)
                     lista_tokens.append(wi)
@@ -821,13 +958,13 @@ class Transformer(nn.Module):
                     #print("wi[",pos_wi,"]=", texto_token[pos_wi])
                     #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
                 else:
-                    if pos2 != -1:
+                    if (pos2 != -1):
                         #print("Adiciona 1 Exceção palavra == wi:", wi)
                         lista_tokens.append(wi+wi1)
                         # Marca como fora do vocabulário do MCL
                         lista_tokens_oov_mcl.append(PALAVRA_FORA_DO_VOCABULARIO)
                         # Verifica se tem mais de um token
-                        if pos2 == 1: 
+                        if (pos2 == 1): 
                             # Adiciona o embedding do token a lista de embeddings
                             lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])
                             lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
@@ -840,7 +977,7 @@ class Transformer(nn.Module):
                         #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
             else:  
                 # Tokens iguais adiciona a lista, o token não possui subtoken
-                if (wi == wj or wj == TOKEN_DESCONHECIDO):
+                if (wi == wj) or (wj == self.TOKEN_DESCONHECIDO):
                     # Adiciona o token a lista de tokens
                     #print("Adiciona 2 wi==wj or wj==TOKEN_DESCONHECIDO:", wi)
                     lista_tokens.append(wi)    
@@ -859,8 +996,8 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     palavra_POS = wj
                     indice_token = pos_wj + 1                 
-                    while  ((palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
-                        if SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]:
+                    while  (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
+                        if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]):
                             # Remove os caracteres SEPARADOR_PALAVRA("##") do token
                             parte = tokens_texto_mcl[indice_token][2:]
                         else:                
@@ -872,7 +1009,7 @@ class Transformer(nn.Module):
                         indice_token = indice_token + 1
 
                     #print("\nMontei palavra:",palavra_POS)
-                    if (palavra_POS == wi or palavra_POS == TOKEN_DESCONHECIDO):
+                    if (palavra_POS == wi) or (palavra_POS == self.TOKEN_DESCONHECIDO):
                         # Adiciona o token a lista
                         #print("Adiciona 3 palavra == wi or palavra_POS = TOKEN_DESCONHECIDO:",wi)
                         lista_tokens.append(wi)
@@ -910,7 +1047,7 @@ class Transformer(nn.Module):
                     pos_wj = indice_token
         
         # Verificação se as listas estão com o mesmo tamanho
-        if len(lista_tokens) !=  len(lista_tokens_texto_pln):
+        if (len(lista_tokens) !=  len(lista_tokens_texto_pln)):
             logger.error("Erro na execução do método getTokensPalavrasEmbeddingsTextoWordPiece.")
             logger.error("texto                      :{}.".format(tokens_texto_concatenado))            
             logger.error("texto_token_pln            :{}.".format(lista_tokens_texto_pln))
@@ -977,8 +1114,8 @@ class Transformer(nn.Module):
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
        
         # Constantes tokens especiais
-        SEPARADOR_TOKEN = "▁"
-        TOKEN_DESCONHECIDO = "<unk>"
+        #SEPARADOR_TOKEN = "▁"
+        #TOKEN_DESCONHECIDO = "<unk>"
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1006,13 +1143,13 @@ class Transformer(nn.Module):
         pos2 = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
-        while pos_wj < len(tokens_texto_mcl):  
+        while (pos_wj < len(tokens_texto_mcl)):  
 
             # Seleciona os tokens da sentença
             wi = lista_tokens_texto_pln[pos_wi] # Recupera o token da palavra gerado pelo spaCy
             wi1 = ""
             pos2 = -1
-            if pos_wi+1 < len(lista_tokens_texto_pln):
+            if (pos_wi+1 < len(lista_tokens_texto_pln)):
                 wi1 = lista_tokens_texto_pln[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
@@ -1028,14 +1165,14 @@ class Transformer(nn.Module):
             pos = self._getExcecaoDicMaior(wi)  
             #print("Exceção pos:", pos)
                 
-            if pos != -1 or pos2 != -1:      
+            if (pos != -1) or (pos2 != -1):      
                 if pos != -1:
                     #print("Adiciona 1 Exceção palavra == wi:",wi)
                     lista_tokens.append(wi)
                     # Marca como fora do vocabulário do MCL
                     lista_tokens_oov_mcl.append(PALAVRA_FORA_DO_VOCABULARIO)
                     # Verifica se tem mais de um token
-                    if pos != 1:
+                    if (pos != 1):
                         indice_token = pos_wj + pos
                         #print("Calcula a média de :", pos_wj , "até", indice_token)
                         embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
@@ -1070,13 +1207,13 @@ class Transformer(nn.Module):
                     #print("wi[",pos_wi,"]=", texto_token[pos_wi])
                     #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
                 else:
-                    if pos2 != -1:
+                    if (pos2 != -1):
                         #print("Adiciona 1 Exceção palavra == wi:",wi)
                         lista_tokens.append(wi+wi1)
                         # Marca como fora do vocabulário do MCL
                         lista_tokens_oov_mcl.append(PALAVRA_FORA_DO_VOCABULARIO)
                         # Verifica se tem mais de um token
-                        if pos2 == 1: 
+                        if (pos2 == 1): 
                             # Adiciona o embedding do token a lista de embeddings
                             lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])
                             lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
@@ -1089,7 +1226,7 @@ class Transformer(nn.Module):
                         #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
             else:  
                 # Tokens iguais adiciona a lista, o token não possui subtoken
-                if (wi == wj or wi == wj[1:] or wj == TOKEN_DESCONHECIDO):
+                if (wi == wj) or (wi == wj[1:]) or (wj == self.TOKEN_DESCONHECIDO):
                     # Adiciona o token a lista de tokens
                     #print("Adiciona 2 wi==wj or wj==TOKEN_DESCONHECIDO:", wi )
                     lista_tokens.append(wi)    
@@ -1108,13 +1245,13 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     
                     # Remove os caracteres SEPARADOR_PALAVRA("_") do token
-                    if SEPARADOR_TOKEN in wj:
+                    if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in wj):
                         palavra_POS = wj[1:]
                     else:                
                         palavra_POS = wj                    
                     
                     indice_token = pos_wj + 1                 
-                    while ((SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
+                    while (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
                        
                         # Separa o token
                         parte = tokens_texto_mcl[indice_token]
@@ -1126,7 +1263,7 @@ class Transformer(nn.Module):
                         indice_token = indice_token + 1
 
                     #print("\nMontei palavra:",palavra_POS)
-                    if (palavra_POS == wi or palavra_POS == TOKEN_DESCONHECIDO):
+                    if (palavra_POS == wi) or (palavra_POS == self.TOKEN_DESCONHECIDO):
                         # Adiciona o token a lista
                         #print("Adiciona 3 palavra == wi or palavra_POS = TOKEN_DESCONHECIDO:",wi)
                         lista_tokens.append(wi)
@@ -1193,7 +1330,7 @@ class Transformer(nn.Module):
         return saida
     
     # ============================  
-    # getTokensPalavrasEmbeddingsTextoBPE(Roberta)
+    # getTokensPalavrasEmbeddingsTextoBPE(Roberta, GTP-2)
     # Gera os tokens, POS e embeddings de cada texto.
     def getTokensPalavrasEmbeddingsTextoBPE(self,
                                             embeddings_texto, 
@@ -1230,8 +1367,8 @@ class Transformer(nn.Module):
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
        
         # Constantes tokens especiais
-        SEPARADOR_TOKEN = "Ġ"
-        TOKEN_DESCONHECIDO = "Â"
+        #SEPARADOR_TOKEN = "Ġ"
+        #TOKEN_DESCONHECIDO = "Â"
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1259,13 +1396,13 @@ class Transformer(nn.Module):
         pos2 = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
-        while pos_wj < len(tokens_texto_mcl):  
+        while (pos_wj < len(tokens_texto_mcl)):  
 
             # Seleciona os tokens da sentença
             wi = lista_tokens_texto_pln[pos_wi] # Recupera o token da palavra gerado pelo spaCy
             wi1 = ""
             pos2 = -1
-            if pos_wi+1 < len(lista_tokens_texto_pln):
+            if (pos_wi+1 < len(lista_tokens_texto_pln)):
                 wi1 = lista_tokens_texto_pln[pos_wi+1] # Recupera o próximo token da palavra gerado pelo spaCy
       
                 # Localiza o deslocamento da exceção        
@@ -1281,14 +1418,14 @@ class Transformer(nn.Module):
             pos = self._getExcecaoDicMaior(wi)  
             #print("Exceção pos:", pos)
                 
-            if pos != -1 or pos2 != -1:      
+            if (pos != -1) or (pos2 != -1):      
                 if pos != -1:
                     #print("Adiciona 1 Exceção palavra == wi:",wi)
                     lista_tokens.append(wi)
                     # Marca como fora do vocabulário do MCL
                     lista_tokens_oov_mcl.append(PALAVRA_FORA_DO_VOCABULARIO)
                     # Verifica se tem mais de um token
-                    if pos != 1:
+                    if (pos != 1):
                         indice_token = pos_wj + pos
                         #print("Calcula a média de :", pos_wj , "até", indice_token)
                         embeddings_tokens_palavra = embeddings_texto[pos_wj:indice_token]
@@ -1323,13 +1460,13 @@ class Transformer(nn.Module):
                     #print("wi[",pos_wi,"]=", texto_token[pos_wi])
                     #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
                 else:
-                    if pos2 != -1:
+                    if (pos2 != -1):
                         #print("Adiciona 1 Exceção palavra == wi:",wi)
                         lista_tokens.append(wi+wi1)
                         # Marca como fora do vocabulário do MCL
-                        lista_tokens_oov_mcl.append(PALAVRA_FORA_DO_VOCABULARIO)
+                        lista_tokens_oov_mcl.append(self.PALAVRA_FORA_DO_VOCABULARIO)
                         # Verifica se tem mais de um token
-                        if pos2 == 1: 
+                        if (pos2 == 1): 
                             # Adiciona o embedding do token a lista de embeddings
                             lista_palavra_embeddings_MEAN.append(embeddings_texto[pos_wj])
                             lista_palavra_embeddings_MAX.append(embeddings_texto[pos_wj])
@@ -1342,7 +1479,7 @@ class Transformer(nn.Module):
                         #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
             else:  
                 # Tokens iguais adiciona a lista, o token não possui subtoken
-                if (wi == wj or wi == wj[1:] or wj[0] == TOKEN_DESCONHECIDO):
+                if (wi == wj) or (wi == wj[1:]) or (wj[0] == self.TOKEN_DESCONHECIDO):
                     # Adiciona o token a lista de tokens
                     #print("Adiciona 2 wi==wj or wj==TOKEN_DESCONHECIDO[0]:", wi )
                     lista_tokens.append(wi)    
@@ -1361,16 +1498,16 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     
                     # Remove os caracteres SEPARADOR_PALAVRA("_") do token
-                    if SEPARADOR_TOKEN in wj:
+                    if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in wj):
                         palavra_POS = wj[1:]
                     else:                
                         palavra_POS = wj                    
                     
                     indice_token = pos_wj + 1                 
-                    while ((SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and indice_token < len(tokens_texto_mcl)):
+                    while (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
                        
                         # Separa o token
-                        if SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]:
+                        if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]):
                             # Remove os caracteres SEPARADOR_TOKEN("G") do token
                             parte = tokens_texto_mcl[indice_token][1:]                            
                         else:
@@ -1383,7 +1520,7 @@ class Transformer(nn.Module):
                         indice_token = indice_token + 1
 
                     #print("\nMontei palavra:",palavra_POS)
-                    if (palavra_POS == wi or palavra_POS[0] == TOKEN_DESCONHECIDO):
+                    if (palavra_POS == wi) or (palavra_POS[0] == self.TOKEN_DESCONHECIDO):
                         # Adiciona o token a lista
                         #print("Adiciona 3 palavra == wi or palavra_POS = TOKEN_DESCONHECIDO:",wi)
                         lista_tokens.append(wi)
@@ -1509,14 +1646,23 @@ class Transformer(nn.Module):
         return lote
     
     # ============================   
-    def trataListaTokensRoberta(self, tokens_texto_mcl):      
-        SEPARADOR_TOKEN = 'Ġ'
-        TOKEN_ESPECIAL_INICIO = '<s>'
+    def trataListaTokensBPE(self, tokens_texto_mcl):    
+        '''
+        Trata a lista de tokens do tokenizador BPE
+
+        Parâmetros:
+           `tokens_texto_mcl` - Lista dos tokens gerados pelo tokenizador.
+           
+        Retorno:
+           Lista de tokens tratada.        
+        '''  
+        #SEPARADOR_TOKEN = 'Ġ'
+        #TOKEN_ESPECIAL_INICIO = '<s>'
         
-        # Se o primeiro token não for o TOKEN_ESPECIAL_INICIO e o token tem caracter inicial igual ao separador, remove
-        if TOKEN_ESPECIAL_INICIO != tokens_texto_mcl[0] and SEPARADOR_TOKEN != tokens_texto_mcl[0][0]:
-            #tokens_texto_mcl = [tokens_texto_mcl[0][1:]] + tokens_texto_mcl[1:]
-            tokens_texto_mcl = [SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
-            #print("tokens_texto_mcl 1 :", tokens_texto_mcl)
+        # Se o primeiro token não for o TOKEN_INICIO e o token tem caracter inicial igual ao separador, remove
+        if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
+        
+            tokens_texto_mcl = [self.SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
+            #print("tokens_texto_mcl:", tokens_texto_mcl)
         
         return tokens_texto_mcl

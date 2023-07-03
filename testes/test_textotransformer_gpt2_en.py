@@ -14,19 +14,19 @@ from textotransformer.util.utiltexto import getIndexTokenTexto
 
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_XLNet_en(unittest.TestCase):
+class TestTextTransformer_GPT2_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("xlnet-base-cased", 
+        self.modelo = TextoTransformer("gpt2", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_XLNet
+    # Testes TextoTransformer_GPT2
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_XLNet")
+        logger.info("Testando o construtor de TextoTransformer_GPT2")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -35,7 +35,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         logger.info("Testando o removeTokensEspeciais")
         
         # Valores de entrada                
-        lista_tokens = ['<s>', 'I', 'like', 'mango', 'ice', 'cream', '.', '</s>']
+        lista_tokens = ['I', 'like', 'mango', 'ice', 'cream', '.']
         
         # Valores de saída
         lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)
@@ -98,13 +98,13 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         self.assertTrue("all_layer_embeddings" in saida)
         
         # Testa a saida dos valores das chaves
-        self.assertEqual(len(saida['token_embeddings']), 10)
-        self.assertEqual(len(saida['input_ids']), 10)
-        self.assertEqual(len(saida['attention_mask']), 10)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 10)        
+        self.assertEqual(len(saida['token_embeddings']), 8)
+        self.assertEqual(len(saida['input_ids']), 8)
+        self.assertEqual(len(saida['attention_mask']), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 8)        
         self.assertEqual(saida['texto_original'], texto)
         self.assertEqual(len(saida['all_layer_embeddings']), 12) # Camadas
-        self.assertEqual(len(saida['all_layer_embeddings'][0]), 10) # tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 8) # tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
         # Testa o tipo das saida dos valores das chaves                
@@ -138,9 +138,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['token_embeddings']), 2) # Textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 12) # tokens
+        self.assertEqual(len(saida['token_embeddings'][0]), 9) # tokens
         self.assertEqual(len(saida['token_embeddings'][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['token_embeddings'][1]), 10) # tokens
+        self.assertEqual(len(saida['token_embeddings'][1]), 8) # tokens
         self.assertEqual(len(saida['token_embeddings'][1][0]), 768) # embeddings
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['attention_mask']), 2)        
@@ -149,9 +149,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1])
         self.assertEqual(len(saida['all_layer_embeddings']), 2) # Textos
         self.assertEqual(len(saida['all_layer_embeddings'][0]), 12) # Camadas do transformer
-        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 12) # 12 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 9) # 9 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 10) # 10 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 8) # 8 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
                 
         # Testa o tipo das saida dos valores das chaves        
@@ -227,7 +227,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['texto_original']), 23)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 8)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['texto_embeddings_MEAN']), 768)
         self.assertEqual(len(saida['texto_embeddings_MAX']), 768)
@@ -295,7 +295,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         self.assertTrue("sentenca_embeddings_MAX" in saida)
                 
         # Testa a saida dos valores das chaves        
-        self.assertEqual(len(saida['tokens_texto_mcl']), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 17)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['sentenca_embeddings_MEAN']), 2)
@@ -331,7 +331,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves        
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 17)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 3)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         self.assertEqual(len(saida['sentencas_texto'][0]), 2)
@@ -437,7 +437,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 9)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 2)
@@ -533,17 +533,17 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 9)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
         # Testa a quantidade de ids
         self.assertEqual(len(saida['input_ids']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['input_ids'][0]), 10)
+        self.assertEqual(len(saida['input_ids'][0]), 9)
         self.assertEqual(len(saida['input_ids'][1]), 8)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['token_embeddings']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 10)
+        self.assertEqual(len(saida['token_embeddings'][0]), 9)
         self.assertEqual(len(saida['token_embeddings'][1]), 8)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['texto_original']), 2)
@@ -573,9 +573,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto)
         
         # Valores esperados
-        CcosEsperado = 0.987067699432373
-        CeucEsperado = 44.02893829345703
-        CmanEsperado = 688.7461547851562
+        CcosEsperado = 0.9990493059158325
+        CeucEsperado = 51.09952163696289
+        CmanEsperado = 274.08123779296875
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -599,9 +599,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 0.987067699432373                
-        CeucEsperado = 44.02893829345703
-        CmanEsperado = 688.7461547851562
+        CcosEsperado = 0.9990493059158325                
+        CeucEsperado = 51.09952163696289
+        CmanEsperado = 274.08123779296875
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -625,9 +625,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         # Valores esperados
-        CcosEsperado = 0.9875938296318054
-        CeucEsperado = 39.51270294189453
-        CmanEsperado = 658.4864501953125
+        CcosEsperado = 0.9967917203903198
+        CeucEsperado = 71.80702209472656
+        CmanEsperado = 344.1712341308594
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -687,9 +687,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embeddingTexto2, embeddingTexto3)
         
         # Valores esperados
-        sim12Esperado = 0.9770107269287109
-        sim13Esperado = 0.9741824865341187
-        sim23Esperado = 0.9824895262718201
+        sim12Esperado = 0.9989951252937317
+        sim13Esperado = 0.9970790147781372
+        sim23Esperado = 0.9981629848480225
         
         #Compara somente n casas decimais
         casas_decimais = 5
@@ -709,7 +709,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "Ġbank")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -722,9 +722,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embedToken2,embedToken3)
                         
         # Valores esperados
-        sim12Esperado = 0.9835878014564514
-        sim13Esperado = 0.9770671725273132
-        sim23Esperado = 0.9823021292686462
+        sim12Esperado = 0.9955418705940247
+        sim13Esperado = 0.992694079875946
+        sim23Esperado = 0.989220380783081
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -743,7 +743,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "Ġbank")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -756,9 +756,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         dif23 = distanciaEuclidiana(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 53.906375885009766
-        dif13Esperado = 43.080039978027344
-        dif23Esperado = 51.95704650878906
+        dif12Esperado = 47.89768981933594
+        dif13Esperado = 46.27248764038086
+        dif23Esperado = 37.265289306640625
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -778,7 +778,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "Ġbank")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -791,9 +791,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         dif23 = distanciaManhattan(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 894.1543
-        dif13Esperado = 936.25
-        dif23Esperado = 928.70776
+        dif12Esperado = 358.1972
+        dif13Esperado = 421.6814
+        dif23Esperado = 446.43518
         
         # Compara somente n casas decimais
         casas_decimais = 4
@@ -805,6 +805,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_XLNet")
+    logger.info("Teste TextoTransformer_GPT2")
     unittest.main()
     

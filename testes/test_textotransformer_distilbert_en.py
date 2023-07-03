@@ -35,7 +35,7 @@ class TestTextTransformer_DistilBERT_en(unittest.TestCase):
         logger.info("Testando o removeTokensEspeciais")
         
         # Valores de entrada                
-        lista_tokens = ['<cls>', 'I', 'like', 'mango', 'ice', 'cream', '.', '<sep>']
+        lista_tokens = ['[CLS]', 'I', 'like', 'mango', 'ice', 'cream', '.', '[SEP]']
         
         # Valores de saída
         lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)

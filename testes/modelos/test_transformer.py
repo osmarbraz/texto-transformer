@@ -63,17 +63,12 @@ class TestTransformer(unittest.TestCase):
         # BERT Tokenizer
         texto1 = ['[CLS]', 'Ado', '##ro', 'sor', '##vete', 'de', 'mang', '##a', '.', '[SEP]']
         # 10 tokens
-        # RoBERTa Tokenizer
-        texto2 = ['<s>', 'Ad', 'oro', 'Ġsor', 've', 'te', 'Ġde', 'Ġmanga', '.', '</s>']
-        # 10 tokens
-        
+               
         # Valores de saída
         self.modelo.removeTokensEspeciais(texto1)
-        saida2 = self.modelo.removeTokensEspeciais(texto2)
         
         # Testa as saídas
-        self.assertEqual(len(texto1), 8)
-        self.assertEqual(len(saida2), 8)
+        self.assertEqual(len(texto1), 8)        
     
     #Testes tokenize string
     def test_tokenize_string(self):

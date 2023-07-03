@@ -10,7 +10,7 @@ import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
 # Biblioteca do transformer
-from transformers import RobertaModel, XLNetModel
+from transformers import RobertaModel, XLNetModel, GPT2Model
 
 # Biblioteca próprias
 from textotransformer.pln.pln import PLN
@@ -60,15 +60,15 @@ class TextoTransformer:
                        
         # Parâmetro recebido para o modelo de linguagem
         model_args.pretrained_model_name_or_path = pretrained_model_name_or_path
-        logger.info("Especificado parâmetro pretrained_model_name_or_path: {}".format(pretrained_model_name_or_path))
+        logger.info("Especificado parâmetro \"pretrained_model_name_or_path\": {}".format(pretrained_model_name_or_path))
                
         # Parâmetro recebido para o modelo da ferramenta de pln
         model_args.modelo_spacy = modelo_spacy
-        logger.info("Especificado parâmetro modelo_spacy:{}".format(modelo_spacy))
+        logger.info("Especificado parâmetro \"modelo_spacy\":{}".format(modelo_spacy))
         
          # Parâmetro recebido para o modelo do_lower_case
         model_args.do_lower_case = do_lower_case
-        logger.info("Especificado parâmetro do_lower_case: {}".format(do_lower_case))
+        logger.info("Especificado parâmetro \"do_lower_case\": {}".format(do_lower_case))
                 
         # Carrega o modelo de linguagem da classe transformador
         self.transformer = Transformer(modelo_args=model_args)
@@ -112,16 +112,6 @@ class TextoTransformer:
                                      transformer=self.transformer, 
                                      pln=self.pln,
                                      device=self._target_device)
-
-
-        # A maioria dos modelos a posição do token de início é 1 e o token separador é -1
-        self.POSICAO_TOKEN_INICIO = 1 # Token de início, o token de classificação [CLS]
-        self.POSICAO_TOKEN_FINAL = -1 # Token final, o token separador [SEP]
-        
-        # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
-        if isinstance(self.auto_model, XLNetModel):
-            self.POSICAO_TOKEN_INICIO = 0
-            self.POSICAO_TOKEN_FINAL = -2
 
         # Mensagem de carregamento da classe
         logger.info("Classe \"{}\" carregada com os parâmetros: \"{}\".".format(self.__class__.__name__, model_args))
@@ -701,10 +691,10 @@ class TextoTransformer:
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
             # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
            
             # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
             
             if isinstance(embeddings_texto, torch.Tensor): 
                 # Calcula a média dos embeddings dos tokens das sentenças do texto
@@ -837,11 +827,11 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):       
 
-            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de embeddings gerados pelo MCL sem os tokens de classificação e separação.
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
 
-            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de tokens do tokenizado pelo MCL sem os tokens de classificação e separação.
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
             
             # Recupera as sentenças do texto
             lista_sentencas_texto = self.getPln().getListaSentencasTexto(texto_embeddings['texto_original'][i])
@@ -860,10 +850,10 @@ class TextoTransformer:
                 sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
                 #print(len(sentenca_tokenizada))
                 
-                # Se for do tipo Roberta Model, adiciona o token de separação no início da sentença
+                # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
                 if j != 0:
-                    if isinstance(self.auto_model, RobertaModel):
-                        sentenca_tokenizada = self.getTransformer().trataListaTokensRoberta(sentenca_tokenizada)
+                    if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
+                        sentenca_tokenizada = self.getTransformer().trataListaTokensBPE(sentenca_tokenizada)
                         
                 # Localiza os índices dos tokens da sentença no texto
                 inicio, fim = encontrarIndiceSubLista(tokens_texto_mcl, sentenca_tokenizada)
@@ -1023,11 +1013,11 @@ class TextoTransformer:
             # Recupera o texto tokenizado pela ferramenta de pln do texto original
             lista_tokens_texto_pln = self.getPln().getTokensTexto(texto_embeddings['texto_original'][i])
             
-            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP 
-            embeddings_texto = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de embeddings gerados pelo MCL sem os tokens de classificação e separação.
+            embeddings_texto = texto_embeddings['token_embeddings'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
             
-            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de tokens do tokenizado pelo MCL sem os tokens de classificação e separação.
+            tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
             
             # Concatena os tokens gerandos pela ferramenta de pln
             tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
@@ -1138,14 +1128,14 @@ class TextoTransformer:
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):    
 
-            # Recupera a lista de embeddings gerados pelo MCL sem CLS e SEP             
-            lista_token_embeddings = texto_embeddings['token_embeddings'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de embeddings gerados pelo MCL sem os tokens de classificação e separação.
+            lista_token_embeddings = texto_embeddings['token_embeddings'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
 
-            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            lista_input_ids = texto_embeddings['input_ids'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de tokens do tokenizado pelo MCL sem os tokens de classificação e separação.
+            lista_input_ids = texto_embeddings['input_ids'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
 
-            # Recupera a lista de tokens do tokenizado pelo MCL sem CLS e SEP
-            lista_tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.POSICAO_TOKEN_INICIO:self.POSICAO_TOKEN_FINAL]
+            # Recupera a lista de tokens do tokenizado pelo MCL sem os tokens de classificação e separação.
+            lista_tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
 
             # Acumula a saída do método             
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
@@ -1162,6 +1152,16 @@ class TextoTransformer:
             saida['token_embeddings'] = saida['token_embeddings'][0]
 
         return saida
+    
+    # ============================
+    def getInfoModel(self):
+        '''
+        Mostra informações do modelo.
+        '''        
+        print("Modelo Huggingface  : {}.".format(self.auto_model.__class__.__name__))
+        print("Modelo pré-treinado : {}.".format(self.auto_model.config._name_or_path))
+        print("Parâmetros          : {:,}.".format(self.auto_model.num_parameters()))
+        print("Tamanho embedding   : {:,}.".format(self.auto_model.config.hidden_size))
     
     # ============================
     def getModel(self):
