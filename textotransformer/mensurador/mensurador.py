@@ -6,7 +6,7 @@ import logging
 # Biblioteca de aprendizado de máquina
 import torch 
 # Biblioteca do transformer
-from transformers import RobertaModel, GPT2Model
+from transformers import RobertaModel, OpenAIGPTModel, GPT2Model
 
 # Bibliotecas próprias
 from textotransformer.modelo.transformer import Transformer
@@ -217,25 +217,25 @@ class Mensurador:
                    
         # Tokeniza o texto
         texto_tokenizado =  self.transformer.getTextoTokenizado(texto)
-        #print(texto_tokenizado)
+        print(texto_tokenizado)
         
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
-        #print(sentenca_tokenizada)
+        print(sentenca_tokenizada)
         
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
-        #print(len(sentenca_tokenizada))
+        print(len(sentenca_tokenizada))
         
-        # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
+        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
+        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
         
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)        
-        #print("inicio:", inicio, "   fim:", fim)
+        print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:            
             logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
@@ -289,8 +289,8 @@ class Mensurador:
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
         
-        # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
+        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
+        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
@@ -367,8 +367,8 @@ class Mensurador:
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
         
-        # Se for o modelo RoBERTaModel
-        if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
+        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
+        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
@@ -551,7 +551,7 @@ class Mensurador:
         embedding_texto = self.getEmbeddingTextoCamada(string_texto,
                                                        abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas,
                                                        converte_para_numpy=converte_para_numpy)
-        #print('embedding_texto=', embedding_texto.shape)
+        print('embedding_texto=', embedding_texto.shape)
 
         # Acumuladores das medidas entre as sentenças  
         soma_Scos = 0

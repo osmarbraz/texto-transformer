@@ -35,7 +35,7 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         logger.info("Testando o removeTokensEspeciais")
         
         # Valores de entrada                
-        lista_tokens = ['<s>', 'I', 'like', 'mango', 'ice', 'cream', '.', '</s>']
+        lista_tokens = ['I', 'like', 'mango', 'ice', 'cream', '.']
         
         # Valores de saída
         lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)

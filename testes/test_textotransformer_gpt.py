@@ -14,19 +14,19 @@ from textotransformer.util.utiltexto import getIndexTokenTexto
 
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_Albert_en(unittest.TestCase):
+class TestTextTransformer_GPT_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("albert-base-v2", 
+        self.modelo = TextoTransformer("openai-gpt", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_Albert
+    # Testes TextoTransformer_GPT2
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_Albert")
+        logger.info("Testando o construtor de TextoTransformer_GPT")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -35,7 +35,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         logger.info("Testando o removeTokensEspeciais")
         
         # Valores de entrada                
-        lista_tokens = ['[CLS]', 'I', 'like', 'mango', 'ice', 'cream', '.', '[SEP]']
+        lista_tokens = ['I', 'like', 'mango', 'ice', 'cream', '.']
         
         # Valores de saída
         lista_tokens_saida = self.modelo.getTransformer().removeTokensEspeciais(lista_tokens)
@@ -98,13 +98,13 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         self.assertTrue("all_layer_embeddings" in saida)
         
         # Testa a saida dos valores das chaves
-        self.assertEqual(len(saida['token_embeddings']), 10)
-        self.assertEqual(len(saida['input_ids']), 10)
-        self.assertEqual(len(saida['attention_mask']), 10)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 10)        
+        self.assertEqual(len(saida['token_embeddings']), 8)
+        self.assertEqual(len(saida['input_ids']), 8)
+        self.assertEqual(len(saida['attention_mask']), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 8)        
         self.assertEqual(saida['texto_original'], texto.lower())
         self.assertEqual(len(saida['all_layer_embeddings']), 12) # Camadas
-        self.assertEqual(len(saida['all_layer_embeddings'][0]), 10) # tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 8) # tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
         # Testa o tipo das saida dos valores das chaves                
@@ -138,9 +138,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['token_embeddings']), 2) # Textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 12) # tokens
+        self.assertEqual(len(saida['token_embeddings'][0]), 8) # tokens
         self.assertEqual(len(saida['token_embeddings'][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['token_embeddings'][1]), 10) # tokens
+        self.assertEqual(len(saida['token_embeddings'][1]), 8) # tokens
         self.assertEqual(len(saida['token_embeddings'][1][0]), 768) # embeddings
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['attention_mask']), 2)        
@@ -149,9 +149,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1].lower())
         self.assertEqual(len(saida['all_layer_embeddings']), 2) # Textos
         self.assertEqual(len(saida['all_layer_embeddings'][0]), 12) # Camadas do transformer
-        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 12) # 12 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 8) # 8 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 10) # 10 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 8) # 8 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
                 
         # Testa o tipo das saida dos valores das chaves        
@@ -227,7 +227,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['texto_original']), 23)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 9)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['texto_embeddings_MEAN']), 768)
         self.assertEqual(len(saida['texto_embeddings_MAX']), 768)
@@ -295,7 +295,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         self.assertTrue("sentenca_embeddings_MAX" in saida)
                 
         # Testa a saida dos valores das chaves        
-        self.assertEqual(len(saida['tokens_texto_mcl']), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 16)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['sentenca_embeddings_MEAN']), 2)
@@ -331,7 +331,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves        
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 16)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 3)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         self.assertEqual(len(saida['sentencas_texto'][0]), 2)
@@ -437,7 +437,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 8)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 2)
@@ -456,7 +456,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][0], texto[0].lower())
         self.assertEqual(saida['texto_original'][1], texto[1].lower())
         # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
+        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 0, 0])
         self.assertEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
@@ -533,17 +533,17 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 8)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
         # Testa a quantidade de ids
         self.assertEqual(len(saida['input_ids']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['input_ids'][0]), 10)
+        self.assertEqual(len(saida['input_ids'][0]), 8)
         self.assertEqual(len(saida['input_ids'][1]), 8)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['token_embeddings']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 10)
+        self.assertEqual(len(saida['token_embeddings'][0]), 8)
         self.assertEqual(len(saida['token_embeddings'][1]), 8)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['texto_original']), 2)
@@ -573,9 +573,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto)
         
         # Valores esperados
-        CcosEsperado = 0.7801497578620911
-        CeucEsperado = 15.01231575012207
-        CmanEsperado = 322.2071533203125
+        CcosEsperado = 0.5852859616279602
+        CeucEsperado = 10.421307563781738
+        CmanEsperado = 226.65457153320312
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -599,9 +599,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 0.7801497578620911                
-        CeucEsperado = 15.01231575012207
-        CmanEsperado = 322.2071533203125
+        CcosEsperado = 0.5852859616279602              
+        CeucEsperado = 10.421307563781738
+        CmanEsperado = 226.65457153320312
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -625,9 +625,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         # Valores esperados
-        CcosEsperado = 0.745449423789978
-        CeucEsperado = 17.00690269470215
-        CmanEsperado = 364.04486083984375
+        CcosEsperado = 0.573768675327301
+        CeucEsperado = 11.906492233276367
+        CmanEsperado = 255.5538330078125
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -687,9 +687,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embeddingTexto2, embeddingTexto3)
         
         # Valores esperados
-        sim12Esperado = 0.7942847609519958
-        sim13Esperado = 0.7596461772918701
-        sim23Esperado = 0.826423168182373
+        sim12Esperado = 0.6160804629325867
+        sim13Esperado = 0.5424067974090576
+        sim23Esperado = 0.6180431842803955
         
         #Compara somente n casas decimais
         casas_decimais = 5
@@ -709,7 +709,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "bank</w>")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -722,9 +722,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embedToken2,embedToken3)
                         
         # Valores esperados
-        sim12Esperado = 0.883001983165741
-        sim13Esperado = 0.6865296363830566
-        sim23Esperado = 0.6598318815231323
+        sim12Esperado = 0.7032352685928345
+        sim13Esperado = 0.5836779475212097
+        sim23Esperado = 0.34492143988609314
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -743,7 +743,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "bank</w>")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -756,9 +756,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         dif23 = distanciaEuclidiana(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 15.56865119934082
-        dif13Esperado = 24.872314453125
-        dif23Esperado = 26.661836624145508
+        dif12Esperado = 14.81995677947998
+        dif13Esperado = 17.967321395874023
+        dif23Esperado = 21.585800170898438
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -778,7 +778,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         saida = self.modelo.getCodificacaoToken(texto)
         
         # Recupera os indices do token "▁bank" no texto (7,13,18)
-        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "▁bank")
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "bank</w>")
                 
         # Recupera os embeddings da saída do método de acordo com os índices
         embedToken1 = saida['token_embeddings'][idx_tokens[0]]
@@ -791,9 +791,9 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         dif23 = distanciaManhattan(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 334.28476
-        dif13Esperado = 549.44995
-        dif23Esperado = 591.8862
+        dif12Esperado = 322.03915
+        dif13Esperado = 386.87018
+        dif23Esperado = 465.57556
         
         # Compara somente n casas decimais
         casas_decimais = 4
@@ -805,6 +805,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_Albert")
+    logger.info("Teste TextoTransformer_GPT")
     unittest.main()
     

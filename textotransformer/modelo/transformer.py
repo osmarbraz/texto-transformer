@@ -9,7 +9,7 @@ import numpy as np
 from torch import Tensor, device
 # Biblioteca do transformer
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel, GPT2Model
+from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel, OpenAIGPTModel, GPT2Model
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
@@ -68,15 +68,12 @@ class Transformer(nn.Module):
         self._carregar_modelo(model_name_or_path, 
                               self.auto_config, 
                               cache_dir)
-
-        # Carrega o tokenizador
-        self.auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, cache_dir=cache_dir, **tokenizer_args)
         
-        # Se não possuir um token de preenchimento, adiciona um
-        if self.auto_tokenizer.pad_token is None:
-            self.auto_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-            self.auto_model.resize_token_embeddings(len(self.auto_tokenizer))
-
+        # Carrega o tokenizador
+        self.auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  model_name_or_path, 
+                                                            cache_dir=cache_dir, 
+                                                            **tokenizer_args)
+        
         # Se max_seq_length não foi especificado, tenta inferir do modelo
         if self.modelo_args.max_seq_len is None:
             if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.auto_tokenizer, "model_max_length"):
@@ -90,6 +87,11 @@ class Transformer(nn.Module):
 
         # Define os tokens especiais e separadores 
         self.defineTokensEspeciais()
+        
+        # Se não possuir um token de preenchimento, adiciona um        
+        if self.auto_tokenizer.pad_token is None:
+            self.auto_tokenizer.add_special_tokens(({'pad_token': self.TOKEN_PADDING})) 
+            self.auto_model.resize_token_embeddings(len(self.auto_tokenizer))
                            
         logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
 
@@ -117,7 +119,9 @@ class Transformer(nn.Module):
         if isinstance(self.auto_model, BertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
+            self.SEPARADOR_SUBTOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 0 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = "[CLS]"
             self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
@@ -125,14 +129,18 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
             self.TOKEN_PADDING = "[PAD]" # O token de padding.
+            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
             self.TOKEN_MASCARA = "[MASK]"
             self.TOKEN_DESCONHECIDO = "[UNK]"
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.SEPARADOR = "[UNK]"            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
             
         elif isinstance(self.auto_model, AlbertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "▁" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
+            self.SEPARADOR_SUBTOKEN = "▁" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = "[CLS]"
             self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
@@ -140,14 +148,17 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
             self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.TOKEN_MASCARA = "[MASK]"
-            self.TOKEN_DESCONHECIDO = "<unk>"
             self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = "[MASK]"
+            self.TOKEN_DESCONHECIDO = "<unk>"            
+            self.DO_LOWER_CASE = True # Define se o tokenizador irá converter os tokens para minúsculo.
         
         elif isinstance(self.auto_model, DistilBertModel):
             # Uma sentença simples: [CLS] X [SEP]
             # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_TOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
+            self.SEPARADOR_SUBTOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 0 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = "[CLS]"
             self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "[SEP]"
@@ -155,14 +166,17 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = "[SEP]"
             self.TOKEN_CLASSIFICACAO = "[CLS]"
             self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.TOKEN_MASCARA = "[MASK]"
-            self.TOKEN_DESCONHECIDO = "<unk>"
             self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = "[MASK]"
+            self.TOKEN_DESCONHECIDO = "<unk>"            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
         
         elif isinstance(self.auto_model, RobertaModel):
             # Uma sentença simples: <s> X </s>
             # Um par de sentenças: <s> A </s></s> B </s>
-            self.SEPARADOR_TOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = "<s>"
             self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
             self.TOKEN_FIM = "</s>"
@@ -170,30 +184,35 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = "</s>"
             self.TOKEN_CLASSIFICACAO = "<s>"
             self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.TOKEN_MASCARA = "<mask>"
-            self.TOKEN_DESCONHECIDO = "Â"
             self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = "<mask>"
+            self.TOKEN_DESCONHECIDO = "Â"            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
             
         elif isinstance(self.auto_model, XLNetModel):
             # Uma sentença simples: X <sep> <cls>
             # Um par de sentenças: A <sep> B <sep> <cls>
-            self.SEPARADOR_TOKEN = "▁"  # Caracter que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
-            self.TOKEN_INICIO = "<s>"
-            # O token de início está no final da sentença junto como separador
+            self.SEPARADOR_SUBTOKEN = "▁"  # Caracter que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
+            self.TOKEN_INICIO = None  # O token de início está no final da sentença junto como separador
             self.POSICAO_TOKEN_INICIO = 0 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = "</s>"
+            self.TOKEN_FIM = None
             self.POSICAO_TOKEN_FINAL = -2 # Posição do token válido do final da lista de tokens.
             self.TOKEN_SEPARADOR = "<sep>"
             self.TOKEN_CLASSIFICACAO = "<cls>"
             self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.TOKEN_MASCARA = "<mask>"
-            self.TOKEN_DESCONHECIDO = "<unk>"
             self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = "<mask>"
+            self.TOKEN_DESCONHECIDO = "<unk>"            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
-        elif isinstance(self.auto_model, GPT2Model):
+        elif isinstance(self.auto_model, OpenAIGPTModel):            
             # Uma sentença simples: X
             # Um par de sentenças: A ,B
-            self.SEPARADOR_TOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.SEPARADOR_SUBTOKEN = "</w>" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 2 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = None  # Não existe token de início
             self.POSICAO_TOKEN_INICIO = None    # Não existe token de início
             self.TOKEN_FIM = None # Não existe token de fim
@@ -201,13 +220,34 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = None
             self.TOKEN_CLASSIFICACAO = None
             self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.TOKEN_MASCARA = None
-            self.TOKEN_DESCONHECIDO = None
             self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = None
+            self.TOKEN_DESCONHECIDO = None            
+            self.DO_LOWER_CASE = True # Define se o tokenizador irá converter os tokens para minúsculo.
+
+        elif isinstance(self.auto_model, GPT2Model):
+            # Uma sentença simples: X
+            # Um par de sentenças: A ,B
+            self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
+            self.TOKEN_INICIO = None  # Não existe token de início
+            self.POSICAO_TOKEN_INICIO = None    # Não existe token de início
+            self.TOKEN_FIM = None # Não existe token de fim
+            self.POSICAO_TOKEN_FINAL = None # Não existe token de fim
+            self.TOKEN_SEPARADOR = None
+            self.TOKEN_CLASSIFICACAO = None
+            self.TOKEN_PADDING = "[PAD]" # O token de padding.
+            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+            self.TOKEN_MASCARA = None
+            self.TOKEN_DESCONHECIDO = None            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
         else:
             # Sem um modelo especificado
-            self.SEPARADOR_TOKEN = None
+            self.SEPARADOR_SUBTOKEN = None
+            self.SERAPADOR_SUBTOKEN_REPETICAO = -1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+            self.SEPARADOR_SUBTOKEN_POSICAO = -1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
             self.TOKEN_INICIO = None
             self.POSICAO_TOKEN_INICIO = None
             self.TOKEN_FIM = None
@@ -215,9 +255,10 @@ class Transformer(nn.Module):
             self.TOKEN_SEPARADOR = None
             self.TOKEN_CLASSIFICACAO = None
             self.TOKEN_PADDING = None
-            self.TOKEN_MASCARA = None
-            self.TOKEN_DESCONHECIDO = None
             self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.           
+            self.TOKEN_MASCARA = None
+            self.TOKEN_DESCONHECIDO = None            
+            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
             
             logger.info("Não foi definido os tokens especiais para o modelo {}.".format(self.auto_model.__class__.__name__))
     
@@ -402,7 +443,7 @@ class Transformer(nn.Module):
         to_tokenize = [[str(s).strip() for s in col] for col in to_tokenize]
 
         # Se for para colocar para minúsculo usa Lowercase nos textos
-        if self.modelo_args.do_lower_case:
+        if self.DO_LOWER_CASE:
             # Convertendo todos os tokens para minúsculo
             to_tokenize = [[s.lower() for s in col] for col in to_tokenize]
 
@@ -772,8 +813,8 @@ class Transformer(nn.Module):
                                                                           dic_excecao_maior = dic_excecao_maior,
                                                                           dic_excecao_menor = dic_excecao_menor)
             else:
-                # Tokenização BPE (Separador, Ġ) para o Roberta e GPT2
-                if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
+                # Tokenização BPE, separador Ġ para o Roberta e GPT2 e separador </w> para o OpenAIGPT
+                if isinstance(self.auto_model, (RobertaModel, OpenAIGPTModel, GPT2Model)):
                     return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto = embeddings_texto,
                                                                     tokens_texto_mcl = tokens_texto_mcl,
                                                                     tokens_texto_concatenado = tokens_texto_concatenado,
@@ -783,6 +824,7 @@ class Transformer(nn.Module):
                 else:
                     logger.error("Não encontrei um tokenizador de palavras para o modelo {}.".format(self.auto_model)) 
                     return  None 
+                    
 
 
     def _inicializaDicionarioExcecao(self,
@@ -873,10 +915,6 @@ class Transformer(nn.Module):
         
         # Inicializa os dicionários de exceção
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
-       
-        # Constantes tokens especiais
-        #self.SEPARADOR_TOKEN = "##"
-        #self.TOKEN_DESCONHECIDO = "[UNK]"
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1007,7 +1045,7 @@ class Transformer(nn.Module):
                     palavra_POS = wj
                     indice_token = pos_wj + 1                 
                     while  (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
-                        if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]):
+                        if (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN in tokens_texto_mcl[indice_token]):
                             # Remove os caracteres SEPARADOR_PALAVRA("##") do token
                             parte = tokens_texto_mcl[indice_token][2:]
                         else:                
@@ -1122,11 +1160,7 @@ class Transformer(nn.Module):
 
         # Inicializa os dicionários de exceção
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
-       
-        # Constantes tokens especiais
-        #SEPARADOR_TOKEN = "▁"
-        #TOKEN_DESCONHECIDO = "<unk>"
-       
+              
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
         lista_tokens_oov_mcl = []
@@ -1255,13 +1289,13 @@ class Transformer(nn.Module):
                     # Inicializa a palavra a ser montada          
                     
                     # Remove os caracteres SEPARADOR_PALAVRA("_") do token
-                    if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in wj):
+                    if (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN in wj):
                         palavra_POS = wj[1:]
                     else:                
                         palavra_POS = wj                    
                     
                     indice_token = pos_wj + 1                 
-                    while (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
+                    while (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
                        
                         # Separa o token
                         parte = tokens_texto_mcl[indice_token]
@@ -1338,9 +1372,9 @@ class Transformer(nn.Module):
                       'palavra_embeddings_MAX' : lista_palavra_embeddings_MAX})
 
         return saida
-    
+   
     # ============================  
-    # getTokensPalavrasEmbeddingsTextoBPE(Roberta, GTP-2)
+    # getTokensPalavrasEmbeddingsTextoBPEOpenAIGPT(OpenGPT)
     # Gera os tokens, POS e embeddings de cada texto.
     def getTokensPalavrasEmbeddingsTextoBPE(self,
                                             embeddings_texto, 
@@ -1375,10 +1409,6 @@ class Transformer(nn.Module):
  
         # Inicializa os dicionários de exceção
         self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
-       
-        # Constantes tokens especiais
-        #SEPARADOR_TOKEN = "Ġ"
-        #TOKEN_DESCONHECIDO = "Â"
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1489,9 +1519,16 @@ class Transformer(nn.Module):
                         #print("wj[",pos_wj,"]=", texto_tokenizada_MCL[pos_wj])
             else:  
                 # Tokens iguais adiciona a lista, o token não possui subtoken
-                if (wi == wj) or (wi == wj[1:]) or (wj[0] == self.TOKEN_DESCONHECIDO):
+                
+                # Concatena o token com o separador de subtoken no inicio
+                wi_separador_token = self.SEPARADOR_SUBTOKEN + wi                
+                # Caso contrário concatena no fim
+                if self.SEPARADOR_SUBTOKEN_POSICAO == 1:                    
+                    wi_separador_token = wi + self.SEPARADOR_SUBTOKEN
+                    
+                if (wi == wj) or (wi_separador_token == wj) or (wj[0] == self.TOKEN_DESCONHECIDO):
                     # Adiciona o token a lista de tokens
-                    #print("Adiciona 2 wi==wj or wj==TOKEN_DESCONHECIDO[0]:", wi )
+                    # print("Adiciona 2 wi==wj or wj==TOKEN_DESCONHECIDO[0]:", wi )
                     lista_tokens.append(wi)    
                     # Marca como dentro do vocabulário do MCL
                     lista_tokens_oov_mcl.append(PALAVRA_DENTRO_DO_VOCABULARIO)
@@ -1507,19 +1544,20 @@ class Transformer(nn.Module):
                     # A palavra foi tokenizada pelo Wordpice com ## ou diferente do spaCy ou desconhecida
                     # Inicializa a palavra a ser montada          
                     
-                    # Remove os caracteres SEPARADOR_PALAVRA("_") do token
-                    if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in wj):
-                        palavra_POS = wj[1:]
+                    # Remove os caracteres SEPARADOR_SUBTOKEN do token
+                    if (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN in wj):
+                        # Remove os caracteres SEPARADOR_SUBTOKEN do token
+                        palavra_POS = wj.replace(self.SEPARADOR_SUBTOKEN, "")                        
                     else:                
                         palavra_POS = wj                    
                     
                     indice_token = pos_wj + 1                 
-                    while (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
+                    while (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN not in tokens_texto_mcl[indice_token]) and (palavra_POS != wi) and (indice_token < len(tokens_texto_mcl)):
                        
                         # Separa o token
-                        if (self.SEPARADOR_TOKEN != None) and (self.SEPARADOR_TOKEN in tokens_texto_mcl[indice_token]):
-                            # Remove os caracteres SEPARADOR_TOKEN("G") do token
-                            parte = tokens_texto_mcl[indice_token][1:]                            
+                        if (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN in tokens_texto_mcl[indice_token]):
+                            # Remove os caracteres SEPARADOR_SUBTOKEN) do token
+                            parte = tokens_texto_mcl[indice_token].replace(self.SEPARADOR_SUBTOKEN, "")                           
                         else:
                             parte = tokens_texto_mcl[indice_token]                            
                   
@@ -1668,9 +1706,9 @@ class Transformer(nn.Module):
         '''  
         
         # Se o primeiro token não for o TOKEN_INICIO e o token tem caracter inicial igual ao separador, remove
-        if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_TOKEN != tokens_texto_mcl[0][0]):
+        if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_SUBTOKEN != tokens_texto_mcl[0][0]):
         
-            tokens_texto_mcl = [self.SEPARADOR_TOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
-            #print("tokens_texto_mcl:", tokens_texto_mcl)
+            tokens_texto_mcl = [self.SEPARADOR_SUBTOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
+            print("tokens_texto_mcl:", tokens_texto_mcl)
         
         return tokens_texto_mcl

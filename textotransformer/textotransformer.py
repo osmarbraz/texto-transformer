@@ -852,7 +852,7 @@ class TextoTransformer:
                 
                 # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
                 if j != 0:
-                    if isinstance(self.auto_model, (RobertaModel,GPT2Model)):
+                    if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
                         sentenca_tokenizada = self.getTransformer().trataListaTokensEspeciais(sentenca_tokenizada)
                         
                 # Localiza os índices dos tokens da sentença no texto
