@@ -189,10 +189,10 @@ class Mensurador:
         '''
 
         if self.model_args.estrategia_pooling == EstrategiasPooling.MEAN.value:
-            return self.getMedidasSentencasEmbeddingMEAN(embedding_si, embedding_sj)
+            return self.getMedidasSentencasEmbeddingMEAN(embedding_si=embedding_si, embedding_sj=embedding_sj)
         else:
             if self.model_args.estrategia_pooling == EstrategiasPooling.MAX.value:
-                return self.getMedidasSentencasEmbeddingMAX(embedding_si, embedding_sj)
+                return self.getMedidasSentencasEmbeddingMAX(embedding_si=embedding_si, embedding_sj=embedding_sj)
             else:
                 logger.info("Nenhuma seleção da estratégia de pooling foi especificada.")
                 return None
@@ -216,25 +216,25 @@ class Mensurador:
         '''
                    
         # Tokeniza o texto
-        texto_tokenizado =  self.transformer.getTextoTokenizado(texto)
+        texto_tokenizado =  self.transformer.getTextoTokenizado(texto=texto)
         print(texto_tokenizado)
         
         # Tokeniza a sentença
-        sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
+        sentenca_tokenizada =  self.transformer.getTextoTokenizado(texto=sentenca)
         print(sentenca_tokenizada)
         
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
         print(len(sentenca_tokenizada))
         
         # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
         if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
         
         # Localiza os índices dos tokens da sentença no texto
-        inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)        
+        inicio, fim = encontrarIndiceSubLista(lista=texto_tokenizado, sublista=sentenca_tokenizada)        
         print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:            
             logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
@@ -266,26 +266,26 @@ class Mensurador:
         '''
           
         # Tokeniza o texto
-        texto_tokenizado =  self.transformer.getTextoTokenizado(texto)  
+        texto_tokenizado = self.transformer.getTextoTokenizado(texto=texto)  
         #print(sentenca_tokenizada)
 
         # Remove as stopword da sentença
-        sentenca_sem_stopword = self.pln.removeStopWord(sentenca)
+        sentenca_sem_stopword = self.pln.removeStopWord(texto=sentenca)
 
         # Tokeniza a sentença sem stopword
-        sentenca_tokenizada_sem_stopword =  self.transformer.getTextoTokenizado(sentenca_sem_stopword)
+        sentenca_tokenizada_sem_stopword =  self.transformer.getTextoTokenizado(texto=sentenca_sem_stopword)
         #print(sentenca_tokenizada_sem_stopword)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada_sem_stopword = self.transformer.removeTokensEspeciais(sentenca_tokenizada_sem_stopword)        
+        sentenca_tokenizada_sem_stopword = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada_sem_stopword)        
         #print(sentenca_tokenizada_sem_stopword)      
         #print(len(sentenca_tokenizada_sem_stopword))
 
         # Tokeniza a sentença
-        sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
+        sentenca_tokenizada =  self.transformer.getTextoTokenizado(texto=sentenca)
         
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
         
@@ -293,10 +293,10 @@ class Mensurador:
         if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
-        inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
+        inicio, fim = encontrarIndiceSubLista(lista=texto_tokenizado, sublista=sentenca_tokenizada)
         #print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:
            logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
@@ -345,25 +345,26 @@ class Mensurador:
         '''
 
         # Tokeniza o texto
-        texto_tokenizado =  self.transformer.getTextoTokenizado(texto)  
+        texto_tokenizado =  self.transformer.getTextoTokenizado(texto=texto)  
         #print(sentenca_tokenizada)
 
         # Retorna as palavras relevantes da sentença do tipo especificado
-        sentenca_somente_relevante = self.pln.retornaPalavraRelevante(sentenca, self.model_args.palavra_relevante)
+        sentenca_somente_relevante = self.pln.retornaPalavraRelevante(texto=sentenca, 
+                                                                      tipo_palavra_relevante=self.model_args.palavra_relevante)
 
         # Tokeniza a sentença 
-        sentenca_tokenizada_somente_relevante =  self.transformer.getTextoTokenizado(sentenca_somente_relevante)
+        sentenca_tokenizada_somente_relevante =  self.transformer.getTextoTokenizado(texto=sentenca_somente_relevante)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada_somente_relevante = self.transformer.removeTokensEspeciais(sentenca_tokenizada_somente_relevante)
+        sentenca_tokenizada_somente_relevante = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada_somente_relevante)
         #print(sentenca_tokenizada_somente_relevante)
         #print(len(sentenca_tokenizada_somente_relevante))
 
         # Tokeniza a sentença
-        sentenca_tokenizada =  self.transformer.getTextoTokenizado(sentenca)
+        sentenca_tokenizada =  self.transformer.getTextoTokenizado(texto=sentenca)
 
         # Remove os tokens de início e fim da sentença
-        sentenca_tokenizada = self.transformer.removeTokensEspeciais(sentenca_tokenizada)
+        sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
         
@@ -371,10 +372,10 @@ class Mensurador:
         if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
             # Se não é a primeira sentença
             if posicao_sentenca != 0:
-                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(sentenca_tokenizada)
+                sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
-        inicio, fim = encontrarIndiceSubLista(texto_tokenizado, sentenca_tokenizada)
+        inicio, fim = encontrarIndiceSubLista(lista=texto_tokenizado, sublista=sentenca_tokenizada)
         #print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:
             logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
@@ -421,19 +422,19 @@ class Mensurador:
         '''
 
         if self.model_args.palavra_relevante == PalavraRelevante.ALL.value:
-            return self.getEmbeddingSentencaEmbeddingTextoALL(embedding_texto, 
+            return self.getEmbeddingSentencaEmbeddingTextoALL(embedding_texto=embedding_texto, 
                                                               texto=texto, 
                                                               sentenca=sentenca, 
                                                               posicao_sentenca=posicao_sentenca)
         else:
             if self.model_args.palavra_relevante == PalavraRelevante.CLEAN.value:                
-                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embedding_texto, 
+                return self.getEmbeddingSentencaEmbeddingTextoCLEAN(embedding_texto=embedding_texto, 
                                                                     texto=texto, 
                                                                     sentenca=sentenca, 
                                                                     posicao_sentenca=posicao_sentenca)
             else:
                 if self.model_args.palavra_relevante == PalavraRelevante.NOUN.value:
-                    return self.getEmbeddingSentencaEmbeddingTextoNOUN(embedding_texto, 
+                    return self.getEmbeddingSentencaEmbeddingTextoNOUN(embedding_texto=embedding_texto, 
                                                                        texto=texto, 
                                                                        sentenca=sentenca, 
                                                                        posicao_sentenca=posicao_sentenca)
@@ -472,13 +473,14 @@ class Mensurador:
         self.auto_model.to(device)            
 
         # Adiciona ao device gpu ou cpu
-        lote_textos_tokenizados = self.getTransformer().batchToDevice(texto, device)            
+        lote_textos_tokenizados = self.getTransformer().batchToDevice(lote=texto, 
+                                                                      target_device=device)            
         
         # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
         with torch.no_grad():
             
             # Recupera a saída da rede
-            saida = self.getTransformer().getSaidaRedeCamada(lote_textos_tokenizados,
+            saida = self.getTransformer().getSaidaRedeCamada(texto=lote_textos_tokenizados,
                                                              abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
         
         return saida
@@ -500,7 +502,7 @@ class Mensurador:
         '''
         
         # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
-        saida = self.getSaidaRedeMensurador(texto,
+        saida = self.getSaidaRedeMensurador(texto=texto,
                                             abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas)
         
         # Remove o lote com [0]
@@ -548,7 +550,7 @@ class Mensurador:
         #print('string_texto=', string_texto)
 
         # Recupera os embeddings dos tokens das camadas especificadas de acordo com a estratégia especificada para camada          
-        embedding_texto = self.getEmbeddingTextoCamada(string_texto,
+        embedding_texto = self.getEmbeddingTextoCamada(texto=string_texto,
                                                        abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas,
                                                        converte_para_numpy=converte_para_numpy)
         print('embedding_texto=', embedding_texto.shape)
@@ -570,14 +572,21 @@ class Mensurador:
             Sj = texto[pos_sj]
 
             # Recupera os embedding das sentenças Si e Sj do embedding do texto      
-            embedding_si = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Si, pos_si)
-            embedding_sj = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto, string_texto, Sj, pos_sj)
+            embedding_si = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto=embedding_texto, 
+                                                                   texto=string_texto, 
+                                                                   sentenca=Si, 
+                                                                   posicao_sentenca=pos_si)
+            embedding_sj = self.getEmbeddingSentencaEmbeddingTexto(embedding_texto=embedding_texto, 
+                                                                   texto=string_texto, 
+                                                                   sentenca=Sj, 
+                                                                   posicao_sentenca=pos_sj)
 
             # Verifica se os embeddings sentenças estão preenchidos
             if embedding_si != None and embedding_sj != None:
 
                 # Recupera as medidas entre Si e Sj     
-                ajustado_embedding_si, ajustado_embedding_sj, Scos, Seuc, Sman = self.getMedidasSentencasEmbedding(embedding_si, embedding_sj)
+                ajustado_embedding_si, ajustado_embedding_sj, Scos, Seuc, Sman = self.getMedidasSentencasEmbedding(embedding_si=embedding_si, 
+                                                                                                                   embedding_sj=embedding_sj)
 
                 # Acumula as medidas
                 soma_Scos = soma_Scos + Scos

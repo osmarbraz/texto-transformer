@@ -201,7 +201,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
                                                           abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -228,7 +228,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
                                                           abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -255,7 +255,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
 
-        saida = self.mensurador.getMedidasComparacaoTexto(texto,
+        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto,
                                                           abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -282,7 +282,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
                                                           abordagem_extracao_embeddings_camadas=model_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -554,7 +554,7 @@ class TextoTransformer:
         
         # Verifica qual granularidade de texto foi passada como parâmetro para a função e chama a função correspondente de codificação.        
         if granularidade_texto == GranularidadeTexto.TOKEN:
-            return self.getCodificacaoToken(texto, 
+            return self.getCodificacaoToken(texto=texto, 
                                             tamanho_lote=tamanho_lote, 
                                             mostra_barra_progresso=mostra_barra_progresso, 
                                             converte_para_numpy=converte_para_numpy, 
@@ -562,7 +562,7 @@ class TextoTransformer:
             
         else:
             if granularidade_texto == GranularidadeTexto.PALAVRA:
-                return self.getCodificacaoPalavra(texto,
+                return self.getCodificacaoPalavra(texto=texto,
                                                   tamanho_lote=tamanho_lote,
                                                   mostra_barra_progresso=mostra_barra_progresso, 
                                                   converte_para_numpy=converte_para_numpy,
@@ -570,14 +570,14 @@ class TextoTransformer:
             
             else:
                 if granularidade_texto == GranularidadeTexto.SENTENCA:
-                    return self.getCodificacaoSentenca(texto, 
+                    return self.getCodificacaoSentenca(texto=texto, 
                                                        tamanho_lote=tamanho_lote, 
                                                        mostra_barra_progresso=mostra_barra_progresso, 
                                                        converte_para_numpy=converte_para_numpy, 
                                                        device=device)                
                 else:
                     if granularidade_texto == GranularidadeTexto.TEXTO:
-                        return self.getCodificacaoTexto(texto,
+                        return self.getCodificacaoTexto(texto=texto,
                                                         tamanho_lote=tamanho_lote, 
                                                         mostra_barra_progresso=mostra_barra_progresso, 
                                                         converte_para_numpy=converte_para_numpy,
@@ -621,16 +621,14 @@ class TextoTransformer:
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
-            
-            
-            return self.getCodificacaoTexto(texto,
+            return self.getCodificacaoTexto(texto=texto,
                                             tamanho_lote=tamanho_lote,
                                             mostra_barra_progresso=mostra_barra_progresso,
                                             converte_para_numpy=converte_para_numpy,
                                             device=device)['texto_embeddings_MEAN']
         else:
             if estrategia_pooling == EstrategiasPooling.MAX:
-                return self.getCodificacaoTexto(texto,
+                return self.getCodificacaoTexto(texto=texto,
                                                 tamanho_lote=tamanho_lote,
                                                 mostra_barra_progresso=mostra_barra_progresso,
                                                 converte_para_numpy=converte_para_numpy,
@@ -672,7 +670,7 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Recupera os embeddings do texto
-        texto_embeddings = self.getCodificacaoCompleta(texto,
+        texto_embeddings = self.getCodificacaoCompleta(texto=texto,
                                                        tamanho_lote=tamanho_lote,
                                                        mostra_barra_progresso=mostra_barra_progresso,
                                                        converte_para_numpy=converte_para_numpy,
@@ -685,7 +683,7 @@ class TextoTransformer:
                       'texto_embeddings_MEAN': [],      # Lista de lista da média dos embeddings dos tokens do texto
                       'texto_embeddings_MAX': [],       # Lista de lista do máximo dos embeddings dos tokens do texto.
                      }
-        )
+                    )
 
         # Percorre os textos da lista.
         for i, texto in enumerate(texto_embeddings['texto_original']):       
@@ -757,14 +755,14 @@ class TextoTransformer:
 
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
-            return self.getCodificacaoSentenca(texto,
+            return self.getCodificacaoSentenca(texto=texto,
                                                tamanho_lote=tamanho_lote,
                                                mostra_barra_progresso=mostra_barra_progresso,
                                                converte_para_numpy=converte_para_numpy,
                                                device=device)['sentenca_embeddings_MEAN']
         else:
             if estrategia_pooling == EstrategiasPooling.MAX:
-                return self.getCodificacaoSentenca(texto,
+                return self.getCodificacaoSentenca(texto=texto,
                                                    tamanho_lote=tamanho_lote,
                                                    mostra_barra_progresso=mostra_barra_progresso,
                                                    converte_para_numpy=converte_para_numpy,
@@ -890,7 +888,7 @@ class TextoTransformer:
         # Se é uma string uma lista com comprimento 1
         if entrada_eh_string:
           saida['texto_original'] = saida['texto_original'][0]
-          saida['tokens_texto_mcl'] =  saida['tokens_texto_mcl'][0]
+          saida['tokens_texto_mcl'] = saida['tokens_texto_mcl'][0]
           saida['sentencas_texto'] = saida['sentencas_texto'][0]
           saida['sentenca_embeddings_MEAN'] = saida['sentenca_embeddings_MEAN'][0]
           saida['sentenca_embeddings_MAX'] = saida['sentenca_embeddings_MAX'][0]
@@ -930,17 +928,16 @@ class TextoTransformer:
             # Converte o parâmetro estrategia_pooling para um objeto da classe EstrategiasPooling
             estrategia_pooling = EstrategiasPooling.converteInt(estrategia_pooling)
 
-
         # Retorna os embeddings de acordo com a estratégia
         if estrategia_pooling == EstrategiasPooling.MEAN:
-            return self.getCodificacaoPalavra(texto,
+            return self.getCodificacaoPalavra(texto=texto,
                                               tamanho_lote=tamanho_lote,
                                               mostra_barra_progresso=mostra_barra_progresso,
                                               converte_para_numpy=converte_para_numpy,
                                               device=device)['palavra_embeddings_MEAN']
         else:
             if estrategia_pooling == EstrategiasPooling.MAX:
-                return self.getCodificacaoPalavra(texto,
+                return self.getCodificacaoPalavra(texto=texto,
                                                   tamanho_lote=tamanho_lote,
                                                   mostra_barra_progresso=mostra_barra_progresso,
                                                   converte_para_numpy=converte_para_numpy,
@@ -973,10 +970,10 @@ class TextoTransformer:
         Retorna um dicionário com as seguintes chaves:
            `texto_original` - Uma lista com os textos originais.  
            `tokens_texto` - Uma lista com os tokens(palavras) realizados pelo método.
-           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV(com ##) do mcl.
-           `tokens_texto_pln` - Uma lista com os tokens realizados pela ferramenta de pln(spaCy).
-           `pos_texto_pln` - Uma lista com as postagging dos tokens realizados pela ferramenta de pln(spaCy).            
+           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo MCL.
+           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV(com ##) do MCL.
+           `tokens_texto_pln` - Uma lista com os tokens realizados pela ferramenta de PLN(spaCy).
+           `pos_texto_pln` - Uma lista com as postagging dos tokens realizados pela ferramenta de PLN(spaCy).            
            `palavra_embeddings_MEAN` - Uma lista com os embeddings das palavras com a estratégia MEAN.
            `palavra_embeddings_MAX` - Uma lista com os embeddings das palavras com a estratégia MAX.
         '''
@@ -988,7 +985,7 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Recupera os embeddings do texto
-        texto_embeddings = self.getCodificacaoCompleta(texto,
+        texto_embeddings = self.getCodificacaoCompleta(texto=texto,
                                                        tamanho_lote=tamanho_lote,
                                                        mostra_barra_progresso=mostra_barra_progresso,
                                                        converte_para_numpy=converte_para_numpy,
@@ -1020,14 +1017,14 @@ class TextoTransformer:
             tokens_texto_mcl = texto_embeddings['tokens_texto_mcl'][i][self.getTransformer().getPosicaoTokenInicio():self.getTransformer().getPosicaoTokenFinal()]
             
             # Concatena os tokens gerandos pela ferramenta de pln
-            tokens_texto_concatenado = " ".join(lista_tokens_texto_pln)
+            tokens_texto_concatenado_pln = " ".join(lista_tokens_texto_pln)
             # print("tokens_texto_concatenado:", tokens_texto_concatenado)
 
             # Recupera os embeddings dos tokens das palavras
-            saida_embedding_palavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto,
-                                                                                             tokens_texto_mcl,
-                                                                                             tokens_texto_concatenado,
-                                                                                             self.getPln())
+            saida_embedding_palavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto=embeddings_texto,
+                                                                                             tokens_texto_mcl=tokens_texto_mcl,
+                                                                                             tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
+                                                                                             pln=self.getPln())
 
             # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])
@@ -1074,7 +1071,7 @@ class TextoTransformer:
            Uma lista com os embeddings dos tokens se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings dos tokens se o parâmetro é lista de string.
         '''
 
-        return self.getCodificacaoToken(texto,
+        return self.getCodificacaoToken(texto=texto,
                                         tamanho_lote=tamanho_lote,
                                         mostra_barra_progresso=mostra_barra_progresso,
                                         converte_para_numpy=converte_para_numpy,
@@ -1110,7 +1107,7 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Recupera os embeddings do texto
-        texto_embeddings = self.getCodificacaoCompleta(texto,
+        texto_embeddings = self.getCodificacaoCompleta(texto=texto,
                                                        tamanho_lote=tamanho_lote,
                                                        mostra_barra_progresso=mostra_barra_progresso,
                                                        converte_para_numpy=converte_para_numpy,
