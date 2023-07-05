@@ -10,6 +10,7 @@ import numpy
 # Bibliotecas próprias
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno, similaridadeCossenoMatriz
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestMedida(unittest.TestCase):

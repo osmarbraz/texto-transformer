@@ -8,6 +8,7 @@ import unittest
 # Bibliotecas próprias
 from textotransformer.util.utiltexto import getIndexTokenTexto, getTextoLista, limpezaTexto, removeTags, tamanhoTexto
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestUtilTexto(unittest.TestCase):

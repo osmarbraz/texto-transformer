@@ -9,6 +9,7 @@ import unittest
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas, EstrategiasPooling
 from textotransformer.util.utilconstantes import LISTATIPOCAMADA_NOME
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestModeloEnum(unittest.TestCase):

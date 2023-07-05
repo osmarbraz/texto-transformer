@@ -8,6 +8,7 @@ import unittest
 # Bibliotecas próprias
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante, MedidasComparacao
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestMensuradorEnum(unittest.TestCase):

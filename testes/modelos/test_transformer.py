@@ -12,6 +12,7 @@ from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # Definição dos parâmetros do Modelo para os cálculos das Medidas
