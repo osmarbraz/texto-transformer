@@ -12,6 +12,7 @@ from textotransformer.textotransformer import TextoTransformer
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestTextTransformer_GPT2_en(unittest.TestCase):

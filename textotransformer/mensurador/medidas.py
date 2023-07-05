@@ -10,6 +10,7 @@ from scipy.spatial.distance import cosine
 from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cityblock
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================  

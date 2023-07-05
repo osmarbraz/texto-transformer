@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================

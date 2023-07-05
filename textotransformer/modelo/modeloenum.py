@@ -9,6 +9,7 @@ from enum import Enum
 # Biblitecas próprias
 from textotransformer.util.utilconstantes import LISTATIPOCAMADA_NOME
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================

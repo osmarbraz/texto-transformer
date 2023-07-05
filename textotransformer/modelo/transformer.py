@@ -22,6 +22,7 @@ from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.pln.pln import PLN
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # Constantes da classe

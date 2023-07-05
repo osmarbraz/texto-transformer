@@ -12,6 +12,7 @@ from spacy.matcher import Matcher
 # Bibliotecas próprias
 from textotransformer.util.utilambiente import InstaladorModelo 
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class PLN():

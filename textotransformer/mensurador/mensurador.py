@@ -18,6 +18,7 @@ from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamada
 from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
 from textotransformer.util.utiltexto import encontrarIndiceSubLista  
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class Mensurador:

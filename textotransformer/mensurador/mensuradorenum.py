@@ -6,6 +6,7 @@ import logging
 # Biblioteca de Enum
 from enum import Enum 
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================

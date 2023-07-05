@@ -22,9 +22,10 @@ from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamada
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
 from textotransformer.util.utiltexto import encontrarIndiceSubLista, tamanhoTexto
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
-# Definição dos parâmetros do Modelo para os cálculos das Medidas
+# Definição dos parâmetros dos modelos do Texto-Transformer.
 modelo_args = ModeloArgumentos(
     max_seq_len=512,
     pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer

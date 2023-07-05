@@ -8,6 +8,7 @@ from math import radians, degrees
 # Biblioteca de data e tempo
 import datetime 
  
+# Objeto de logger
 logger = logging.getLogger(__name__)
  
 # ============================    

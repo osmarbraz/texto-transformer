@@ -13,6 +13,7 @@ import os
 from textotransformer.util.utilconstantes import DIRETORIO_TEXTO_TRANSFORMER
 from textotransformer.util.utiltexto import removeTags
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================  

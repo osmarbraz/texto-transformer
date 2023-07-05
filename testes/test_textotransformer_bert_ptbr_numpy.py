@@ -11,6 +11,7 @@ import numpy
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 class TestTextTransformer_BERT_ptbr_Numpy(unittest.TestCase):

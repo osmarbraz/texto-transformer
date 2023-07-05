@@ -11,6 +11,7 @@ from functools import reduce
 # Biblioteca de tipos
 from typing import List, Union
 
+# Objeto de logger
 logger = logging.getLogger(__name__)
 
 # ============================  
