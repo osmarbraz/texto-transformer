@@ -7,7 +7,7 @@ from torch import nn
 import torch 
 import numpy as np
 from torch import Tensor, device
-# Biblioteca do transformer
+# Biblioteca do transformer hunggingface
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel, OpenAIGPTModel, GPT2Model
 # Biblioteca de manipulação json

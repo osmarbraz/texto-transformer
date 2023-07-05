@@ -5,7 +5,7 @@ import logging
 
 # Biblioteca de aprendizado de máquina
 import torch 
-# Biblioteca do transformer
+# Biblioteca do transformer hunggingface
 from transformers import RobertaModel, OpenAIGPTModel, GPT2Model
 
 # Bibliotecas próprias

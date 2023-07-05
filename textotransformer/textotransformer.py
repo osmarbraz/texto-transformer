@@ -9,7 +9,7 @@ import torch
 import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
-# Biblioteca do transformer
+# Biblioteca do transformer hunggingface
 from transformers import RobertaModel, XLNetModel, GPT2Model
 
 # Biblioteca próprias
