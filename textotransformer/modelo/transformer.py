@@ -938,7 +938,6 @@ class Transformer(nn.Module):
         # Seleciona os pares de palavra a serem avaliadas
         pos_wi = 0 # Posição do token da palavra gerado pelo spaCy
         pos_wj = pos_wi # Posição do token da palavra gerado pelo MCL
-        #pos_menor = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
         while (pos_wj < len(tokens_texto_mcl)):  
@@ -1186,7 +1185,6 @@ class Transformer(nn.Module):
         # Seleciona os pares de palavra a serem avaliadas
         pos_wi = 0 # Posição do token da palavra gerado pelo spaCy
         pos_wj = pos_wi # Posição do token da palavra gerado pelo MCL
-        #pos_menor = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
         while (pos_wj < len(tokens_texto_mcl)):  
@@ -1447,7 +1445,6 @@ class Transformer(nn.Module):
         # Seleciona os pares de palavra a serem avaliadas
         pos_wi = 0 # Posição do token da palavra gerado pelo spaCy
         pos_wj = pos_wi # Posição do token da palavra gerado pelo MCL
-        #pos_menor = -1
 
         # Enquanto o indíce da palavra pos_wj(2a palavra) não chegou ao final da quantidade de tokens do MCL
         while (pos_wj < len(tokens_texto_mcl)):  
