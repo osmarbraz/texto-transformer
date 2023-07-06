@@ -310,8 +310,8 @@ class Transformer(nn.Module):
             else:
                 # Carrega modelos genéricos
                 self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
-                                                            config=config, 
-                                                            cache_dir=cache_dir)
+                                                            config = config, 
+                                                            cache_dir = cache_dir)
 
     # ============================   
     def _load_t5_model(self, model_name_or_path: str, 
@@ -329,8 +329,8 @@ class Transformer(nn.Module):
         from transformers import T5EncoderModel
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
-                                                         config=config, 
-                                                         cache_dir=cache_dir)
+                                                         config = config, 
+                                                         cache_dir = cache_dir)
 
     # ============================   
     def _load_mt5_model(self, model_name_or_path: str, 
@@ -348,8 +348,8 @@ class Transformer(nn.Module):
         from transformers import MT5EncoderModel
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
-                                                          config=config, 
-                                                          cache_dir=cache_dir)
+                                                          config = config, 
+                                                          cache_dir = cache_dir)
    
     # ============================      
     def getTextoTokenizado(self, texto : str,
@@ -794,30 +794,30 @@ class Transformer(nn.Module):
         
         # Tokenização Wordpiece (Separador, ##) para BERT, DistilBert
         if isinstance(self.auto_model, (BertModel, DistilBertModel)):
-            return self.getTokensPalavrasEmbeddingsTextoWordPiece(embeddings_texto = embeddings_texto,
-                                                                  lista_tokens_texto_mcl = tokens_texto_mcl,
-                                                                  tokens_texto_concatenado_pln = tokens_texto_concatenado_pln,
-                                                                  pln = pln,
-                                                                  dic_excecao_maior = dic_excecao_maior,
-                                                                  dic_excecao_menor = dic_excecao_menor)
+            return self.getTokensPalavrasEmbeddingsTextoWordPiece(embeddings_texto=embeddings_texto,
+                                                                  lista_tokens_texto_mcl=tokens_texto_mcl,
+                                                                  tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
+                                                                  pln=pln,
+                                                                  dic_excecao_maior=dic_excecao_maior,
+                                                                  dic_excecao_menor=dic_excecao_menor)
         else:
             # Tokenização SentencePiece (Separador, _) Albert, XLNet
             if isinstance(self.auto_model, (AlbertModel, XLNetModel)):
-                return self.getTokensPalavrasEmbeddingsTextoSentencePiece(embeddings_texto = embeddings_texto,
-                                                                          lista_tokens_texto_mcl = tokens_texto_mcl,
-                                                                          tokens_texto_concatenado_pln = tokens_texto_concatenado_pln,
-                                                                          pln = pln,
-                                                                          dic_excecao_maior = dic_excecao_maior,
-                                                                          dic_excecao_menor = dic_excecao_menor)
+                return self.getTokensPalavrasEmbeddingsTextoSentencePiece(embeddings_texto=embeddings_texto,
+                                                                          lista_tokens_texto_mcl=tokens_texto_mcl,
+                                                                          tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
+                                                                          pln=pln,
+                                                                          dic_excecao_maior=dic_excecao_maior,
+                                                                          dic_excecao_menor=dic_excecao_menor)
             else:
                 # Tokenização BPE, separador Ġ para o Roberta e GPT2 e separador </w> para o OpenAIGPT
                 if isinstance(self.auto_model, (RobertaModel, OpenAIGPTModel, GPT2Model)):
-                    return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto = embeddings_texto,
-                                                                    lista_tokens_texto_mcl = tokens_texto_mcl,
-                                                                    tokens_texto_concatenado_pln = tokens_texto_concatenado_pln,
-                                                                    pln = pln,
-                                                                    dic_excecao_maior = dic_excecao_maior,
-                                                                    dic_excecao_menor = dic_excecao_menor)                    
+                    return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto=embeddings_texto,
+                                                                    lista_tokens_texto_mcl=tokens_texto_mcl,
+                                                                    tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
+                                                                    pln=pln,
+                                                                    dic_excecao_maior=dic_excecao_maior,
+                                                                    dic_excecao_menor=dic_excecao_menor)                    
                 else:
                     logger.error("Não encontrei um tokenizador de palavras para o modelo {}.".format(self.auto_model)) 
                     return  None 
@@ -907,7 +907,8 @@ class Transformer(nn.Module):
         '''
         
         # Inicializa os dicionários de exceção
-        self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
+        self._inicializaDicionarioExcecao(dic_excecao_maior=dic_excecao_maior, 
+                                          dic_excecao_menor=dic_excecao_menor)
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -916,7 +917,7 @@ class Transformer(nn.Module):
         lista_palavra_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(tokens_texto_concatenado_pln)
+        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(texto=tokens_texto_concatenado_pln)
 
         # print("\tokens_texto_concatenado    :",tokens_texto_concatenado)    
         # print("lista_tokens_texto_pln       :",lista_tokens_texto_pln)
@@ -1205,7 +1206,8 @@ class Transformer(nn.Module):
         '''
 
         # Inicializa os dicionários de exceção
-        self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
+        self._inicializaDicionarioExcecao(dic_excecao_maior=dic_excecao_maior, 
+                                          dic_excecao_menor=dic_excecao_menor)
               
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1214,7 +1216,7 @@ class Transformer(nn.Module):
         lista_palavra_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(tokens_texto_concatenado_pln)
+        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(texto=tokens_texto_concatenado_pln)
 
         # print("\tokens_texto_concatenado    :",tokens_texto_concatenado)    
         # print("lista_tokens_texto_pln       :",lista_tokens_texto_pln)
@@ -1515,7 +1517,8 @@ class Transformer(nn.Module):
         '''
  
         # Inicializa os dicionários de exceção
-        self._inicializaDicionarioExcecao(dic_excecao_maior, dic_excecao_menor)
+        self._inicializaDicionarioExcecao(dic_excecao_maior=dic_excecao_maior, 
+                                          dic_excecao_menor=dic_excecao_menor)
        
         # Guarda os tokens e embeddings de retorno
         lista_tokens = []
@@ -1524,7 +1527,7 @@ class Transformer(nn.Module):
         lista_palavra_embeddings_MAX = []
         
         # Gera a tokenização e POS-Tagging da sentença    
-        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(tokens_texto_concatenado_pln)
+        lista_tokens_texto_pln, lista_pos_texto_pln = pln.getListaTokensPOSTexto(texto=tokens_texto_concatenado_pln)
 
         # print("\tokens_texto_concatenado    :",tokens_texto_concatenado)    
         # print("lista_tokens_texto_pln       :",lista_tokens_texto_pln)

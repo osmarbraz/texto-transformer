@@ -27,15 +27,15 @@ logger = logging.getLogger(__name__)
 
 # Definição dos parâmetros dos modelos do Texto-Transformer.
 modelo_args = ModeloArgumentos(
-    max_seq_len=512,
-    pretrained_model_name_or_path="neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
-    modelo_spacy="pt_core_news_lg",             # Nome do modelo de linguagem da ferramenta de PLN
-    do_lower_case=False,                        # default True
-    output_attentions=False,                    # default False
-    output_hidden_states=True,                  # default False  /Retornar os embeddings das camadas ocultas  
-    abordagem_extracao_embeddings_camadas=2,    # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma todas
-    estrategia_pooling=0,                       # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
-    palavra_relevante=0                         # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
+    max_seq_len = 512,
+    pretrained_model_name_or_path = "neuralmind/bert-base-portuguese-cased", # Nome do modelo de linguagem pré-treinado Transformer
+    modelo_spacy = "pt_core_news_lg",             # Nome do modelo de linguagem da ferramenta de PLN
+    do_lower_case = False,                        # default True
+    output_attentions = False,                    # default False
+    output_hidden_states = True,                  # default False  /Retornar os embeddings das camadas ocultas  
+    abordagem_extracao_embeddings_camadas = 2,    # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma todas
+    estrategia_pooling = 0,                       # 0 - MEAN estratégia média / 1 - MAX  estratégia maior
+    palavra_relevante = 0                         # 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas
 )
 
 class TextoTransformer:
@@ -53,8 +53,8 @@ class TextoTransformer:
     ''' 
     
     # Construtor da classe
-    def __init__(self, pretrained_model_name_or_path: str ="neuralmind/bert-base-portuguese-cased", 
-                       modelo_spacy: str ="pt_core_news_lg",
+    def __init__(self, pretrained_model_name_or_path: str = "neuralmind/bert-base-portuguese-cased", 
+                       modelo_spacy: str = "pt_core_news_lg",
                        abordagem_extracao_embeddings_camadas: int = 2,
                        do_lower_case: bool = False,
                        device = None):
@@ -229,7 +229,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto = texto, 
                                                           abordagem_extracao_embeddings_camadas=modelo_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -283,7 +283,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto = texto, 
                                                           abordagem_extracao_embeddings_camadas=modelo_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
