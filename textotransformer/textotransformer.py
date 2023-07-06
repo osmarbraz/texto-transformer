@@ -524,18 +524,22 @@ class TextoTransformer:
                        tamanho_lote: int = 32,
                        mostra_barra_progresso: bool = False,
                        converte_para_numpy: bool = False,
-                       device: str = None) -> dict:
+                       device: str = None,
+                       dic_excecao_maior: dict = {"":-1,},
+                       dic_excecao_menor: dict = {"":-1,}) -> dict:
        
         '''
         Retorna a codificação do texto utilizando o modelo de linguagem de acordo com o tipo codificação do texto.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem
+           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem.
            `tipo_codificação_texto` - O tipo de codificação do texto. Pode ser: texto, sentenca, palavra e token.         
-           `tamanho_lote` - o tamanho do lote usado para o computação
+           `tamanho_lote` - o tamanho do lote usado para o computação.
            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
            `device` - Qual torch.device usar para a computação.
+           `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
+           `dic_excecao_menor` - Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
     
         Retorna um dicionário com as seguintes chaves:
            `token_embeddings` - Uma lista com os embeddings da última camada.
@@ -567,7 +571,9 @@ class TextoTransformer:
                                                   tamanho_lote=tamanho_lote,
                                                   mostra_barra_progresso=mostra_barra_progresso, 
                                                   converte_para_numpy=converte_para_numpy,
-                                                  device=device)
+                                                  device=device,
+                                                  dic_excecao_maior=dic_excecao_maior,
+                                                  dic_excecao_menor=dic_excecao_menor)
             
             else:
                 if granularidade_texto == GranularidadeTexto.SENTENCA:
@@ -952,7 +958,9 @@ class TextoTransformer:
                               tamanho_lote: int = 32, 
                               mostra_barra_progresso: bool = False,
                               converte_para_numpy: bool = False,
-                              device: str = None) -> dict:      
+                              device: str = None,
+                              dic_excecao_maior: dict = {"":-1,},
+                              dic_excecao_menor: dict = {"":-1,}) -> dict:      
         
         '''                
         De um texto (string ou uma lista de strings) retorna a codificação das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -962,11 +970,13 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
+           `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem.
+           `tamanho_lote` - o tamanho do lote usado para o computação.
            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
            `device` - Qual torch.device usar para o computação.
+           `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
+           `dic_excecao_menor` - Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
     
         Retorna um dicionário com as seguintes chaves:
            `texto_original` - Uma lista com os textos originais.  
@@ -1025,7 +1035,9 @@ class TextoTransformer:
             saida_embedding_palavra = self.getTransformer().getTokensPalavrasEmbeddingsTexto(embeddings_texto=embeddings_texto,
                                                                                              tokens_texto_mcl=tokens_texto_mcl,
                                                                                              tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
-                                                                                             pln=self.getPln())
+                                                                                             pln=self.getPln(),
+                                                                                             dic_excecao_maior=dic_excecao_maior,
+                                                                                             dic_excecao_menor=dic_excecao_menor)
 
             # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])

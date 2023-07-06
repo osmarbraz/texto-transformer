@@ -412,7 +412,7 @@ class TestTextTransformer_Albert_en(unittest.TestCase):
         logger.info("Testando o getCodificacaoPalavra lista com string")
         
         # Valores de entrada
-        texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
+        texto = ["Fresh sea bass is a great delicacy.", "I play bass in a jazz band."]
                 
         # Valores de saída
         saida = self.modelo.getCodificacaoPalavra(texto)
