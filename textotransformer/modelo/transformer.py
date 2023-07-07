@@ -884,15 +884,15 @@ class Transformer(nn.Module):
         return  wi_pln_pos_excecao, pos_pln_excecao, pos_excecao
     
     # ============================  
-    def verificaSituacaoListaPalavras(self, mensagem,
-                                      tokens_texto_concatenado_pln,
-                                      lista_tokens, 
-                                      lista_tokens_texto_pln,
-                                      lista_pos_texto_pln,
-                                      lista_tokens_texto_mcl,
-                                      lista_tokens_oov_mcl, 
-                                      lista_palavra_embeddings_MEAN, 
-                                      lista_palavra_embeddings_MAX):
+    def _verificaSituacaoListaPalavras(self, mensagem,
+                                       tokens_texto_concatenado_pln,
+                                       lista_tokens, 
+                                       lista_tokens_texto_pln,
+                                       lista_pos_texto_pln,
+                                       lista_tokens_texto_mcl,
+                                       lista_tokens_oov_mcl, 
+                                       lista_palavra_embeddings_MEAN, 
+                                       lista_palavra_embeddings_MAX):
         '''
         Verifica se as listas geradas pelo método de gerar embedding de palavras estão com o mesmo tamanho e conteúdo.
         
@@ -935,7 +935,25 @@ class Transformer(nn.Module):
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
             - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+        
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
             
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2 - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
+                          
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
@@ -1178,15 +1196,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1218,6 +1236,24 @@ class Transformer(nn.Module):
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
             - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+            
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
+            
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2 - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.            
             
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
@@ -1474,15 +1510,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)            
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)            
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1514,6 +1550,24 @@ class Transformer(nn.Module):
         Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
             - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
+            
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2  - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
             
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
@@ -1766,15 +1820,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoBPE.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)   
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoBPE.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)   
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
