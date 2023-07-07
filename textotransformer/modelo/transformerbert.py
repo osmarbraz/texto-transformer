@@ -13,16 +13,15 @@ from textotransformer.pln.pln import PLN
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-
 class TransformerBert(Transformer):
     '''
     Classe que encapsula a classe BertModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     '''
+    
     def __init__(self, auto_model: AutoModel = None, 
                  auto_config: AutoConfig = None, 
                  auto_tokenizer: AutoTokenizer = None, 
-                 modelo_args: ModeloArgumentos = None):
-        
+                 modelo_args: ModeloArgumentos = None):        
         '''
         Construtor da classe TransformerBert.
 

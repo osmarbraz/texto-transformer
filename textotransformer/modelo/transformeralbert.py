@@ -13,7 +13,6 @@ from textotransformer.pln.pln import PLN
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-
 class TransformerAlbert(Transformer):
     '''
     Classe que encapsula a classe AlbertModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.

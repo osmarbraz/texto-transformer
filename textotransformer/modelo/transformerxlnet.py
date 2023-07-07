@@ -13,7 +13,6 @@ from textotransformer.pln.pln import PLN
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-
 class TransformerXLNet(Transformer):
     '''
     Classe que encapsula a classe XLNetModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
