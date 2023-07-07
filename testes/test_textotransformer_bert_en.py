@@ -362,9 +362,9 @@ class TestTextTransformer_BERT_en(unittest.TestCase):
         self.assertIsInstance(saida['sentenca_embeddings_MAX'][1], list)
         self.assertIsInstance(saida['sentenca_embeddings_MAX'][1][0], torch.Tensor)
 
-# Testes getCodificacaoPalavraExcecaoMenor string
-    def test_getCodificacaoPalavraExcecaoMenor_string(self):
-        logger.info("Testando o getCodificacaoPalavraExcecaoMenor com string")             
+    # Testes getCodificacaoPalavraExcecao string
+    def test_getCodificacaoPalavraExcecao_string(self):
+        logger.info("Testando o getCodificacaoPalavraExcecao com string")             
         
         # Valores de entrada
         texto = "I am 1° place in the 100 meter dash."
@@ -388,17 +388,69 @@ class TestTextTransformer_BERT_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['tokens_texto']), 10)
+        self.assertListEqual(saida['tokens_texto'], ['I', 'am', '1°', 'place', 'in', 'the', '100', 'meter', 'dash', '.'])
         self.assertEqual(len(saida['tokens_texto_mcl']), 11) # O MCL gera mais tokens que a ferramenta de PLN
+        self.assertListEqual(saida['tokens_texto_mcl'], ['I', 'am', '1', '##°', 'place', 'in', 'the', '100', 'meter', 'dash', '.'])
         self.assertEqual(len(saida['tokens_oov_texto_mcl']), 10)
+        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
         self.assertEqual(len(saida['tokens_texto_pln']), 11)
+        self.assertListEqual(saida['tokens_texto_pln'], ['I', 'am', '1', '°', 'place', 'in', 'the', '100', 'meter', 'dash', '.'])
         self.assertEqual(len(saida['pos_texto_pln']), 11)
+        self.assertListEqual(saida['pos_texto_pln'], ['PRON', 'AUX', 'NUM', 'NUM', 'NOUN', 'ADP', 'DET', 'NUM', 'NOUN', 'NOUN', 'PUNCT'])
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 10)
         self.assertEqual(len(saida['palavra_embeddings_MAX']), 10)
         # Testa o valor do texto
         self.assertEqual(saida['texto_original'], texto)
-        # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0])
+        
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
+        self.assertIsInstance(saida['palavra_embeddings_MEAN'][0], torch.Tensor)
+        
+        self.assertIsInstance(saida['palavra_embeddings_MAX'], list)
+        self.assertIsInstance(saida['palavra_embeddings_MAX'][0], torch.Tensor)
+
+    # Testes getCodificacaoPalavraExcecaoMaior string
+    def test_getCodificacaoPalavraExcecaoMaior_string(self):
+        logger.info("Testando o getCodificacaoPalavraExcecaoMaior com string")             
+        
+        # Valores de entrada
+        texto = "I have lived on Main St. for a long time."
+        # A ferramenta de PLN tokeniza St. em 1 token.
+        # A ferramenta de MCL tokeniza St. em 2 tokens.
+        
+        # Valores de saída
+        saida = self.modelo.getCodificacaoPalavra(texto, dic_excecao = {"St.":2,})
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 8) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("tokens_texto" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("tokens_oov_texto_mcl" in saida)
+        self.assertTrue("tokens_texto_pln" in saida)
+        self.assertTrue("pos_texto_pln" in saida)
+        self.assertTrue("palavra_embeddings_MEAN" in saida)
+        self.assertTrue("palavra_embeddings_MAX" in saida)
+                
+        # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['tokens_texto']), 11)
+        self.assertListEqual(saida['tokens_texto'], ['I', 'have', 'lived', 'on', 'Main', 'St.', 'for', 'a', 'long', 'time', '.'])
+        self.assertEqual(len(saida['tokens_texto_mcl']), 12) # O MCL gera mais tokens que a ferramenta de PLN
+        self.assertListEqual(saida['tokens_texto_mcl'], ['I', 'have', 'lived', 'on', 'Main', 'St', '.', 'for', 'a', 'long', 'time', '.'])
+        self.assertEqual(len(saida['tokens_oov_texto_mcl']), 11)
+        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0])
+        self.assertEqual(len(saida['tokens_texto_pln']), 11)
+        self.assertListEqual(saida['tokens_texto_pln'], ['I', 'have', 'lived', 'on', 'Main', 'St.', 'for', 'a', 'long', 'time', '.'])
+        self.assertEqual(len(saida['pos_texto_pln']), 11)
+        self.assertListEqual(saida['pos_texto_pln'], ['PRON', 'AUX', 'VERB', 'ADP', 'PROPN', 'PROPN', 'ADP', 'DET', 'ADJ', 'NOUN', 'PUNCT'])
+        # Testa a quantidade de embeddings
+        self.assertEqual(len(saida['palavra_embeddings_MEAN']), 11)
+        self.assertEqual(len(saida['palavra_embeddings_MAX']), 11)
+        # Testa o valor do texto
+        self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -442,7 +494,7 @@ class TestTextTransformer_BERT_en(unittest.TestCase):
         # Testa o valor do texto
         self.assertEqual(saida['texto_original'], texto)
         # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -501,8 +553,8 @@ class TestTextTransformer_BERT_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])
         # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
-        self.assertEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  

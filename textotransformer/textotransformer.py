@@ -525,8 +525,7 @@ class TextoTransformer:
                        mostra_barra_progresso: bool = False,
                        converte_para_numpy: bool = False,
                        device: str = None,
-                       dic_excecao_maior: dict = {"":-1,},
-                       dic_excecao_menor: dict = {"":-1,}) -> dict:
+                       dic_excecao: dict = {"":0,}) -> dict:
        
         '''
         Retorna a codificação do texto utilizando o modelo de linguagem de acordo com o tipo codificação do texto.
@@ -538,8 +537,7 @@ class TextoTransformer:
            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
            `device` - Qual torch.device usar para a computação.
-           `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
-           `dic_excecao_menor` - Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
+           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
     
         Retorna um dicionário com as seguintes chaves:
            `token_embeddings` - Uma lista com os embeddings da última camada.
@@ -572,8 +570,7 @@ class TextoTransformer:
                                                   mostra_barra_progresso=mostra_barra_progresso, 
                                                   converte_para_numpy=converte_para_numpy,
                                                   device=device,
-                                                  dic_excecao_maior=dic_excecao_maior,
-                                                  dic_excecao_menor=dic_excecao_menor)
+                                                  dic_excecao=dic_excecao)
             
             else:
                 if granularidade_texto == GranularidadeTexto.SENTENCA:
@@ -959,8 +956,7 @@ class TextoTransformer:
                               mostra_barra_progresso: bool = False,
                               converte_para_numpy: bool = False,
                               device: str = None,
-                              dic_excecao_maior: dict = {"":-1,},
-                              dic_excecao_menor: dict = {"":-1,}) -> dict:      
+                              dic_excecao: dict = {"":0,}) -> dict:      
         
         '''                
         De um texto (string ou uma lista de strings) retorna a codificação das palavras do texto, igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
@@ -975,8 +971,7 @@ class TextoTransformer:
            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
            `device` - Qual torch.device usar para o computação.
-           `dic_excecao_maior` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais tokens do modelo de linguagem em relação ao spaCy.
-           `dic_excecao_menor` - Um dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy.
+           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
     
         Retorna um dicionário com as seguintes chaves:
            `texto_original` - Uma lista com os textos originais.  
@@ -1036,8 +1031,7 @@ class TextoTransformer:
                                                                                              tokens_texto_mcl=tokens_texto_mcl,
                                                                                              tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
                                                                                              pln=self.getPln(),
-                                                                                             dic_excecao_maior=dic_excecao_maior,
-                                                                                             dic_excecao_menor=dic_excecao_menor)
+                                                                                             dic_excecao=dic_excecao)
 
             # Acumula a saída do método 
             saida['texto_original'].append(texto_embeddings['texto_original'][i])

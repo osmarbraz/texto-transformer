@@ -397,7 +397,7 @@ class TestTextTransformer_DistilBERT_en(unittest.TestCase):
         # Testa o valor do texto
         self.assertEqual(saida['texto_original'], texto)
         # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -456,8 +456,8 @@ class TestTextTransformer_DistilBERT_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])
         # Testa as palavras fora do vocabulário
-        self.assertEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
-        self.assertEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
