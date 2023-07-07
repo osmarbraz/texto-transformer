@@ -957,6 +957,15 @@ class Transformer(nn.Module):
                                             lista_tokens_oov_mcl, 
                                             lista_palavra_embeddings_MEAN, 
                                             lista_palavra_embeddings_MAX)
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1258,6 +1267,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)            
         self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
                                             tokens_texto_concatenado_pln,
                                             lista_tokens, 
