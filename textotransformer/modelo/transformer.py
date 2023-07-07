@@ -1610,7 +1610,7 @@ class Transformer(nn.Module):
             json.dump(self.get_config_dict(), fOut, indent=2)
 
     # ============================   
-    def getAutoModel(self):
+    def getAutoModel(self) -> AutoModel:
         '''
         Recupera o modelo.
         '''
@@ -1618,7 +1618,7 @@ class Transformer(nn.Module):
         return self.auto_model
 
     # ============================   
-    def getAutoTokenizer(self):
+    def getAutoTokenizer(self) -> AutoTokenizer:
         '''
         Recupera o tokenizador.
         '''
@@ -1646,7 +1646,7 @@ class Transformer(nn.Module):
         return lote
     
     # ============================   
-    def trataListaTokensEspeciais(self, tokens_texto_mcl):    
+    def trataListaTokensEspeciais(self, tokens_texto_mcl: List[str]) -> List[str]:    
         '''
         Trata a lista de tokens tokenizador do MCL.
 

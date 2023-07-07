@@ -169,14 +169,12 @@ class TextoTransformer:
         # Atribui para os parâmetros do modelo
         if palavra_relevante == PalavraRelevante.ALL:
             modelo_args.palavra_relevante = PalavraRelevante.ALL.value            
+        elif palavra_relevante == PalavraRelevante.CLEAN:
+            modelo_args.palavra_relevante = PalavraRelevante.CLEAN.value                
+        elif palavra_relevante == PalavraRelevante.NOUN:
+            modelo_args.palavra_relevante = PalavraRelevante.NOUN.value                    
         else:
-            if palavra_relevante == PalavraRelevante.CLEAN:
-                modelo_args.palavra_relevante = PalavraRelevante.CLEAN.value                
-            else:
-                if palavra_relevante == PalavraRelevante.NOUN:
-                    modelo_args.palavra_relevante = PalavraRelevante.NOUN.value                    
-                else:
-                    logger.error("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
+            logger.error("Não foi especificado uma estratégia de relevância de palavras do texto válida.") 
 
     # ============================
     def getMedidasTexto(self, texto: str, 
