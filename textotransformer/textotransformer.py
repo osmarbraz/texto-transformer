@@ -10,9 +10,11 @@ import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
 # Biblioteca do transformer hunggingface
-from transformers import RobertaModel, XLNetModel, GPT2Model
+#from transformers import RobertaModel, XLNetModel, GPT2Model
+#from transformers import RobertaModel, GPT2Model
 
 # Biblioteca próprias
+from textotransformer.modelo.transformerfactory import TransformerFactory
 from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.mensurador import Mensurador
 from textotransformer.modelo.transformer import Transformer
@@ -67,17 +69,17 @@ class TextoTransformer:
         modelo_args.modelo_spacy = modelo_spacy
         logger.info("Especificado parâmetro \"modelo_spacy\": {}.".format(modelo_spacy))
         
-         # Parâmetro recebido para o modelo do_lower_case
+        # Parâmetro recebido para o modelo do_lower_case
         modelo_args.do_lower_case = do_lower_case
         logger.info("Especificado parâmetro \"do_lower_case\": {}.".format(do_lower_case))
                 
-        # Carrega o modelo de linguagem da classe transformador
-        self.transformer = Transformer(modelo_args=modelo_args)
-    
-        # Recupera o modelo de linguagem.
+        # Retorna um objeto Transformer carregado com o modelo de linguagem especificado especificado nos parâmetros.
+        self.transformer = TransformerFactory.getTransformer(modelo_args=modelo_args)
+        
+        # Recupera o modelo de linguagem do objeto transformer.
         self.auto_model = self.transformer.getAutoModel()
     
-        # Recupera o tokenizador.     
+        # Recupera o tokenizador do objeto transformer.     
         self.auto_tokenizer = self.transformer.getAutoTokenizer()
         
         # Especifica a abordagem para a extração dos embeddings das camadas do transformer.         
@@ -388,10 +390,11 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Padding é o preenchimento do texto para que fiquem do mesmo tamanho nos lotes.
-        # A maioria do modelso preenche a direita(0), mas alguns preenchem a esquerda(1)
-        padding_side = 1
-        if isinstance(self.auto_model, XLNetModel):
-            padding_side = 0
+        # A maioria do modelo preenche a direita(0), mas alguns preenchem a esquerda(1)
+        #padding_side = 1
+        #if isinstance(self.auto_model, XLNetModel):
+        #     padding_side = 0
+        padding_side = self.getTransformer().getLadoPreenchimento()
 
         # Se não foi especificado um dispositivo, use-o defaul
         if device is None:
@@ -854,7 +857,8 @@ class TextoTransformer:
                 
                 # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
                 if j != 0:
-                    if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
+                    #if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
+                    if self.getTransformer().getPrimeiroTokenSemSeparador():
                         sentenca_tokenizada = self.getTransformer().trataListaTokensEspeciais(sentenca_tokenizada)
                         
                 # Localiza os índices dos tokens da sentença no texto

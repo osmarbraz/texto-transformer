@@ -9,13 +9,14 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
+from textotransformer.modelo.transformeropenaigpt import TransformerOpenAIGPT
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_GPT_en(unittest.TestCase):
+class TestTextTransformer_openaigpt_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
@@ -25,11 +26,12 @@ class TestTextTransformer_GPT_en(unittest.TestCase):
         self.modelo = TextoTransformer("openai-gpt", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_GPT2
+    # Testes TextoTransformer_openaigpt_en
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_GPT")
+        logger.info("Testando o construtor de TextoTransformer_gpt_en")
                 
         self.assertIsNotNone(self.modelo)
+        self.assertIsInstance(self.modelo.getTransformer(), TransformerOpenAIGPT)
     
     # Testes removeTokensEspeciais
     def test_removeTokensEspeciais(self):
@@ -806,6 +808,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_GPT")
+    logger.info("Teste TextoTransformer_openaigpt_en")
     unittest.main()
     

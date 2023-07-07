@@ -5,17 +5,19 @@ import logging
 # Biblioteca de testes unitários
 import unittest
 # Biblioteca de aprendizado de máquina
-import torch 
+import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
+from textotransformer.modelo.transformerbert import TransformerBert 
+from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_BERT_ptbr(unittest.TestCase):
+class TestTextTransformer_bert_ptbr(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
@@ -24,11 +26,95 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
         self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
     
-    # Testes TextoTransformer_BERT   
-    def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_BERT")
+    # Testes TextoTransformer_bert   
+    def test_TextoTransformer_bert(self):
+        logger.info("Testando o construtor de TextoTransformer_bert")
                 
         self.assertIsNotNone(self.modelo)
+        self.assertIsInstance(self.modelo.getTransformer(), TransformerBert)
+            
+    #Testes getTextoTokenizado string
+    def test_getTextoTokenizado(self):
+        logger.info("Testando o getTextoTokenizado com string")
+        
+        # Valores de entrada
+        texto = "Adoro sorvete de manga."
+
+        # Valores de saída
+        saida = self.modelo.getTransformer().getTextoTokenizado(texto)
+        
+        saidaEsperada = ['[CLS]', 'Ado', '##ro', 'sor', '##vete', 'de', 'mang', '##a', '.', '[SEP]']
+        
+        self.assertListEqual(saida, saidaEsperada)
+        
+    #Testes tokenize string
+    def test_tokenize_string(self):
+        logger.info("Testando o tokenize com string")
+        
+        # Valores de entrada        
+        texto = "Adoro sorvete de manga."
+
+        # Valores de saída
+        saida = self.modelo.tokenize(texto)
+          
+         # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 5) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['input_ids']), 1)
+        self.assertEqual(len(saida['input_ids'][0]), 10)
+        self.assertEqual(len(saida['token_type_ids']), 1)  
+        self.assertEqual(len(saida['token_type_ids'][0]), 10)
+        self.assertEqual(len(saida['attention_mask']), 1)    
+        self.assertEqual(len(saida['attention_mask'][0]), 10)  
+        self.assertEqual(len(saida['tokens_texto_mcl']), 1)   
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)                
+        self.assertEqual(len(saida['texto_original']), 1)
+        self.assertEqual(saida['texto_original'][0], texto)        
+
+    # Testes tokenize Lista de Strings
+    def test_tokenize_list_string(self):
+        logger.info("Testando o tokenize com lista de strings")
+        
+        # Valores de entrada        
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+
+        # Valores de saída
+        saida = self.modelo.tokenize(texto)
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 5) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("token_type_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        
+        # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['input_ids']), 2)
+        self.assertEqual(len(saida['input_ids'][0]), 11)
+        self.assertEqual(len(saida['input_ids'][1]), 11)
+        self.assertEqual(len(saida['token_type_ids']), 2)
+        self.assertEqual(len(saida['token_type_ids'][0]), 11)
+        self.assertEqual(len(saida['token_type_ids'][1]), 11)
+        self.assertEqual(len(saida['attention_mask']), 2)
+        self.assertEqual(len(saida['attention_mask'][0]), 11)
+        self.assertEqual(len(saida['attention_mask'][1]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 2)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 11) 
+        self.assertEqual(len(saida['texto_original']), 2)
+        self.assertEqual(saida['texto_original'][0], texto[0])
+        self.assertEqual(saida['texto_original'][1], texto[1])
     
     # Testes removeTokensEspeciais
     def test_removeTokensEspeciais(self):
@@ -45,16 +131,16 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         
         # Testa as listas
         self.assertListEqual(lista_tokens_saida, lista_tokens_esperado) 
-        
-    # Testes getSaidaRede 
-    def test_getSaidaRede(self):
-        logger.info("Testando o getSaidaRede")
-        
-        # Valores de entrada                
+    
+    # Testes getSaidaRede String
+    def test_getSaidaRede_string(self):
+        logger.info("Testando o getSaidaRede com string")
+         
+        # Valores de entrada        
         texto = "Adoro sorvete de manga."
         
         # Tokeniza o texto
-        texto_tokenizado = self.modelo.getTransformer().tokenize(texto)
+        texto_tokenizado = self.modelo.tokenize(texto)
         
         # Valores de saída
         saida = self.modelo.getSaidaRede(texto_tokenizado)
@@ -62,20 +148,149 @@ class TestTextTransformer_BERT_ptbr(unittest.TestCase):
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 6) 
         
-    # Testes getSaidaRedeCamada
-    def test_getSaidaRedeCamada(self):
-        logger.info("Testando o getSaidaRedeCamada")
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)        
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        
+       # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['input_ids']), 1)
+        self.assertEqual(len(saida['input_ids'][0]), 10)
+        self.assertEqual(len(saida['attention_mask']), 1)    
+        self.assertEqual(len(saida['attention_mask'][0]), 10)  
+        self.assertEqual(len(saida['tokens_texto_mcl']), 1)   
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)        
+        self.assertEqual(len(saida['texto_original']), 1)
+        self.assertEqual(saida['texto_original'][0], texto)
+        self.assertEqual(len(saida['token_embeddings']), 1)
+        self.assertEqual(len(saida['token_embeddings'][0]), 10)
+        self.assertEqual(len(saida['all_layer_embeddings']), 13) #Camadas
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 1) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 10) #Tokens
+        
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertIsInstance(saida['token_embeddings'], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
+        
+        self.assertIsInstance(saida['all_layer_embeddings'], tuple)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], torch.Tensor)                 
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)       
+        
+    # Testes getSaidaRede Lista de Strings
+    def test_getSaidaRede_lista_string(self):
+        logger.info("Testando o getSaidaRede com lista de strings")
          
         # Valores de entrada       
-        texto = "Adoro sorvete de manga."
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
         
-        texto_tokenizado = self.modelo.getTransformer().tokenize(texto)
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.tokenize(texto)
         
         # Valores de saída
-        saida = self.modelo.getSaidaRedeCamada(texto_tokenizado, 2) # Camada 2 - Ultima camada dos transformers
+        saida = self.modelo.getSaidaRede(texto_tokenizado)
         
         # Testa o tamanho do dicionário
-        self.assertEqual(len(saida), 8)
+        self.assertEqual(len(saida), 6) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        
+        # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['input_ids']), 2)
+        self.assertEqual(len(saida['input_ids'][0]), 11)
+        self.assertEqual(len(saida['input_ids'][1]), 11)
+        self.assertEqual(len(saida['attention_mask']), 2)
+        self.assertEqual(len(saida['attention_mask'][0]), 11)
+        self.assertEqual(len(saida['attention_mask'][1]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 2)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 11) 
+        self.assertEqual(len(saida['texto_original']), 2)
+        self.assertEqual(saida['texto_original'][0], texto[0])
+        self.assertEqual(saida['texto_original'][1], texto[1])        
+        self.assertEqual(len(saida['token_embeddings']), 2)
+        self.assertEqual(len(saida['token_embeddings'][0]), 11)
+        self.assertEqual(len(saida['token_embeddings'][1]), 11)                
+        self.assertEqual(len(saida['all_layer_embeddings']), 13) #Camadas
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 2) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11) #Tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1]), 2) #Textos
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) #Tokens
+                
+        # Testa o tipo das saida dos valores das chaves        
+        self.assertIsInstance(saida['token_embeddings'], torch.Tensor)
+        self.assertIsInstance(saida['token_embeddings'][0], torch.Tensor)
+        
+        self.assertIsInstance(saida['all_layer_embeddings'], tuple)
+        self.assertIsInstance(saida['all_layer_embeddings'][0], torch.Tensor)                 
+        self.assertIsInstance(saida['all_layer_embeddings'][0][0], torch.Tensor)
+
+    # Testes getSaidaRedeCamada String
+    def test_getSaidaRedeCamada_string(self):
+        logger.info("Testando o getSaidaRedeCamada com strings")
+        
+        # Valores de entrada        
+        texto = ["Adoro sorvete de manga.","Sujei a manga da camisa."]
+        
+        # Tokeniza o texto
+        texto_tokenizado = self.modelo.tokenize(texto)
+        
+        # Valores de saída
+        # Abordagem extração de embeddings das camadas
+        # 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Soma de todas
+        saida = self.modelo.getSaidaRedeCamada(texto_tokenizado, 2)
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 8) 
+        
+        # Testa o nome das chaves
+        self.assertTrue("token_embeddings" in saida)
+        self.assertTrue("input_ids" in saida)
+        self.assertTrue("attention_mask" in saida)
+        self.assertTrue("tokens_texto_mcl" in saida)
+        self.assertTrue("texto_original" in saida)
+        self.assertTrue("all_layer_embeddings" in saida)
+        self.assertTrue("embedding_extraido" in saida)
+        self.assertTrue("abordagem_extracao_embeddings_camadas" in saida)
+                
+        # Testa a saida dos valores das chaves
+        self.assertEqual(len(saida['input_ids']), 2)
+        self.assertEqual(len(saida['input_ids'][0]), 11)
+        self.assertEqual(len(saida['input_ids'][1]), 11)
+        self.assertEqual(len(saida['attention_mask']), 2)
+        self.assertEqual(len(saida['attention_mask'][0]), 11)
+        self.assertEqual(len(saida['attention_mask'][1]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 2)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 11) 
+        self.assertEqual(len(saida['texto_original']), 2)
+        self.assertEqual(saida['texto_original'][0], texto[0])
+        self.assertEqual(saida['texto_original'][1], texto[1])        
+        
+        self.assertEqual(len(saida['token_embeddings']), 2)
+        self.assertEqual(len(saida['token_embeddings'][0]), 11)
+        self.assertEqual(len(saida['token_embeddings'][1]), 11)        
+        
+        self.assertEqual(len(saida['all_layer_embeddings']), 13) #13 Camadas
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 2) # Dois textos
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 11) # 11 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1]),  2) # Dois textos
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) # 11 tokens
+        
+        # Chaves adicionais para abordagem extração de embeddings das camadas
+        self.assertEqual(len(saida['embedding_extraido']), 2) # Dois textos
+        self.assertEqual(len(saida['embedding_extraido'][0]), 11) # 11 tokens        
+        self.assertEqual(len(saida['embedding_extraido'][1]), 11) # 11 tokens
+        
+        self.assertEqual(saida['abordagem_extracao_embeddings_camadas'], AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA) 
     
     # Testes getCodificacaoCompleta string
     def test_getCodificacaoCompleta_string(self):
@@ -853,6 +1068,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_BERT")
+    logger.info("Teste TextoTransformer_bert_ptbr")
     unittest.main()
     

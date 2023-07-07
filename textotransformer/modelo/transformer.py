@@ -7,15 +7,14 @@ from torch import nn
 import torch 
 import numpy as np
 from torch import Tensor, device
-# Biblioteca do transformer hunggingface
-from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from transformers import BertModel, AlbertModel, DistilBertModel, RobertaModel, XLNetModel, OpenAIGPTModel, GPT2Model
 # Biblioteca de manipulação json
 import json
 # Biblioteca de tipos
-from typing import List, Dict, Optional, Union
+from typing import List, Dict,  Union
 # Biblioteca de manipulação sistema
 import os
+# Bibliteca das classes abstratas base
+from abc import abstractmethod
 
 # Bibliotecas próprias
 from textotransformer.modelo.modeloargumentos import ModeloArgumentos
@@ -32,67 +31,37 @@ PALAVRA_DENTRO_DO_VOCABULARIO = 0
 class Transformer(nn.Module):
     '''
     Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
-    Carrega a classe correta, por exemplo BERT / RoBERTa etc.
-
-    Parâmetros:
-       `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
-       `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
-       `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
-       `tokenizer_name_or_path` - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado    
     '''
 
-    def __init__(self, 
-                modelo_args : ModeloArgumentos,                
-                cache_dir: Optional[str] = None,
-                tokenizer_args: Dict = {}, 
-                tokenizer_name_or_path : str = None):
+    def __init__(self, auto_model, 
+                 auto_config, 
+                 auto_tokenizer, 
+                 modelo_args: ModeloArgumentos):
+        '''
+        Construtor da classe TransformerRoberta.
+
+        Parâmetros:
+            `auto_model` - Auto model modelo carregado.
+            `auto_config` - Auto config carregado.
+            `auto_tokenizer` - Auto tokenizer carregado.
+            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
+        '''
         
         # Inicializa o construtor da superclasse
         super(Transformer, self).__init__()
+      
+        # Define os argumentos do modelo
+        self.auto_model = auto_model
+        
+        # Define os argumentos do config modelo
+        self.auto_config = auto_config
+        
+        # Define os argumentos do tokenizador modelo
+        self.auto_tokenizer = auto_tokenizer
         
         # Define os argumentos do modelo
         self.modelo_args = modelo_args
-
-        # Recupera parâmetros do transformador dos argumentos e cria um dicionário para o AutoConfig
-        model_args = {"output_attentions": modelo_args.output_attentions, 
-                      "output_hidden_states": modelo_args.output_hidden_states}
-    
-        # Configuração do modelo        
-        self.auto_config = AutoConfig.from_pretrained(modelo_args.pretrained_model_name_or_path, 
-                                                     **model_args, 
-                                                     cache_dir=cache_dir)
         
-        # Carrega o modelo
-        self._carregar_modelo(modelo_args.pretrained_model_name_or_path, 
-                              self.auto_config, 
-                              cache_dir)
-        
-        # Carrega o tokenizador
-        self.auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  modelo_args.pretrained_model_name_or_path, 
-                                                            cache_dir=cache_dir, 
-                                                            **tokenizer_args)
-        
-        # Se max_seq_length não foi especificado, tenta inferir do modelo
-        if self.modelo_args.max_seq_len is None:
-            if hasattr(self.auto_model, "config") and hasattr(self.auto_model.config, "max_position_embeddings") and hasattr(self.auto_tokenizer, "model_max_length"):
-                self.modelo_args.max_seq_len = min(self.auto_model.config.max_position_embeddings,
-                                                   self.auto_tokenizer.model_max_length)
-
-        # Define a classe do tokenizador
-        if tokenizer_name_or_path is not None:
-            self.auto_model.config.tokenizer_class = self.auto_tokenizer.__class__.__name__
-
-
-        # Define os tokens especiais e separadores 
-        self.defineTokensEspeciais()
-        
-        # Se não possuir um token de preenchimento, adiciona um        
-        if self.auto_tokenizer.pad_token is None:
-            self.auto_tokenizer.add_special_tokens(({'pad_token': self.TOKEN_PADDING})) 
-            self.auto_model.resize_token_embeddings(len(self.auto_tokenizer))
-                           
-        logger.info("Classe \"{}\" carregada: \"{}\".".format(self.__class__.__name__, modelo_args))
-
     # ============================   
     def __repr__(self):
         '''
@@ -105,6 +74,7 @@ class Transformer(nn.Module):
                                                                                                                                       self.auto_model.__class__.__name__,
                                                                                                                                       self.auto_tokenizer.__class__.__name__)
     # ============================   
+    @abstractmethod
     def defineTokensEspeciais(self):
         '''
         Define os tokens especiais e separadores considerando o modelo instânciado.
@@ -112,152 +82,23 @@ class Transformer(nn.Module):
         # A maioria dos modelos a posição do token de início é 1 e o token separador é -1
         # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
         '''
-        
-        # Verifica a instãncia do modelo.
-        if isinstance(self.auto_model, BertModel):
-            # Uma sentença simples: [CLS] X [SEP]
-            # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_SUBTOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 0 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
-            self.TOKEN_SEPARADOR = "[SEP]"
-            self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = "[MASK]"
-            self.TOKEN_DESCONHECIDO = "[UNK]"      
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-            
-        elif isinstance(self.auto_model, AlbertModel):
-            # Uma sentença simples: [CLS] X [SEP]
-            # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_SUBTOKEN = "▁" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
-            self.TOKEN_SEPARADOR = "[SEP]"
-            self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = "[MASK]"
-            self.TOKEN_DESCONHECIDO = "<unk>"            
-            self.DO_LOWER_CASE = True # Define se o tokenizador irá converter os tokens para minúsculo.
-        
-        elif isinstance(self.auto_model, DistilBertModel):
-            # Uma sentença simples: [CLS] X [SEP]
-            # Um par de sentenças: [CLS] A [SEP] B [SEP]
-            self.SEPARADOR_SUBTOKEN = "##" # Caracteres que separa palavras fora do vocabulário segundo o Algoritmo WordPiece.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 0 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = "[CLS]"
-            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = "[SEP]"
-            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
-            self.TOKEN_SEPARADOR = "[SEP]"
-            self.TOKEN_CLASSIFICACAO = "[CLS]"
-            self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = "[MASK]"
-            self.TOKEN_DESCONHECIDO = "<unk>"            
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-        
-        elif isinstance(self.auto_model, RobertaModel):
-            # Uma sentença simples: <s> X </s>
-            # Um par de sentenças: <s> A </s></s> B </s>
-            self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = "<s>"
-            self.POSICAO_TOKEN_INICIO = 1 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = "</s>"
-            self.POSICAO_TOKEN_FINAL = -1 # Posição do token válido do final da lista de tokens.
-            self.TOKEN_SEPARADOR = "</s>"
-            self.TOKEN_CLASSIFICACAO = "<s>"
-            self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = "<mask>"
-            self.TOKEN_DESCONHECIDO = "Â"            
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-            
-        elif isinstance(self.auto_model, XLNetModel):
-            # Uma sentença simples: X <sep> <cls>
-            # Um par de sentenças: A <sep> B <sep> <cls>
-            self.SEPARADOR_SUBTOKEN = "▁"  # Caracter que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = None  # O token de início está no final da sentença junto como separador
-            self.POSICAO_TOKEN_INICIO = 0 # Posição do token válido do início da lista de tokens.
-            self.TOKEN_FIM = None
-            self.POSICAO_TOKEN_FINAL = -2 # Posição do token válido do final da lista de tokens.
-            self.TOKEN_SEPARADOR = "<sep>"
-            self.TOKEN_CLASSIFICACAO = "<cls>"
-            self.TOKEN_PADDING = "<pad>" # O token de padding.
-            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = "<mask>"
-            self.TOKEN_DESCONHECIDO = "<unk>"            
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-
-        elif isinstance(self.auto_model, OpenAIGPTModel):            
-            # Uma sentença simples: X
-            # Um par de sentenças: A ,B
-            self.SEPARADOR_SUBTOKEN = "</w>" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 2 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = None  # Não existe token de início
-            self.POSICAO_TOKEN_INICIO = None    # Não existe token de início
-            self.TOKEN_FIM = None # Não existe token de fim
-            self.POSICAO_TOKEN_FINAL = None # Não existe token de fim
-            self.TOKEN_SEPARADOR = None
-            self.TOKEN_CLASSIFICACAO = None
-            self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = None
-            self.TOKEN_DESCONHECIDO = None            
-            self.DO_LOWER_CASE = True # Define se o tokenizador irá converter os tokens para minúsculo.
-
-        elif isinstance(self.auto_model, GPT2Model):
-            # Uma sentença simples: X
-            # Um par de sentenças: A ,B
-            self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
-            self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = None  # Não existe token de início
-            self.POSICAO_TOKEN_INICIO = None    # Não existe token de início
-            self.TOKEN_FIM = None # Não existe token de fim
-            self.POSICAO_TOKEN_FINAL = None # Não existe token de fim
-            self.TOKEN_SEPARADOR = None
-            self.TOKEN_CLASSIFICACAO = None
-            self.TOKEN_PADDING = "[PAD]" # O token de padding.
-            self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-            self.TOKEN_MASCARA = None
-            self.TOKEN_DESCONHECIDO = None            
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-
-        else:
-            # Sem um modelo especificado
-            self.SEPARADOR_SUBTOKEN = None
-            self.SERAPADOR_SUBTOKEN_REPETICAO = -1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-            self.SEPARADOR_SUBTOKEN_POSICAO = -1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-            self.TOKEN_INICIO = None
-            self.POSICAO_TOKEN_INICIO = None
-            self.TOKEN_FIM = None
-            self.POSICAO_TOKEN_FINAL = None
-            self.TOKEN_SEPARADOR = None
-            self.TOKEN_CLASSIFICACAO = None
-            self.TOKEN_PADDING = None
-            self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.           
-            self.TOKEN_MASCARA = None
-            self.TOKEN_DESCONHECIDO = None            
-            self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
-            
-            logger.info("Não foi definido os tokens especiais para o modelo {}.".format(self.auto_model.__class__.__name__))
+      
+        # Sem um modelo especificado
+        self.SEPARADOR_SUBTOKEN = None # Separador de subtoken. Ex. ##, ou Ġ, </w>
+        self.SERAPADOR_SUBTOKEN_REPETICAO = -1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+        self.SEPARADOR_SUBTOKEN_POSICAO = -1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
+        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
+        self.TOKEN_INICIO = None # Token de início de texto. Ex. [CLS]
+        self.POSICAO_TOKEN_INICIO = 0 # Posição primeiro do token válido do início da lista de tokens.
+        self.TOKEN_FIM = None # Token de fim. Ex. [SEP]
+        self.POSICAO_TOKEN_FINAL = None # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
+        self.TOKEN_SEPARADOR = None # Token separador de sentença. Ex. [SEP]
+        self.TOKEN_CLASSIFICACAO = None # Token de classificação. Ex. [CLS]
+        self.TOKEN_PADDING = None   # Token de preenchimento. Ex. [PAD]
+        self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.           
+        self.TOKEN_MASCARA = None # Token de máscara. Ex. [MASK]
+        self.TOKEN_DESCONHECIDO = None  # Token desconhecido. Ex. [UNK] 
+        self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
     
     # ============================ 
     def getPosicaoTokenInicio(self) -> int:
@@ -282,75 +123,29 @@ class Transformer(nn.Module):
         return self.POSICAO_TOKEN_FINAL
     
     # ============================   
-    def _carregar_modelo(self,
-                         model_name_or_path: str, 
-                         config, 
-                         cache_dir):
+    def getLadoPreenchimento(self) -> int:
         '''
-        Carrega o modelo transformer
-
-        Parâmetros:
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
-        '''
-
-        # Carregamento T5
-        if isinstance(config, T5Config):
-            self._load_t5_model(model_name_or_path, 
-                                config, 
-                                cache_dir)
+        Recupera o lado de preenchimento da tag PAD.
         
-        else:
-            # Carregamento MT5
-            if isinstance(config, MT5Config):
-                self._load_mt5_model(model_name_or_path, 
-                                    config, 
-                                    cache_dir)
-            else:
-                # Carrega modelos genéricos
-                self.auto_model = AutoModel.from_pretrained(model_name_or_path, 
-                                                            config = config, 
-                                                            cache_dir = cache_dir)
+        Retorna:
+           0 - o preenchimento do token de preenchimento é a esquerda. 
+           1 - o preenchimento do token de preenchimento é a direita. 
+        '''
 
+        return self.PADDING_SIDE
+    
     # ============================   
-    def _load_t5_model(self, model_name_or_path: str, 
-                       config, 
-                       cache_dir):
+    def getPrimeiroTokenSemSeparador(self) -> int:
         '''
-        Carrega codificador do modelo¨T5
-
-        Parâmetros:
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
+        Recupera se o primeiro token do texto não possuo o token de separação.
+        
+        Retorna:
+           True - O primeiro token não possui o token de separação.
+           False - O primeiro token possui o token de separação.        
         '''
 
-        from transformers import T5EncoderModel
-        T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        self.auto_model = T5EncoderModel.from_pretrained(model_name_or_path, 
-                                                         config = config, 
-                                                         cache_dir = cache_dir)
-
-    # ============================   
-    def _load_mt5_model(self, model_name_or_path: str, 
-                        config, 
-                        cache_dir):
-        '''
-        Carrega codificador do modelo MT5
-
-        Parâmetros:
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
-        '''
-
-        from transformers import MT5EncoderModel
-        MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        self.auto_model = MT5EncoderModel.from_pretrained(model_name_or_path, 
-                                                          config = config, 
-                                                          cache_dir = cache_dir)
-   
+        return self.PRIMEIRO_TOKEN_SEM_SEPARADOR
+    
     # ============================      
     def getTextoTokenizado(self, texto : str,
                            addicionar_tokens_especiais: bool = True) -> List[str]:
@@ -381,7 +176,7 @@ class Transformer(nn.Module):
            `lista_tokens` - Uma lista de tokens.
         
         Retorno:
-              Uma lista de tokens sem os tokens especiais.
+            Uma lista de tokens sem os tokens especiais.
         '''
         
         # Se possui token de início e faz parte da lista
@@ -757,8 +552,8 @@ class Transformer(nn.Module):
 
         return saida_rede
 
-
-    # ============================  
+    # ============================
+    @abstractmethod
     def getTokensPalavrasEmbeddingsTexto(self, 
                                          embeddings_texto, 
                                          tokens_texto_mcl: list[str],
@@ -766,66 +561,27 @@ class Transformer(nn.Module):
                                          pln: PLN,
                                          dic_excecao: dict = {"":0,}) -> dict:
         '''
-        Escolhe o melhor tokenizador de palavra para o texto de acordo com o modelo de linguagem.
+        As subclasses devem escolher um dos métodos para retornar a tokenização de palavras:
+        - getTokensPalavrasEmbeddingsTextoWordPiece
+        - getTokensPalavrasEmbeddingsTextoSentencePiece
+        - getTokensPalavrasEmbeddingsTextoBPE
         
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
-        Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
-        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
-            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
-            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
-            
-        Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
-           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
-           `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
-           `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
-           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
-               
-        Retorna um dicionário com as seguintes chaves: 
-           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
-           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
-           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
-           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
-        ''' 
+        '''
         
-        # Tokenização Wordpiece (Separador, ##) para BERT, DistilBert
-        if isinstance(self.auto_model, (BertModel, DistilBertModel)):
-            return self.getTokensPalavrasEmbeddingsTextoWordPiece(embeddings_texto=embeddings_texto,
-                                                                  lista_tokens_texto_mcl=tokens_texto_mcl,
-                                                                  tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
-                                                                  pln=pln,
-                                                                  dic_excecao=dic_excecao)
-        else:
-            # Tokenização SentencePiece (Separador, _) Albert, XLNet
-            if isinstance(self.auto_model, (AlbertModel, XLNetModel)):
-                return self.getTokensPalavrasEmbeddingsTextoSentencePiece(embeddings_texto=embeddings_texto,
-                                                                          lista_tokens_texto_mcl=tokens_texto_mcl,
-                                                                          tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
-                                                                          pln=pln,
-                                                                          dic_excecao=dic_excecao)
-            else:
-                # Tokenização BPE, separador Ġ para o Roberta e GPT2 e separador </w> para o OpenAIGPT
-                if isinstance(self.auto_model, (RobertaModel, OpenAIGPTModel, GPT2Model)):
-                    return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto=embeddings_texto,
-                                                                    lista_tokens_texto_mcl=tokens_texto_mcl,
-                                                                    tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
-                                                                    pln=pln,
-                                                                    dic_excecao=dic_excecao)                    
-                else:
-                    logger.error("Não encontrei um tokenizador de palavras para o modelo {}.".format(self.auto_model)) 
-                    return  None 
-                    
+        pass
+    
+    # ============================
+    def _inicializaDicionarioExcecao(self, dic_excecao: dict = {"":0,}):
+        '''
+        Inicializa o dicionário utilizado pela tokenização de palavras.
 
-
-    def _inicializaDicionarioExcecao(self,dic_excecao: dict = {"":0,}):
+        Parâmetros:           
+           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. 
+        '''
         
-        # Dicionário de tokens de exceções e seus deslocamentos para considerar menos tokens do modelo de linguagem em relação ao spaCy
-        # A tokenização do modelo de linguagem gera menos tokens que a tokenização das palavras do spaCy
         self._dic_excecao = dic_excecao
         
-                             
+    # ============================      
     def _getExcecaoDicMenor(self, token: str): 
         '''
         Retorna o deslocamento do token no texto para considerar mais ou menos tokens do MCL em relação a tokenização de PLN.
@@ -884,15 +640,15 @@ class Transformer(nn.Module):
         return  wi_pln_pos_excecao, pos_pln_excecao, pos_excecao
     
     # ============================  
-    def verificaSituacaoListaPalavras(self, mensagem,
-                                      tokens_texto_concatenado_pln,
-                                      lista_tokens, 
-                                      lista_tokens_texto_pln,
-                                      lista_pos_texto_pln,
-                                      lista_tokens_texto_mcl,
-                                      lista_tokens_oov_mcl, 
-                                      lista_palavra_embeddings_MEAN, 
-                                      lista_palavra_embeddings_MAX):
+    def _verificaSituacaoListaPalavras(self, mensagem,
+                                       tokens_texto_concatenado_pln,
+                                       lista_tokens, 
+                                       lista_tokens_texto_pln,
+                                       lista_pos_texto_pln,
+                                       lista_tokens_texto_mcl,
+                                       lista_tokens_oov_mcl, 
+                                       lista_palavra_embeddings_MEAN, 
+                                       lista_palavra_embeddings_MAX):
         '''
         Verifica se as listas geradas pelo método de gerar embedding de palavras estão com o mesmo tamanho e conteúdo.
         
@@ -930,12 +686,26 @@ class Transformer(nn.Module):
                                                   pln: PLN,
                                                   dic_excecao: dict = {"":0,}) -> dict:
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
-        Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
-        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
-            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
-            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+        De um texto tokenizado pelo algoritmo WordPiece e seus embeddings retorna os embeddings das palavras segundo a ferramenta de PLN.
+        
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
             
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2 - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
+                          
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
@@ -1178,15 +948,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1213,12 +983,26 @@ class Transformer(nn.Module):
                                                       pln: PLN,
                                                       dic_excecao: dict = {"": 0,}) -> dict:
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
-        Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
-        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
-            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
-            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+        De um texto tokenizado pelo algoritmo SentencePiece e seus embeddings retorna os embeddings das palavras segundo a ferramenta de PLN.
+        
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
             
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2 - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
+                          
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
@@ -1474,15 +1258,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)            
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)            
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1500,7 +1284,7 @@ class Transformer(nn.Module):
         return saida
    
     # ============================  
-    # getTokensPalavrasEmbeddingsTextoBPE(OpenGPT)
+    # getTokensPalavrasEmbeddingsTextoBPE
     # Gera os tokens, POS e embeddings de cada texto.
     def getTokensPalavrasEmbeddingsTextoBPE(self,
                                             embeddings_texto, 
@@ -1509,12 +1293,26 @@ class Transformer(nn.Module):
                                             pln: PLN,
                                             dic_excecao: dict = {"":0,}) -> dict:
         '''
-        De um texto preparado(tokenizado) ou não, retorna os embeddings das palavras do texto. 
-        Retorna 5 listas, os tokens(palavras), as postagging, tokens OOV, e os embeddings dos tokens igualando a quantidade de tokens do spaCy com a tokenização do MCL de acordo com a estratégia. 
-        Utiliza duas estratégias para realizar o pooling de tokens que forma uma palavra.
-            - Estratégia MEAN para calcular a média dos embeddings dos tokens que formam uma palavra.
-            - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
+        De um texto tokenizado pelo algoritmo BPE e seus embeddings retorna os embeddings das palavras segundo a ferramenta de PLN.
+        
+        Condidera os tratamentos de tokenização do MCL na ordem a seguir.  
+        1 - Exceção 
+            Procura o token e o próximo no dicionário.wi_pln_pos_excecao	
+            1.1 - Exceção maior que 0(valores positivos) - Tokenização do MCL gera mais tokens que a PLN.
+                Ex.: {"St.":2}, a ferramenta de pln tokeniza "St." em 1 token "St." e o MCL em dois tokens"St" e "." ou seja 2 tokens do MCL devem virar 1.
+
+            1.2 - Exceção menor que 0(valores negativos) - Tokenização do MCL gera menos tokens que a PLN.
+                Ex.: {"1°": -1}, a ferramenta de pln tokeniza "1°" em 2 tokens "1" e "°" e o MCL em um token "1°", ou seja 2 tokens do PLN devem virar 1.
+
+        2 - Token PLN igual ao token MCL ou desconhecida(UNK) e que não possui separador no próximo subtoken do MCL
+            Token do PLN é igual ao token do MCL adiciona diretamente na lista de tokens.
             
+        3 - Palavra foi dividida(tokenizada), o próximo token MCL possui separador e não é o fim da lista de tokens do MCL
+            3.1 - Palavra completa MCL é igual a palavra completa PLN
+                Tokens da palavra adicionado a lista de tokens e embeddings dos tokens consolidados para gerar as palavras.
+            3.2 - Palavra completa MCL diferente da palavra completa PLN
+                Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
+                          
         Parâmetros:
            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
@@ -1526,7 +1324,7 @@ class Transformer(nn.Module):
         Retorna um dicionário com as seguintes chaves: 
            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
+           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
@@ -1766,15 +1564,15 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self.verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoBPE.",
-                                           tokens_texto_concatenado_pln,
-                                           lista_tokens, 
-                                           lista_tokens_texto_pln,
-                                           lista_pos_texto_pln,
-                                           lista_tokens_texto_mcl,
-                                           lista_tokens_oov_mcl, 
-                                           lista_palavra_embeddings_MEAN, 
-                                           lista_palavra_embeddings_MAX)   
+        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoBPE.",
+                                            tokens_texto_concatenado_pln,
+                                            lista_tokens, 
+                                            lista_tokens_texto_pln,
+                                            lista_pos_texto_pln,
+                                            lista_tokens_texto_mcl,
+                                            lista_tokens_oov_mcl, 
+                                            lista_palavra_embeddings_MEAN, 
+                                            lista_palavra_embeddings_MAX)   
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1829,7 +1627,7 @@ class Transformer(nn.Module):
         '''
 
         return self.auto_tokenizer
-
+    
     # ============================   
     def batchToDevice(self, lote, 
                       target_device: device):
@@ -1862,10 +1660,10 @@ class Transformer(nn.Module):
            Lista de tokens tratada.        
         '''  
         
-        # Se o primeiro token não for o TOKEN_INICIO e o token tem caracter inicial igual ao separador, remove
+        # Se o primeiro token não for o TOKEN_INICIO e o token não tem caracter inicial igual ao separador, adiciona
         if (self.TOKEN_INICIO != tokens_texto_mcl[0]) and (self.SEPARADOR_SUBTOKEN != tokens_texto_mcl[0][0]):
         
             tokens_texto_mcl = [self.SEPARADOR_SUBTOKEN + tokens_texto_mcl[0]] + tokens_texto_mcl[1:]
-            print("tokens_texto_mcl:", tokens_texto_mcl)
+            #print("tokens_texto_mcl:", tokens_texto_mcl)
         
         return tokens_texto_mcl

@@ -9,13 +9,14 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
+from textotransformer.modelo.transformerbert import TransformerBert
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_BERT_en(unittest.TestCase):
+class TestTextTransformer_bert_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
@@ -25,11 +26,12 @@ class TestTextTransformer_BERT_en(unittest.TestCase):
         self.modelo = TextoTransformer("bert-base-cased", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_BERT
+    # Testes TextoTransformer_bert
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_BERT")
+        logger.info("Testando o construtor de TextoTransformer_bert")
                 
         self.assertIsNotNone(self.modelo)
+        self.assertIsInstance(self.modelo.getTransformer(), TransformerBert)
     
     # Testes removeTokensEspeciais
     def test_removeTokensEspeciais(self):
@@ -902,6 +904,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_BERT")
+    logger.info("Teste TextoTransformer_bert_en")
     unittest.main()
     

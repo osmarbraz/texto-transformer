@@ -15,7 +15,7 @@ from textotransformer.util.utiltexto import getIndexTokenTexto
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_XLNet_en(unittest.TestCase):
+class TestTextTransformer_xlnet_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
@@ -25,9 +25,9 @@ class TestTextTransformer_XLNet_en(unittest.TestCase):
         self.modelo = TextoTransformer("xlnet-base-cased", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_XLNet
+    # Testes TextoTransformer_xlnet_en
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_XLNet")
+        logger.info("Testando o construtor de TextoTransformer_xlnet_en")
                 
         self.assertIsNotNone(self.modelo)
     
@@ -806,6 +806,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_XLNet")
+    logger.info("Teste TextoTransformer_xlnet_en")
     unittest.main()
     
