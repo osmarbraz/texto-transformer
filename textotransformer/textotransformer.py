@@ -9,9 +9,6 @@ import torch
 import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
-# Biblioteca do transformer hunggingface
-#from transformers import RobertaModel, XLNetModel, GPT2Model
-#from transformers import RobertaModel, GPT2Model
 
 # Biblioteca próprias
 from textotransformer.modelo.transformerfactory import TransformerFactory
@@ -857,7 +854,6 @@ class TextoTransformer:
                 
                 # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
                 if j != 0:
-                    #if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
                     if self.getTransformer().getPrimeiroTokenSemSeparador():
                         sentenca_tokenizada = self.getTransformer().trataListaTokensEspeciais(sentenca_tokenizada)
                         

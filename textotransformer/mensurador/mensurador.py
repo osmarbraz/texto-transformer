@@ -5,8 +5,6 @@ import logging
 
 # Biblioteca de aprendizado de máquina
 import torch 
-# Biblioteca do transformer hunggingface
-from transformers import RobertaModel, OpenAIGPTModel, GPT2Model
 
 # Bibliotecas próprias
 from textotransformer.modelo.transformer import Transformer
@@ -14,8 +12,7 @@ from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.pln.pln import PLN
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
-from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas, EstrategiasPooling
-from textotransformer.util.utilconstantes import OUTPUTS, OUTPUTS_HIDDEN_STATES
+from textotransformer.modelo.modeloenum import EstrategiasPooling
 from textotransformer.util.utiltexto import encontrarIndiceSubLista  
 
 # Objeto de logger
@@ -228,10 +225,9 @@ class Mensurador:
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
         print(len(sentenca_tokenizada))
         
-        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
-        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
-            # Se não é a primeira sentença
-            if posicao_sentenca != 0:
+        # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
+        if posicao_sentenca != 0:
+            if self.getTransformer().getPrimeiroTokenSemSeparador():
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
         
         # Localiza os índices dos tokens da sentença no texto
@@ -275,7 +271,7 @@ class Mensurador:
 
         # Tokeniza a sentença sem stopword
         sentenca_tokenizada_sem_stopword =  self.transformer.getTextoTokenizado(texto=sentenca_sem_stopword)
-        #print(sentenca_tokenizada_sem_stopword)
+        #print(sentenca_tokenizada_sem_stopwod)
 
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada_sem_stopword = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada_sem_stopword)        
@@ -289,11 +285,10 @@ class Mensurador:
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
-        
-        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
-        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
-            # Se não é a primeira sentença
-            if posicao_sentenca != 0:
+                
+        # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
+        if posicao_sentenca != 0:
+            if self.getTransformer().getPrimeiroTokenSemSeparador():
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto
@@ -369,10 +364,9 @@ class Mensurador:
         #print(sentenca_tokenizada)
         #print(len(sentenca_tokenizada))
         
-        # Se for o modelo RoBERTaModel GPT2Model adiciona o caracter especial no início do primeiro token
-        if isinstance(self.auto_model, (RobertaModel, GPT2Model)):
-            # Se não é a primeira sentença
-            if posicao_sentenca != 0:
+        # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
+        if posicao_sentenca != 0:
+            if self.getTransformer().getPrimeiroTokenSemSeparador():
                 sentenca_tokenizada = self.transformer.trataListaTokensEspeciais(tokens_texto_mcl=sentenca_tokenizada)
 
         # Localiza os índices dos tokens da sentença no texto

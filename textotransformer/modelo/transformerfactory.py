@@ -6,7 +6,7 @@ import logging
 # Biblioteca de logging
 import logging  
 # Biblioteca de tipos
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 # Biblioteca do transformer hunggingface
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 from transformers import AlbertModel, BertModel, DistilBertModel, GPT2Model, OpenAIGPTModel, RobertaModel, XLNetModel
@@ -19,7 +19,6 @@ from textotransformer.modelo.transformergpt2 import TransformerGPT2
 from textotransformer.modelo.transformeropenaigpt import TransformerOpenAIGPT
 from textotransformer.modelo.transformerroberta import TransformerRoberta
 from textotransformer.modelo.transformerxlnet import TransformerXLNet
-
 from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 
 # Objeto de logger
