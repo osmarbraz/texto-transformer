@@ -13,6 +13,8 @@ import json
 from typing import List, Dict,  Union
 # Biblioteca de manipulação sistema
 import os
+# Biblioteca do transformer hunggingface
+from transformers import AutoModel, AutoTokenizer, AutoConfig
 # Bibliteca das classes abstratas base
 from abc import abstractmethod
 
@@ -33,12 +35,12 @@ class Transformer(nn.Module):
     Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     '''
 
-    def __init__(self, auto_model, 
-                 auto_config, 
-                 auto_tokenizer, 
+    def __init__(self, auto_model: AutoModel, 
+                 auto_config: AutoConfig, 
+                 auto_tokenizer: AutoTokenizer, 
                  modelo_args: ModeloArgumentos):
         '''
-        Construtor da classe TransformerRoberta.
+        Construtor da classe Transformer Base.
 
         Parâmetros:
             `auto_model` - Auto model modelo carregado.
@@ -128,8 +130,8 @@ class Transformer(nn.Module):
         Recupera o lado de preenchimento da tag PAD.
         
         Retorna:
-           0 - o preenchimento do token de preenchimento é a esquerda. 
-           1 - o preenchimento do token de preenchimento é a direita. 
+           0 - o preenchimento do token de pad a esquerda. 
+           1 - o preenchimento do token de pad a direita. 
         '''
 
         return self.PADDING_SIDE
@@ -522,24 +524,19 @@ class Transformer(nn.Module):
 
         # Chama o método que recupera os embeddings da camada especificada
         if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.PRIMEIRA_CAMADA:
-          embedding_extraido_abordagem = self.getEmbeddingPrimeiraCamadaRede(saida_rede)
-        else:
-            if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.PENULTIMA_CAMADA:
-              embedding_extraido_abordagem = self.getEmbeddingPenultimaCamada(saida_rede)
-            else:
-                if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA:
-                  embedding_extraido_abordagem = self.getEmbeddingUltimaCamada(saida_rede)
-                else:
-                    if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.SOMA_4_ULTIMAS_CAMADAS:
-                      embedding_extraido_abordagem = self.getEmbeddingSoma4UltimasCamadas(saida_rede)
-                    else:
-                        if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.CONCAT_4_ULTIMAS_CAMADAS:
-                            embedding_extraido_abordagem = self.getEmbeddingConcat4UltimasCamadas(saida_rede)
-                        else:
-                            if abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.TODAS_AS_CAMADAS:
-                                embedding_extraido_abordagem = self.getEmbeddingSomaTodasAsCamada(saida_rede)
-                            else:                                
-                                logger.error("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
+            embedding_extraido_abordagem = self.getEmbeddingPrimeiraCamadaRede(saida_rede)
+        elif abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.PENULTIMA_CAMADA:
+            embedding_extraido_abordagem = self.getEmbeddingPenultimaCamada(saida_rede)
+        elif abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.ULTIMA_CAMADA:
+            embedding_extraido_abordagem = self.getEmbeddingUltimaCamada(saida_rede)
+        elif abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.SOMA_4_ULTIMAS_CAMADAS:
+            embedding_extraido_abordagem = self.getEmbeddingSoma4UltimasCamadas(saida_rede)
+        elif abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.CONCAT_4_ULTIMAS_CAMADAS:
+            embedding_extraido_abordagem = self.getEmbeddingConcat4UltimasCamadas(saida_rede)
+        elif abordagem_extracao_embeddings_camadas == AbordagemExtracaoEmbeddingsCamadas.TODAS_AS_CAMADAS:
+            embedding_extraido_abordagem = self.getEmbeddingSomaTodasAsCamada(saida_rede)
+        else:                                
+            logger.error("Não foi especificado uma abordagem de extração dos embeddings das camadas do transformer.") 
         
         # Verifica se foi realizado a extração
         if embedding_extraido_abordagem != None:
@@ -957,15 +954,6 @@ class Transformer(nn.Module):
                                             lista_tokens_oov_mcl, 
                                             lista_palavra_embeddings_MEAN, 
                                             lista_palavra_embeddings_MAX)
-        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoWordPiece.",
-                                            tokens_texto_concatenado_pln,
-                                            lista_tokens, 
-                                            lista_tokens_texto_pln,
-                                            lista_pos_texto_pln,
-                                            lista_tokens_texto_mcl,
-                                            lista_tokens_oov_mcl, 
-                                            lista_palavra_embeddings_MEAN, 
-                                            lista_palavra_embeddings_MAX)
        
         # Remove as variáveis que não serão mais utilizadas
         del embeddings_texto
@@ -1267,15 +1255,6 @@ class Transformer(nn.Module):
                     pos_wj_mcl = indice_proximo_token_wj_mcl
         
         # Verificação se as listas estão com o mesmo tamanho        
-        self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
-                                            tokens_texto_concatenado_pln,
-                                            lista_tokens, 
-                                            lista_tokens_texto_pln,
-                                            lista_pos_texto_pln,
-                                            lista_tokens_texto_mcl,
-                                            lista_tokens_oov_mcl, 
-                                            lista_palavra_embeddings_MEAN, 
-                                            lista_palavra_embeddings_MAX)            
         self._verificaSituacaoListaPalavras("getTokensPalavrasEmbeddingsTextoSentencePiece.",
                                             tokens_texto_concatenado_pln,
                                             lista_tokens, 
