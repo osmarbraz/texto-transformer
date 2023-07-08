@@ -104,6 +104,7 @@ class TransformerFactory():
            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
         '''
         
+        # Verifica qual o Transformer deve ser retornado pelo parâmetro auto_model.
         if isinstance(auto_model, BertModel):
             return TransformerBert(auto_model=auto_model, 
                                    auto_config=auto_config, 
@@ -119,7 +120,7 @@ class TransformerFactory():
                                          auto_config=auto_config, 
                                          auto_tokenizer=auto_tokenizer, 
                                          modelo_args=modelo_args)
-        elif isinstance(auto_model, GPT2Model):
+        elif isinstance(auto_model, GPT2Model):            
             return TransformerGPT2(auto_model=auto_model, 
                                    auto_config=auto_config, 
                                    auto_tokenizer=auto_tokenizer, 
@@ -168,6 +169,6 @@ class TransformerFactory():
 
         # Carrega modelos genéricos
         return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                            config=config, 
-                                            cache_dir=cache_dir)
+                                         config=config, 
+                                         cache_dir=cache_dir)
         
