@@ -79,14 +79,14 @@ class TransformerXLNet(Transformer):
         self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
         self.TOKEN_INICIO = None  # O token de início está no final da sentença junto como separador
         self.POSICAO_TOKEN_INICIO = 0 # Posição do primeiro token válido do início da lista de tokens.
-        self.TOKEN_FIM = None
+        self.TOKEN_FIM = None # Não existe token de fim de texto.
         self.POSICAO_TOKEN_FINAL = -2 ## Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
-        self.TOKEN_SEPARADOR = "<sep>"
-        self.TOKEN_CLASSIFICACAO = "<cls>"
+        self.TOKEN_SEPARADOR = "<sep>" # Token separador de sentença.
+        self.TOKEN_CLASSIFICACAO = "<cls>" # Token de classificação.
         self.TOKEN_PADDING = "<pad>" # O token de padding.
         self.PADDING_SIDE = 0 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-        self.TOKEN_MASCARA = "<mask>"
-        self.TOKEN_DESCONHECIDO = "<unk>"            
+        self.TOKEN_MASCARA = "<mask>" # Token de máscara.
+        self.TOKEN_DESCONHECIDO = "<unk>"  # Token desconhecido.
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
     # ============================  

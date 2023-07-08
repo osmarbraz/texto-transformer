@@ -77,16 +77,16 @@ class TransformerBert(Transformer):
         self.SERAPADOR_SUBTOKEN_REPETICAO = 0 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
         self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
         self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
-        self.TOKEN_INICIO = "[CLS]"
+        self.TOKEN_INICIO = "[CLS]" # Token de início de texto.
         self.POSICAO_TOKEN_INICIO = 1 # Posição do primeiro token válido do início da lista de tokens.
-        self.TOKEN_FIM = "[SEP]"
-        self.POSICAO_TOKEN_FINAL = -1 # # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
-        self.TOKEN_SEPARADOR = "[SEP]"
-        self.TOKEN_CLASSIFICACAO = "[CLS]"
+        self.TOKEN_FIM = "[SEP]" # Token de fim de texto.
+        self.POSICAO_TOKEN_FINAL = -1 # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
+        self.TOKEN_SEPARADOR = "[SEP]" # Token separador de sentença.
+        self.TOKEN_CLASSIFICACAO = "[CLS]" # Token de classificação.
         self.TOKEN_PADDING = "[PAD]" # O token de padding.
         self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-        self.TOKEN_MASCARA = "[MASK]"
-        self.TOKEN_DESCONHECIDO = "[UNK]"      
+        self.TOKEN_MASCARA = "[MASK]" # Token de máscara.
+        self.TOKEN_DESCONHECIDO = "[UNK]" # Token desconhecido.
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
     # ============================  

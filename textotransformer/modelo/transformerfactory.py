@@ -9,17 +9,19 @@ import logging
 from typing import Dict, Optional
 # Biblioteca do transformer hunggingface
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from transformers import AlbertModel, BertModel, DistilBertModel, GPT2Model, OpenAIGPTModel, RobertaModel, XLNetModel
+from transformers import AlbertModel, BertModel, DistilBertModel, GPT2Model, OpenAIGPTModel
+from transformers import RobertaModel, XLMRobertaModel, XLNetModel
 
 # Bibliotecas próprias
+from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.transformeralbert import TransformerAlbert
 from textotransformer.modelo.transformerbert import TransformerBert
 from textotransformer.modelo.transformerdistilbert import TransformerDistilbert
 from textotransformer.modelo.transformergpt2 import TransformerGPT2
 from textotransformer.modelo.transformeropenaigpt import TransformerOpenAIGPT
 from textotransformer.modelo.transformerroberta import TransformerRoberta
+from textotransformer.modelo.transformerxlmroberta import TransformerXLMRoberta
 from textotransformer.modelo.transformerxlnet import TransformerXLNet
-from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
@@ -79,7 +81,8 @@ class TransformerFactory():
         if tokenizer_name_or_path is not None:
             auto_model.config.tokenizer_class = auto_tokenizer.__class__.__name__
 
-        # Verifica qual o modelo deve ser retornado pelos parâmetros auto                                  
+        # Verifica qual o modelo deve ser retornado pelos parâmetros auto
+        # Passa os parâmetros para o modelo carregado a classe Transformer especifica.
         return TransformerFactory.getInstanciaTransformer(auto_model=auto_model, 
                                                           auto_config=auto_config, 
                                                           auto_tokenizer=auto_tokenizer, 
@@ -130,12 +133,20 @@ class TransformerFactory():
             return TransformerRoberta(auto_model=auto_model, 
                                       auto_config=auto_config, 
                                       auto_tokenizer=auto_tokenizer, 
-                                      modelo_args=modelo_args)        
+                                      modelo_args=modelo_args)
+        elif isinstance(auto_model, XLMRobertaModel):
+            return TransformerXLMRoberta(auto_model=auto_model, 
+                                    auto_config=auto_config, 
+                                    auto_tokenizer=auto_tokenizer, 
+                                    modelo_args=modelo_args)              
         elif isinstance(auto_model, XLNetModel):
             return TransformerXLNet(auto_model=auto_model, 
                                     auto_config=auto_config, 
                                     auto_tokenizer=auto_tokenizer, 
-                                    modelo_args=modelo_args)        
+                                    modelo_args=modelo_args)
+          
+        # Outros modelos vão aqui!
+        
         else:
             logger.error("Modelo não suportado: \"{}\".".format(auto_model.__class__.__name__))
             
@@ -155,62 +166,8 @@ class TransformerFactory():
            `cache_dir` - Diretório de cache.
         '''
 
-        # Carregamento T5
-        if isinstance(config, T5Config):
-            return TransformerFactory._load_t5_model(model_name_or_path=model_name_or_path,
-                                                     config=config, 
-                                                     cache_dir=cache_dir)
+        # Carrega modelos genéricos
+        return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                            config=config, 
+                                            cache_dir=cache_dir)
         
-        else:
-            # Carregamento MT5
-            if isinstance(config, MT5Config):
-                return TransformerFactory._load_mt5_model(model_name_or_path=model_name_or_path,
-                                                          config=config, 
-                                                          cache_dir=cache_dir)
-            else:
-                # Carrega modelos genéricos
-                return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                                 config=config, 
-                                                 cache_dir=cache_dir)
-
-    # ============================ 
-    @staticmethod
-    def _load_t5_model(model_name_or_path: str, 
-                       config, 
-                       cache_dir):
-        '''
-        Carrega codificador do modelo¨T5
-
-        Parâmetros:
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
-        '''
-
-        from transformers import T5EncoderModel
-        T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        
-        return T5EncoderModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path, 
-                                              config=config, 
-                                              cache_dir=cache_dir)
-
-    # ============================ 
-    @staticmethod
-    def _load_mt5_model(model_name_or_path: str, 
-                        config, 
-                        cache_dir):
-        '''
-        Carrega codificador do modelo MT5
-
-        Parâmetros:
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
-        '''
-
-        from transformers import MT5EncoderModel
-        MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
-        
-        return MT5EncoderModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path, 
-                                               config=config, 
-                                               cache_dir=cache_dir)

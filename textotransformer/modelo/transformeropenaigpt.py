@@ -77,16 +77,16 @@ class TransformerOpenAIGPT(Transformer):
         self.SERAPADOR_SUBTOKEN_REPETICAO = 2 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
         self.SEPARADOR_SUBTOKEN_POSICAO = 1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
         self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
-        self.TOKEN_INICIO = None  # Não existe token de início
+        self.TOKEN_INICIO = None  # Não existe token de início de texto.
         self.POSICAO_TOKEN_INICIO = 0   # Posição do primeiro token válido do início da lista de tokens.
-        self.TOKEN_FIM = None # Não existe token de fim
+        self.TOKEN_FIM = None # Não existe token de fim de texto.
         self.POSICAO_TOKEN_FINAL = None # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
-        self.TOKEN_SEPARADOR = None
-        self.TOKEN_CLASSIFICACAO = None
+        self.TOKEN_SEPARADOR = None # Não existe token separador de sentença.
+        self.TOKEN_CLASSIFICACAO = None # Não existe token de classificação.
         self.TOKEN_PADDING = "[PAD]" # O token de padding.
         self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-        self.TOKEN_MASCARA = None
-        self.TOKEN_DESCONHECIDO = None            
+        self.TOKEN_MASCARA = None # Não existe token de máscara
+        self.TOKEN_DESCONHECIDO = None # Não existe token desconhecido.
         self.DO_LOWER_CASE = True # Define se o tokenizador irá converter os tokens para minúsculo.
 
     # ============================  

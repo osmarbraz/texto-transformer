@@ -9,29 +9,29 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
-from textotransformer.modelo.transformerxlnet import TransformerXLNet
+from textotransformer.modelo.transformerxlmroberta import TransformerXLMRoberta 
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TestTextTransformer_xlnet_en(unittest.TestCase):
+class TestTextTransformer_xlmroberta_en(unittest.TestCase):
     
     # Inicialização do modelo para os testes
     @classmethod     
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("xlnet-base-cased", 
+        self.modelo = TextoTransformer("xlm-roberta-base", 
                                        modelo_spacy="en_core_web_sm") 
     
-    # Testes TextoTransformer_xlnet_en
+    # Testes TextoTransformer_xlmroberta_en
     def test_textotransformer(self):
-        logger.info("Testando o construtor de TextoTransformer_xlnet_en")
+        logger.info("Testando o construtor de TextoTransformer_xlmroberta_en")
                 
         self.assertIsNotNone(self.modelo)
-        self.assertIsInstance(self.modelo.getTransformer(), TransformerXLNet)
+        self.assertIsInstance(self.modelo.getTransformer(), TransformerXLMRoberta)
     
     # Testes removeTokensEspeciais
     def test_removeTokensEspeciais(self):
@@ -101,13 +101,13 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("all_layer_embeddings" in saida)
         
         # Testa a saida dos valores das chaves
-        self.assertEqual(len(saida['token_embeddings']), 10)
-        self.assertEqual(len(saida['input_ids']), 10)
-        self.assertEqual(len(saida['attention_mask']), 10)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 10)        
+        self.assertEqual(len(saida['token_embeddings']), 11)
+        self.assertEqual(len(saida['input_ids']), 11)
+        self.assertEqual(len(saida['attention_mask']), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 11)        
         self.assertEqual(saida['texto_original'], texto)
         self.assertEqual(len(saida['all_layer_embeddings']), 12) # Camadas
-        self.assertEqual(len(saida['all_layer_embeddings'][0]), 10) # tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0]), 11) # tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 768) # dimensões
         
         # Testa o tipo das saida dos valores das chaves                
@@ -141,9 +141,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['token_embeddings']), 2) # Textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 12) # tokens
+        self.assertEqual(len(saida['token_embeddings'][0]), 13) # tokens
         self.assertEqual(len(saida['token_embeddings'][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['token_embeddings'][1]), 10) # tokens
+        self.assertEqual(len(saida['token_embeddings'][1]), 11) # tokens
         self.assertEqual(len(saida['token_embeddings'][1][0]), 768) # embeddings
         self.assertEqual(len(saida['input_ids']), 2)
         self.assertEqual(len(saida['attention_mask']), 2)        
@@ -152,9 +152,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][1], texto[1])
         self.assertEqual(len(saida['all_layer_embeddings']), 2) # Textos
         self.assertEqual(len(saida['all_layer_embeddings'][0]), 12) # Camadas do transformer
-        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 12) # 12 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][0][0]), 13) # 13 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][0][0][0]), 768) # embeddings
-        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 10) # 10 tokens
+        self.assertEqual(len(saida['all_layer_embeddings'][1][0]), 11) # 11 tokens
         self.assertEqual(len(saida['all_layer_embeddings'][1][0][0]), 768) # embeddings
                 
         # Testa o tipo das saida dos valores das chaves        
@@ -230,7 +230,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['texto_original']), 23)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 10)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 6)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['texto_embeddings_MEAN']), 768)
         self.assertEqual(len(saida['texto_embeddings_MAX']), 768)
@@ -298,7 +298,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("sentenca_embeddings_MAX" in saida)
                 
         # Testa a saida dos valores das chaves        
-        self.assertEqual(len(saida['tokens_texto_mcl']), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 20)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['sentenca_embeddings_MEAN']), 2)
@@ -334,7 +334,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves        
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 18)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 20)
         self.assertEqual(len(saida['tokens_texto_mcl'][1]), 3)
         self.assertEqual(len(saida['sentencas_texto']), 2)
         self.assertEqual(len(saida['sentencas_texto'][0]), 2)
@@ -390,7 +390,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
                 
         # Testa a saida dos valores das chaves
         self.assertEqual(len(saida['tokens_texto']), 8)
-        self.assertEqual(len(saida['tokens_texto_mcl']), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 9)
         self.assertEqual(len(saida['tokens_oov_texto_mcl']), 8)
         self.assertEqual(len(saida['tokens_texto_pln']), 8)
         self.assertEqual(len(saida['pos_texto_pln']), 8)
@@ -400,7 +400,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         # Testa o valor dos texto
         self.assertEqual(saida['texto_original'], texto)
         # Testa as palavras fora do vocabulário
-        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'], [0, 0, 1, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves        
         self.assertIsInstance(saida['palavra_embeddings_MEAN'], list)
@@ -440,8 +440,8 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
-        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 9)
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 2)
         # Testa a quantidade de de embeddings
@@ -459,8 +459,8 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertEqual(saida['texto_original'][0], texto[0])
         self.assertEqual(saida['texto_original'][1], texto[1])
         # Testa as palavras fora do vocabulário
-        self.assertListEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 0, 0, 0, 0, 1, 0])
-        self.assertListEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 0, 0, 0, 0, 0, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][0], [0, 0, 1, 0, 0, 0, 1, 0])
+        self.assertListEqual(saida['tokens_oov_texto_mcl'][1], [0, 0, 1, 0, 0, 0, 0, 0])
         
         # Testa o tipo das saida dos valores das chaves      
         # MEAN  
@@ -504,9 +504,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("texto_original" in saida)
         
         # Testa a saida dos valores das chaves
-        self.assertEqual(len(saida['tokens_texto_mcl']), 8)
-        self.assertEqual(len(saida['token_embeddings']), 8)
-        self.assertEqual(len(saida['input_ids']), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl']), 9)
+        self.assertEqual(len(saida['token_embeddings']), 9)
+        self.assertEqual(len(saida['input_ids']), 9)
         self.assertEqual(saida['texto_original'], texto)
         
         # Testa o tipo das saida dos valores das chaves        
@@ -536,18 +536,18 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         # Testa a quantidade de textos
         self.assertEqual(len(saida['tokens_texto_mcl']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 10)
-        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 8)
+        self.assertEqual(len(saida['tokens_texto_mcl'][0]), 11)
+        self.assertEqual(len(saida['tokens_texto_mcl'][1]), 9)
         # Testa a quantidade de ids
         self.assertEqual(len(saida['input_ids']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['input_ids'][0]), 10)
-        self.assertEqual(len(saida['input_ids'][1]), 8)
+        self.assertEqual(len(saida['input_ids'][0]), 11)
+        self.assertEqual(len(saida['input_ids'][1]), 9)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['token_embeddings']), 2)
         # Testa a quantidade de tokens das textos
-        self.assertEqual(len(saida['token_embeddings'][0]), 10)
-        self.assertEqual(len(saida['token_embeddings'][1]), 8)
+        self.assertEqual(len(saida['token_embeddings'][0]), 11)
+        self.assertEqual(len(saida['token_embeddings'][1]), 9)
         # Testa a quantidade de textos
         self.assertEqual(len(saida['texto_original']), 2)
         # Testa o valor dos textos
@@ -576,9 +576,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto)
         
         # Valores esperados
-        CcosEsperado = 0.987067699432373
-        CeucEsperado = 44.02893829345703
-        CmanEsperado = 688.7461547851562
+        CcosEsperado = 0.99775630235672
+        CeucEsperado = 1.2788904905319214
+        CmanEsperado = 25.024639129638672
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -602,9 +602,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 0.987067699432373                
-        CeucEsperado = 44.02893829345703
-        CmanEsperado = 688.7461547851562
+        CcosEsperado = 0.99775630235672                
+        CeucEsperado = 1.2788904905319214
+        CmanEsperado = 25.024639129638672
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -628,9 +628,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         # Valores esperados
-        CcosEsperado = 0.9875938296318054
-        CeucEsperado = 39.51270294189453
-        CmanEsperado = 658.4864501953125
+        CcosEsperado = 0.9972693920135498
+        CeucEsperado = 1.4120290279388428
+        CmanEsperado = 28.310440063476562
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -690,9 +690,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embeddingTexto2, embeddingTexto3)
         
         # Valores esperados
-        sim12Esperado = 0.9770107269287109
-        sim13Esperado = 0.9741824865341187
-        sim23Esperado = 0.9824895262718201
+        sim12Esperado = 0.9975473284721375
+        sim13Esperado = 0.9969601035118103
+        sim23Esperado = 0.9978873133659363
         
         #Compara somente n casas decimais
         casas_decimais = 5
@@ -725,9 +725,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         sim23 = similaridadeCosseno(embedToken2,embedToken3)
                         
         # Valores esperados
-        sim12Esperado = 0.9835878014564514
-        sim13Esperado = 0.9770671725273132
-        sim23Esperado = 0.9823021292686462
+        sim12Esperado = 0.9987642168998718
+        sim13Esperado = 0.9945612549781799
+        sim23Esperado = 0.9945850968360901
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -759,9 +759,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         dif23 = distanciaEuclidiana(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 53.906375885009766
-        dif13Esperado = 43.080039978027344
-        dif23Esperado = 51.95704650878906
+        dif12Esperado = 0.9584599733352661
+        dif13Esperado = 2.024867057800293
+        dif23Esperado = 2.020202875137329
         
         # Compara somente n casas decimais
         casas_decimais = 5
@@ -794,9 +794,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         dif23 = distanciaManhattan(embedToken2,embedToken3)
                         
         # Valores esperados
-        dif12Esperado = 894.1543
-        dif13Esperado = 936.25
-        dif23Esperado = 928.70776
+        dif12Esperado = 18.053436
+        dif13Esperado = 39.43595
+        dif23Esperado = 38.84765
         
         # Compara somente n casas decimais
         casas_decimais = 4
@@ -808,6 +808,6 @@ if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    logger.info("Teste TextoTransformer_xlnet_en")
+    logger.info("Teste TextoTransformer_xlmroberta_en")
     unittest.main()
     

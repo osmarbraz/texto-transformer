@@ -9,6 +9,7 @@ import torch
 
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
+from textotransformer.modelo.transformergpt2 import TransformerGPT2
 from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
@@ -30,6 +31,7 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         logger.info("Testando o construtor de TextoTransformer_GPT2")
                 
         self.assertIsNotNone(self.modelo)
+        self.assertIsInstance(self.modelo.getTransformer(), TransformerGPT2)
     
     # Testes removeTokensEspeciais
     def test_removeTokensEspeciais(self):

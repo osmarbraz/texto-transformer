@@ -1159,17 +1159,20 @@ class TextoTransformer:
     def getInfoModel(self):
         '''
         Mostra informações do modelo.
-        '''        
+        '''
+        
         print("Modelo Huggingface  : {}.".format(self.auto_model.__class__.__name__))
         print("Modelo pré-treinado : {}.".format(self.auto_model.config._name_or_path))
         print("Parâmetros          : {:,}.".format(self.auto_model.num_parameters()))
         print("Tamanho embedding   : {:,}.".format(self.auto_model.config.hidden_size))
+        print("Texto-Transformer   : {}.".format(self.getTransformer().__class__.__name__))
     
     # ============================
     def getModel(self):
         '''
         Recupera o modelo.
-        '''        
+        '''
+        
         return self.auto_model
 
     # ============================
@@ -1177,6 +1180,7 @@ class TextoTransformer:
         '''
         Recupera o tokenizador.
         '''
+        
         return self.auto_tokenizer
 
     # ============================
@@ -1184,18 +1188,21 @@ class TextoTransformer:
         '''
         Recupera o transformer.
         '''
+        
         return self.transformer
 
-    # ============================    
+    # ============================
     def getMensurador(self) -> Mensurador:
         '''
         Recupera o mensurador.
         '''
+        
         return self.mensurador        
         
-    # ============================        
+    # ============================
     def getPln(self) -> PLN:
         '''
         Recupera o PLN.
         '''
+        
         return self.pln

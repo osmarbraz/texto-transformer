@@ -13,9 +13,9 @@ from textotransformer.pln.pln import PLN
 # Objeto de logger
 logger = logging.getLogger(__name__)
 
-class TransformerGPT2(Transformer):
+class TransformerXLMRoberta(Transformer):
     '''
-    Classe que encapsula a classe GPT2Model da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
+    Classe que encapsula a classe XLMRobertaModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
     '''
 
     def __init__(self, auto_model: AutoModel = None, 
@@ -23,7 +23,7 @@ class TransformerGPT2(Transformer):
                  auto_tokenizer: AutoTokenizer = None, 
                  modelo_args: ModeloArgumentos = None):
         '''
-        Construtor da classe TransformerGPT2.
+        Construtor da classe TransformerXLMRoberta.
 
         Parâmetros:
             `auto_model` - Auto model modelo carregado.
@@ -33,7 +33,7 @@ class TransformerGPT2(Transformer):
         '''
         
         # Inicializa o construtor da superclasse
-        super(TransformerGPT2, self).__init__(
+        super(TransformerXLMRoberta, self).__init__(
                 auto_model=auto_model, 
                 auto_config=auto_config, 
                 auto_tokenizer=auto_tokenizer, 
@@ -71,22 +71,22 @@ class TransformerGPT2(Transformer):
         # Em alguns a posição do token de início é 0(não existe) e o token separador é -2 e o último <sep> é o token de classificação <CLS>
         '''
       
-        # Uma sentença simples: X
-        # Um par de sentenças: A ,B
-        self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+        # Uma sentença simples: X <sep> <cls>
+        # Um par de sentenças: A <sep> B <sep> <cls>
+        self.SEPARADOR_SUBTOKEN = "▁"  # Caracter que separa palavras fora do vocabulário segundo o Algoritmo SentencePiece.
         self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
         self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = True # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
-        self.TOKEN_INICIO = None  # Não existe token de início de texto.
-        self.POSICAO_TOKEN_INICIO = 0 # Posição do primeiro token válido do início da lista de tokens.
-        self.TOKEN_FIM = None # Não existe token de fim dde texto.
-        self.POSICAO_TOKEN_FINAL = None # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
-        self.TOKEN_SEPARADOR = None # Não existe token separador de sentença.
-        self.TOKEN_CLASSIFICACAO = None # Não existe token de classificação
-        self.TOKEN_PADDING = "[PAD]" # O token de padding.
+        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
+        self.TOKEN_INICIO = "<s>"  # O token de início de texto.
+        self.POSICAO_TOKEN_INICIO = 1 # Posição do primeiro token válido do início da lista de tokens.
+        self.TOKEN_FIM = "</s>" # Token de fim de texto.
+        self.POSICAO_TOKEN_FINAL = -1 ## Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
+        self.TOKEN_SEPARADOR = "</s>" # Token separador de sentença.
+        self.TOKEN_CLASSIFICACAO = "<s>" # Token de classificação.
+        self.TOKEN_PADDING = "<pad>" # O token de padding.
         self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-        self.TOKEN_MASCARA = None # Não existe token de máscara
-        self.TOKEN_DESCONHECIDO = None # Não existe token desconhecido
+        self.TOKEN_MASCARA = "<mask>" # Token de máscara.
+        self.TOKEN_DESCONHECIDO = "<unk>" # Token desconhecido.
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
     # ============================  
@@ -121,10 +121,11 @@ class TransformerGPT2(Transformer):
            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         ''' 
         
-        # Tokenização BPE, separador Ġ para o GPT2
-        return self.getTokensPalavrasEmbeddingsTextoBPE(embeddings_texto=embeddings_texto,
-                                                        lista_tokens_texto_mcl=tokens_texto_mcl,
-                                                        tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
-                                                        pln=pln,
-                                                        dic_excecao=dic_excecao)    
+        # Tokenização SentencePiece (Separador, _) XLNet
+        return self.getTokensPalavrasEmbeddingsTextoSentencePiece(embeddings_texto=embeddings_texto,
+                                                                  lista_tokens_texto_mcl=tokens_texto_mcl,
+                                                                  tokens_texto_concatenado_pln=tokens_texto_concatenado_pln,
+                                                                  pln=pln,
+                                                                  dic_excecao=dic_excecao)
+    
                             

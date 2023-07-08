@@ -32,7 +32,8 @@ PALAVRA_DENTRO_DO_VOCABULARIO = 0
 
 class Transformer(nn.Module):
     '''
-    Classe que encapsula a classe AutoModel da Huggingface para gerar embeddings de token, palavra, sentença ou texto.
+    Classe base de Transformer que encapsula a classe AutoModel da Huggingface.
+    Possui os métodos para gerar embeddings de token, palavra, sentença ou texto.
     '''
 
     def __init__(self, auto_model: AutoModel, 
@@ -1617,7 +1618,7 @@ class Transformer(nn.Module):
 
         return self.auto_model
 
-    # ============================   
+    # ============================
     def getAutoTokenizer(self) -> AutoTokenizer:
         '''
         Recupera o tokenizador.
