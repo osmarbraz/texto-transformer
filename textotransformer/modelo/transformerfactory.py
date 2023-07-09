@@ -78,7 +78,7 @@ class TransformerFactory():
         if modelo_args.max_seq_len is None:
             if hasattr(auto_model, "config") and hasattr(auto_model.config, "max_position_embeddings") and hasattr(auto_tokenizer, "model_max_length"):
                 modelo_args.max_seq_len = min(auto_model.config.max_position_embeddings,
-                                                   auto_tokenizer.model_max_length)
+                                              auto_tokenizer.model_max_length)
 
         # Define a classe do tokenizador
         if tokenizer_name_or_path is not None:
@@ -109,41 +109,58 @@ class TransformerFactory():
         
         # Verifica qual o Transformer deve ser retornado pelo parâmetro auto_model.
         if isinstance(auto_model, BertModel):
+            # BertModel
+            # https://huggingface.co/docs/transformers/model_doc/bert
             return TransformerBert(auto_model=auto_model, 
                                    auto_config=auto_config, 
                                    auto_tokenizer=auto_tokenizer, 
                                    modelo_args=modelo_args)
         elif isinstance(auto_model, AlbertModel):
+            # AlbertModel
+            # https://huggingface.co/docs/transformers/model_doc/albert
             return TransformerAlbert(auto_model=auto_model, 
                                      auto_config=auto_config, 
                                      auto_tokenizer=auto_tokenizer, 
                                      modelo_args=modelo_args)
         elif isinstance(auto_model, DistilBertModel):            
+            # DistilBertModel
+            # https://huggingface.co/docs/transformers/model_doc/distilbert
             return TransformerDistilbert(auto_model=auto_model, 
                                          auto_config=auto_config, 
                                          auto_tokenizer=auto_tokenizer, 
                                          modelo_args=modelo_args)
-        elif isinstance(auto_model, GPT2Model):            
+        elif isinstance(auto_model, GPT2Model):
+            # GPT2Model
+            # https://huggingface.co/docs/transformers/model_doc/gpt2
             return TransformerGPT2(auto_model=auto_model, 
                                    auto_config=auto_config, 
                                    auto_tokenizer=auto_tokenizer, 
                                    modelo_args=modelo_args)
         elif isinstance(auto_model, OpenAIGPTModel):
+            # OpenAIGPTModel
+            # https://huggingface.co/docs/transformers/model_doc/openai-gpt
             return TransformerOpenAIGPT(auto_model=auto_model, 
                                         auto_config=auto_config, 
                                         auto_tokenizer=auto_tokenizer, 
                                         modelo_args=modelo_args)
         elif isinstance(auto_model, RobertaModel):
+            # RobertaModel
+            # https://huggingface.co/docs/transformers/model_doc/roberta
             return TransformerRoberta(auto_model=auto_model, 
                                       auto_config=auto_config, 
                                       auto_tokenizer=auto_tokenizer, 
                                       modelo_args=modelo_args)
         elif isinstance(auto_model, XLMRobertaModel):
+            # XLMRobertaModel
+            # https://huggingface.co/docs/transformers/model_doc/xlm-roberta
             return TransformerXLMRoberta(auto_model=auto_model, 
-                                    auto_config=auto_config, 
-                                    auto_tokenizer=auto_tokenizer, 
-                                    modelo_args=modelo_args)              
+                                         auto_config=auto_config, 
+                                         auto_tokenizer=auto_tokenizer, 
+                                         modelo_args=modelo_args)              
         elif isinstance(auto_model, XLNetModel):
+            # XLNetModel
+            # https://huggingface.co/docs/transformers/model_doc/xlnet
+            
             return TransformerXLNet(auto_model=auto_model, 
                                     auto_config=auto_config, 
                                     auto_tokenizer=auto_tokenizer, 
@@ -188,7 +205,7 @@ class TransformerFactory():
                                             config=config, 
                                             cache_dir=cache_dir)
         
-        # Outros tipos dde modelos vão aqui!
+        # Outros tipos de modelos vão aqui!
         
         else:
             logger.error("Tipo de modelo pré-treinaddo não suportado: \"{}\".".format(tipo_modelo_pretreinado))
