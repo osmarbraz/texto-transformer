@@ -8,7 +8,7 @@ import logging
 # Biblioteca de tipos
 from typing import Dict, Optional
 # Biblioteca do transformer hunggingface
-from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
+from transformers import AutoModel, AutoModelForMaskedLM, AutoTokenizer, AutoConfig
 from transformers import AlbertModel, BertModel, DistilBertModel, GPT2Model, OpenAIGPTModel
 from transformers import RobertaModel, XLMRobertaModel, XLNetModel
 
@@ -33,10 +33,11 @@ class TransformerFactory():
     '''
     
     @staticmethod
-    def getTransformer(modelo_args : ModeloArgumentos,
+    def getTransformer(tipo_modelo_pretreinado: str ="simples",
+                       modelo_args: ModeloArgumentos = None,
                        cache_dir: Optional[str] = None,
                        tokenizer_args: Dict = {}, 
-                       tokenizer_name_or_path : str = None):
+                       tokenizer_name_or_path: str = None):
         ''' 
         Retorna um objeto Transformer de Texto-Transformer de acordo com auto_model. 
         Para o Albert que utiliza AlbertaModel, retorna um TransformerAlbert.
@@ -46,6 +47,7 @@ class TransformerFactory():
         Para o Distilbert que utiliza DistilbertModel, retorna um TransformerGPT2.
             
         Parâmetros:
+           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" (default) ou "mascara".
            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
            `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
            `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
@@ -56,17 +58,18 @@ class TransformerFactory():
         modelo_args_config = {"output_attentions": modelo_args.output_attentions, 
                               "output_hidden_states": modelo_args.output_hidden_states}
     
-        # Configuração do modelo        
+        # Carrega a configuração do modelo pré-treinado
         auto_config = AutoConfig.from_pretrained(modelo_args.pretrained_model_name_or_path,
                                                  **modelo_args_config, 
                                                  cache_dir=cache_dir)
         
         # Carrega o modelo
-        auto_model = TransformerFactory._carregar_modelo(modelo_args.pretrained_model_name_or_path,
-                                                         auto_config, 
-                                                         cache_dir)
+        auto_model = TransformerFactory._carregar_modelo(tipo_modelo_pretreinado=tipo_modelo_pretreinado,
+                                                         model_name_or_path=modelo_args.pretrained_model_name_or_path,
+                                                         config=auto_config, 
+                                                         cache_dir=cache_dir)
         
-        # Carrega o tokenizador
+        # Carrega o tokenizador do modelo pré-treinado
         auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  modelo_args.pretrained_model_name_or_path,
                                                        cache_dir=cache_dir, 
                                                        **tokenizer_args)
@@ -155,20 +158,40 @@ class TransformerFactory():
     
     # ============================ 
     @staticmethod
-    def _carregar_modelo(model_name_or_path: str, 
-                         config, 
-                         cache_dir):
+    def _carregar_modelo(tipo_modelo_pretreinado: str = "simples",
+                         model_name_or_path: str = None, 
+                         config = None, 
+                         cache_dir = None):
         '''
-        Carrega o modelo transformer
+        Carrega o modelo transformer de acordo com o tipo.
 
         Parâmetros:
+           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" (default) ou "mascara".
            `model_name_or_path` - Nome ou caminho do modelo.
            `config` - Configuração do modelo.
            `cache_dir` - Diretório de cache.
         '''
 
-        # Carrega modelos genéricos
-        return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                         config=config, 
-                                         cache_dir=cache_dir)
+        if tipo_modelo_pretreinado == "simples":
+            # Carrega modelo pré-treinado simples usando AutoModel
+            # https://huggingface.co/docs/transformers/model_doc/auto#transformers.AutoModel
+            
+            return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                            config=config, 
+                                            cache_dir=cache_dir)
+            
+        elif tipo_modelo_pretreinado == "mascara":
+            # Carrega modelos pré-treinados para processamento de linguagem mascarada usando AutoModelForMaskedLM
+            # https://huggingface.co/docs/transformers/model_doc/auto#transformers.AutoModelForMaskedLM
+            
+            return AutoModelForMaskedLM.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                            config=config, 
+                                            cache_dir=cache_dir)
+        
+        # Outros tipos dde modelos vão aqui!
+        
+        else:
+            logger.error("Tipo de modelo pré-treinaddo não suportado: \"{}\".".format(tipo_modelo_pretreinado))
+            
+            return None
         
