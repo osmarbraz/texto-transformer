@@ -73,20 +73,20 @@ class TransformerRoberta(Transformer):
       
         # Uma sentença simples: <s> X </s>
         # Um par de sentenças: <s> A </s></s> B </s>
-        self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
-        self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
-        self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = True # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
         self.TOKEN_INICIO = "<s>" # Token de início de texto.
-        self.POSICAO_TOKEN_INICIO = 1 # Posição do primeiro token válido do início da lista de tokens.
         self.TOKEN_FIM = "</s>" # Token de fim de texto.
-        self.POSICAO_TOKEN_FINAL = -1 # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
         self.TOKEN_SEPARADOR = "</s>" # Token separador de sentença.
         self.TOKEN_CLASSIFICACAO = "<s>" # Token de classificação.
         self.TOKEN_PADDING = "<pad>" # O token de padding.
         self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
-        self.TOKEN_MASCARA = "<mask>"
+        self.TOKEN_MASCARA = "<mask>"  # Token de máscara.
         self.TOKEN_DESCONHECIDO = "Â" # Token desconhecido.
+        self.SEPARADOR_SUBTOKEN = "Ġ" # Caracter que separa palavras fora do vocabulário segundo o Algoritmo BPE.
+        self.POSICAO_TOKEN_INICIO = 1 # Posição do primeiro token válido do início da lista de tokens.
+        self.POSICAO_TOKEN_FINAL = -1 # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
+        self.SERAPADOR_SUBTOKEN_REPETICAO = 1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
+        self.SEPARADOR_SUBTOKEN_POSICAO = 0 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
+        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = True # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3'].        
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
 
     # ============================  

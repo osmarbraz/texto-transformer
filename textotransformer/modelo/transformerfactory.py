@@ -33,7 +33,7 @@ class TransformerFactory():
     '''
     
     @staticmethod
-    def getTransformer(tipo_modelo_pretreinado: str ="simples",
+    def getTransformer(tipo_modelo_pretreinado: str = "simples",
                        modelo_args: ModeloArgumentos = None,
                        cache_dir: Optional[str] = None,
                        tokenizer_args: Dict = {}, 

@@ -87,20 +87,20 @@ class Transformer(nn.Module):
         '''
       
         # Sem um modelo especificado
-        self.SEPARADOR_SUBTOKEN = None # Separador de subtoken. Ex. ##, ou Ġ, </w>
+        self.TOKEN_INICIO = None # Token de início de texto. Ex. [CLS].
+        self.TOKEN_FIM = None # Token de fim. Ex. [SEP].
+        self.TOKEN_SEPARADOR = None # Token separador de sentença. Ex. [SEP].
+        self.TOKEN_CLASSIFICACAO = None # Token de classificação. Ex. [CLS].
+        self.TOKEN_PADDING = None # Token de preenchimento. Ex. [PAD].
+        self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.
+        self.TOKEN_MASCARA = None # Token de máscara. Ex. [MASK].
+        self.TOKEN_DESCONHECIDO = None  # Token desconhecido. Ex. [UNK].
+        self.SEPARADOR_SUBTOKEN = None # Separador de subtoken. Ex. ##, ou Ġ, </w>.
+        self.POSICAO_TOKEN_INICIO = 0 # Posição primeiro do token válido do início da lista de tokens.
+        self.POSICAO_TOKEN_FINAL = None # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
         self.SERAPADOR_SUBTOKEN_REPETICAO = -1 # Repetição do separador subtoken. -1 - Sem separador subtoken, 0 - nos subtokens(menos primeiro), 1 - somente primeiro subtoken, 2 - somente último subtoken.
         self.SEPARADOR_SUBTOKEN_POSICAO = -1 # Posição do separador de subtoken. -1 - Sem separador de subtoken, 0 - no início do token,  1 - no fim do token.
-        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3']
-        self.TOKEN_INICIO = None # Token de início de texto. Ex. [CLS]
-        self.POSICAO_TOKEN_INICIO = 0 # Posição primeiro do token válido do início da lista de tokens.
-        self.TOKEN_FIM = None # Token de fim. Ex. [SEP]
-        self.POSICAO_TOKEN_FINAL = None # Posição último do token válido do final da lista de tokens. Valor "None" indica que é o último token.
-        self.TOKEN_SEPARADOR = None # Token separador de sentença. Ex. [SEP]
-        self.TOKEN_CLASSIFICACAO = None # Token de classificação. Ex. [CLS]
-        self.TOKEN_PADDING = None   # Token de preenchimento. Ex. [PAD]
-        self.PADDING_SIDE = 1 # Define o lado que será realizado o preenchimento das lista de tokens. 0: esquerda, 1: direita.           
-        self.TOKEN_MASCARA = None # Token de máscara. Ex. [MASK]
-        self.TOKEN_DESCONHECIDO = None  # Token desconhecido. Ex. [UNK] 
+        self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3'].
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
     
     # ============================ 
