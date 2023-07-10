@@ -199,6 +199,7 @@ def tamanhoTexto(texto: Union[List[int], List[List[int]]]):
                 # Soma do comprimento de strings individuais
                 return sum([len(t) for t in texto])
 
+# ============================
 def getIndexTokenTexto(lista_tokens: List[str], 
                        token : str) -> List[int]:
     '''
@@ -221,4 +222,25 @@ def getIndexTokenTexto(lista_tokens: List[str],
             # Adiciona o índice na lista
             lista_index.append(i)
     
-    return lista_index            
+    return lista_index
+
+# ============================
+def contaElemento(lista, elemento):
+    ''' 
+    Conta o número de ocorrências do elemento na lista.
+        
+    Parâmetros:
+    `lista` - Lista com os elementos.
+    `elemento` - Elemento a ser contado a ocorrência na lista.
+
+    Retorno:    
+    `cont` - Quantidade de ocorrências de elmento na lista.
+    '''
+    cont = 0
+    # Percorre a lista
+    for i, linha in enumerate(lista):      
+      # Verifica se o elemento existe na lista
+      if linha in elemento:
+        # conta o elemento
+        cont = cont + 1
+    return cont

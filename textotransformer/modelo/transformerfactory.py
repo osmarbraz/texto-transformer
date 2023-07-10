@@ -9,8 +9,14 @@ import logging
 from typing import Dict, Optional
 # Biblioteca do transformer hunggingface
 from transformers import AutoModel, AutoModelForMaskedLM, AutoTokenizer, AutoConfig
-from transformers import AlbertModel, BertModel, DistilBertModel, GPT2Model, OpenAIGPTModel
-from transformers import RobertaModel, XLMRobertaModel, XLNetModel
+from transformers import AlbertModel, AlbertForMaskedLM
+from transformers import BertModel, BertForMaskedLM
+from transformers import DistilBertModel, DistilBertForMaskedLM
+from transformers import GPT2Model, GPT2Config, GPT2LMHeadModel
+from transformers import OpenAIGPTModel, OpenAIGPTConfig, OpenAIGPTLMHeadModel 
+from transformers import RobertaModel, RobertaForMaskedLM
+from transformers import XLMRobertaModel, XLMRobertaForMaskedLM
+from transformers import XLNetModel, XLNetConfig, XLNetLMHeadModel
 
 # Bibliotecas próprias
 from textotransformer.modelo.modeloargumentos import ModeloArgumentos
@@ -47,7 +53,7 @@ class TransformerFactory():
         Para o Distilbert que utiliza DistilbertModel, retorna um TransformerGPT2.
             
         Parâmetros:
-           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" (default) ou "mascara".
+           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
            `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
            `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
@@ -68,7 +74,7 @@ class TransformerFactory():
                                                          model_name_or_path=modelo_args.pretrained_model_name_or_path,
                                                          config=auto_config, 
                                                          cache_dir=cache_dir)
-        
+       
         # Carrega o tokenizador do modelo pré-treinado
         auto_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path if tokenizer_name_or_path is not None else  modelo_args.pretrained_model_name_or_path,
                                                        cache_dir=cache_dir, 
@@ -108,59 +114,58 @@ class TransformerFactory():
         '''
         
         # Verifica qual o Transformer deve ser retornado pelo parâmetro auto_model.
-        if isinstance(auto_model, BertModel):
+        if isinstance(auto_model, (BertModel, BertForMaskedLM)):
             # BertModel
             # https://huggingface.co/docs/transformers/model_doc/bert
             return TransformerBert(auto_model=auto_model, 
                                    auto_config=auto_config, 
                                    auto_tokenizer=auto_tokenizer, 
                                    modelo_args=modelo_args)
-        elif isinstance(auto_model, AlbertModel):
+        elif isinstance(auto_model, (AlbertModel, AlbertForMaskedLM)):
             # AlbertModel
             # https://huggingface.co/docs/transformers/model_doc/albert
             return TransformerAlbert(auto_model=auto_model, 
                                      auto_config=auto_config, 
                                      auto_tokenizer=auto_tokenizer, 
                                      modelo_args=modelo_args)
-        elif isinstance(auto_model, DistilBertModel):            
+        elif isinstance(auto_model, (DistilBertModel, DistilBertForMaskedLM)):            
             # DistilBertModel
             # https://huggingface.co/docs/transformers/model_doc/distilbert
             return TransformerDistilbert(auto_model=auto_model, 
                                          auto_config=auto_config, 
                                          auto_tokenizer=auto_tokenizer, 
                                          modelo_args=modelo_args)
-        elif isinstance(auto_model, GPT2Model):
+        elif isinstance(auto_model, (GPT2Model, GPT2LMHeadModel)):
             # GPT2Model
             # https://huggingface.co/docs/transformers/model_doc/gpt2
             return TransformerGPT2(auto_model=auto_model, 
                                    auto_config=auto_config, 
                                    auto_tokenizer=auto_tokenizer, 
                                    modelo_args=modelo_args)
-        elif isinstance(auto_model, OpenAIGPTModel):
+        elif isinstance(auto_model, (OpenAIGPTModel, OpenAIGPTLMHeadModel)):
             # OpenAIGPTModel
             # https://huggingface.co/docs/transformers/model_doc/openai-gpt
             return TransformerOpenAIGPT(auto_model=auto_model, 
                                         auto_config=auto_config, 
                                         auto_tokenizer=auto_tokenizer, 
                                         modelo_args=modelo_args)
-        elif isinstance(auto_model, RobertaModel):
+        elif isinstance(auto_model, (RobertaModel, RobertaForMaskedLM)):
             # RobertaModel
             # https://huggingface.co/docs/transformers/model_doc/roberta
             return TransformerRoberta(auto_model=auto_model, 
                                       auto_config=auto_config, 
                                       auto_tokenizer=auto_tokenizer, 
                                       modelo_args=modelo_args)
-        elif isinstance(auto_model, XLMRobertaModel):
+        elif isinstance(auto_model, (XLMRobertaModel, XLMRobertaForMaskedLM)):
             # XLMRobertaModel
             # https://huggingface.co/docs/transformers/model_doc/xlm-roberta
             return TransformerXLMRoberta(auto_model=auto_model, 
                                          auto_config=auto_config, 
                                          auto_tokenizer=auto_tokenizer, 
                                          modelo_args=modelo_args)              
-        elif isinstance(auto_model, XLNetModel):
+        elif isinstance(auto_model, (XLNetModel, XLNetLMHeadModel)):
             # XLNetModel
             # https://huggingface.co/docs/transformers/model_doc/xlnet
-            
             return TransformerXLNet(auto_model=auto_model, 
                                     auto_config=auto_config, 
                                     auto_tokenizer=auto_tokenizer, 
@@ -194,16 +199,30 @@ class TransformerFactory():
             # https://huggingface.co/docs/transformers/model_doc/auto#transformers.AutoModel
             
             return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                            config=config, 
-                                            cache_dir=cache_dir)
+                                             config=config, 
+                                             cache_dir=cache_dir)
             
         elif tipo_modelo_pretreinado == "mascara":
             # Carrega modelos pré-treinados para processamento de linguagem mascarada usando AutoModelForMaskedLM
             # https://huggingface.co/docs/transformers/model_doc/auto#transformers.AutoModelForMaskedLM
             
-            return AutoModelForMaskedLM.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                            config=config, 
-                                            cache_dir=cache_dir)
+            if isinstance(config, GPT2Config):
+                return GPT2LMHeadModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                       config=config, 
+                                                       cache_dir=cache_dir)
+          
+            elif isinstance(config, OpenAIGPTConfig):
+                return OpenAIGPTLMHeadModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                            config=config, 
+                                                            cache_dir=cache_dir)
+            elif isinstance(config, XLNetConfig):
+                return XLNetLMHeadModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                        config=config, 
+                                                        cache_dir=cache_dir)                
+            else:
+                return AutoModelForMaskedLM.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                            config=config, 
+                                                            cache_dir=cache_dir)
         
         # Outros tipos de modelos vão aqui!
         

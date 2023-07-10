@@ -9,6 +9,8 @@ import torch
 import numpy as np
 # Biblioteca barra de progresso
 from tqdm import trange
+# Biblioteca para o sorteio
+from random import randint 
 
 # Biblioteca próprias
 from textotransformer.modelo.transformerfactory import TransformerFactory
@@ -19,7 +21,7 @@ from textotransformer.modelo.modeloargumentos import ModeloArgumentos
 from textotransformer.modelo.modeloenum import EstrategiasPooling, GranularidadeTexto
 from textotransformer.modelo.modeloenum import AbordagemExtracaoEmbeddingsCamadas
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
-from textotransformer.util.utiltexto import encontrarIndiceSubLista, tamanhoTexto
+from textotransformer.util.utiltexto import contaElemento, encontrarIndiceSubLista, tamanhoTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
@@ -49,6 +51,7 @@ class TextoTransformer:
        `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
        `do_lower_case` - Se True, converte todas as letras para minúsculas antes da tokenização. Valor default 'False'.
        `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
+       `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
     ''' 
     
     # Construtor da classe
@@ -56,7 +59,8 @@ class TextoTransformer:
                        modelo_spacy: str = "pt_core_news_lg",
                        abordagem_extracao_embeddings_camadas: int = 2,
                        do_lower_case: bool = False,
-                       device = None):
+                       device = None,
+                       tipo_modelo_pretreinado: str = "simples"):
                        
         # Parâmetro recebido para o modelo de linguagem
         modelo_args.pretrained_model_name_or_path = pretrained_model_name_or_path
@@ -71,7 +75,8 @@ class TextoTransformer:
         logger.info("Especificado parâmetro \"do_lower_case\": {}.".format(do_lower_case))
                 
         # Retorna um objeto Transformer carregado com o modelo de linguagem especificado especificado nos parâmetros.
-        self.transformer = TransformerFactory.getTransformer(modelo_args=modelo_args)
+        self.transformer = TransformerFactory.getTransformer(modelo_args=modelo_args,
+                                                             tipo_modelo_pretreinado=tipo_modelo_pretreinado)
         
         # Recupera o modelo de linguagem do objeto transformer.
         self.auto_model = self.transformer.getAutoModel()
@@ -93,7 +98,7 @@ class TextoTransformer:
             # Verifica se é possível usar GPU
             if torch.cuda.is_available():    
                 device = "cuda"
-                logger.info("Existem\"{}\" GPU(s) disponíveis.".format(torch.cuda.device_count()))
+                logger.info("Existem \"{}\" GPU(s) disponíveis.".format(torch.cuda.device_count()))
                 logger.info("Iremos usar a GPU: \"{}\".".format(torch.cuda.get_device_name(0)))
 
             else:                
@@ -226,7 +231,7 @@ class TextoTransformer:
         self._defineEstrategiaPooling(estrategia_pooling)
         self._definePalavraRelevante(palavra_relevante)
         
-        saida = self.mensurador.getMedidasComparacaoTexto(texto = texto, 
+        saida = self.mensurador.getMedidasComparacaoTexto(texto=texto, 
                                                           abordagem_extracao_embeddings_camadas=modelo_args.abordagem_extracao_embeddings_camadas,
                                                           converte_para_numpy=converte_para_numpy)
           
@@ -1154,6 +1159,586 @@ class TextoTransformer:
             saida['token_embeddings'] = saida['token_embeddings'][0]
 
         return saida
+    
+    # ============================
+    def getTextoMascarado(self, texto: str,
+                          texto_token: list[str],
+                          texto_pos: list[str],
+                          classe: list[str] =["VERB","NOUN","AUX"], 
+                          qtde: int = 1):
+        ''' 
+        Gera o texto mascarado com [MAKS] para usar com MLM do BERT.
+        Considera determinadas classes morfossintática das palavras e uma quantidade(qtde) de palavras a serem mascaradas.
+            
+        Parâmetros:
+           `texto` - Texto a ser mascarada.
+           `texto_token` - Lista com os tokens do texto.
+           `texto_pos` - Lista com as POS dos tokens do texto.
+           `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
+           `qtde` - Quantidade de mascarada a serem realizadas nas palavras do texto.
+                    Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                    for menor que quantidade de palavras das classes no texto.
+
+        Retorno:    
+           `texto_mascarado` - Texto mascarado.
+           `palavra_mascarada` - Lista com as palavras substituidas pela máscara.
+        '''
+        
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+        
+            texto_mascarado = ""
+            palavra_mascarada = ""
+
+            # Verifica a quantidade de trocas a ser realizada
+            if qtde != 0:
+
+                # Conta o número de palavras das classes especificadas
+                if len(classe) > 1:
+                    # Se tem duas classes usa a primeira para contar se existe uma palavra
+                    # Pega o primeiro para realizar a conta
+                    classe_conta = [classe[0]]
+                    conta_mascara = contaElemento(texto_pos, classe_conta)
+                    
+                    # Senão encontrar pega a segunda classe
+                    if conta_mascara == 0:
+                        #Pega a segunda classe
+                        classe_conta = [classe[1]]
+                        conta_mascara = contaElemento(texto_pos, classe_conta)
+
+                        # Senão encontrar pega a terceira classe
+                        if conta_mascara == 0:
+                            #Pega a terceira classe
+                            classe_conta = [classe[2]]
+                            conta_mascara = contaElemento(texto_pos, classe_conta) 
+                    
+                        # Usa a classe para gerar o texto mascarado
+                        classe = classe_conta
+                    else:
+                        conta_mascara = contaElemento(texto_pos, classe)
+                
+                    # Verifica se existe palavras das classes a serem mascaradas
+                    if conta_mascara != 0:    
+                        # Verifica a quantidade de trocas é menor que a quantidade palavras a serem trocadas encontradas
+                        if qtde < conta_mascara:
+                            # A quantidade de trocas é menor que a quantidade de palavras existentes
+                            # Precisa sortear as posições que serão trocadas pela máscara dentro da quantidade
+                                
+                            roleta = []
+                            # preenche a roleta com o indice das palavras as serem mascaradas
+                            for i in range(conta_mascara):
+                                roleta.append(i)
+
+                            # Sorteia as posições das trocas
+                            posicao = []
+                            for i in range(qtde):
+                                posicao_sorteio = randint(0, len(roleta)-1)
+                                # Guarda o número sorteado
+                                posicao.append(roleta[posicao_sorteio])
+                                # Remove o elemento sorteado da roleta
+                                del roleta[posicao_sorteio]
+                            
+                            # Conta o número das trocas realizadas
+                            troca = 0
+
+                            # Substitui o elemento pela máscara
+                            for i, token in enumerate(texto_token):            
+                                # Se a classe da palavra é a desejada
+                                if texto_pos[i] in classe:
+                                    # Verifica se a troca deve ser realizada para a posição
+                                    if troca in posicao:      
+                                        # Trocar palavra da classe por [MASK]
+                                        texto_mascarado = texto_mascarado + self.getTransformer().getTokenMascara() + " "    
+                                        # Guarda a palavra que foi mascarada
+                                        palavra_mascarada = token                                  
+                                    else:                  
+                                        # Adiciona o token
+                                        texto_mascarado = texto_mascarado + token + " "
+                                        # Avança para a próxima troca
+                                        troca = troca + 1
+                                else:
+                                    # Adiciona o token
+                                    texto_mascarado = texto_mascarado + token + " "
+                        else:        
+                            # Trocar todas as palavras pela mascará, pois a quantidade
+                            # de trocas é igual a quantidade de mascarás existentes na sentença
+
+                            # Substitui o elemento da classe pela mascará
+                            for i, token in enumerate(texto_token):
+                                #print(token, sentenca_pos[i])        
+                                # Se a classe da palavra é a desejada
+                                if texto_pos[i] in classe:
+                                    # Trocar palavra da classe por [MASK]
+                                    texto_mascarado = texto_mascarado + self.getTransformer().getTokenMascara() + " "    
+                                    # Guarda a palavra que foi mascarada
+                                    palavra_mascarada = token 
+                                else:
+                                    texto_mascarado = texto_mascarado + token + " "
+                else:
+                    # Não existe palavras da classe especificada      
+                    logger.erro("Não existe palavras da classe especificada.")
+                    logger.erro("texto:",texto)
+                    logger.erro("texto_pos:",texto_pos)
+                    texto_mascarado = texto    
+            else:
+                # Quantidade trocas igual a 0
+                logger.erro("Não foi especificado uma quantidade de trocas.")
+                texto_mascarado = texto
+
+            # Retira o espaço em branco do início e fim do texto
+            texto_mascarado = texto_mascarado.strip(" ")
+
+            return texto_mascarado, palavra_mascarada
+        
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None        
+    
+    # ============================
+    def getPrevisaoPalavraTexto(self, texto,
+                                top_k_predicao=5):
+        ''' 
+        Retorna uma lista com as k previsões para a palavra mascarada no texto.
+            
+        Parâmetros:
+            `texto` - Texto mascarado.
+            `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
+
+        Retorno:
+            Lista com as k previsões para a palavra mascarada no texto.
+
+        '''
+        
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+        
+            # Divide as palavras em tokens        
+            texto_tokenizado = self.getTransformer().getTextoTokenizado(texto)
+            #print("texto_tokenizado:", texto_tokenizado)
+
+            # Retorna o índice da mascara de atenção
+            mascara_atencao_indice = texto_tokenizado.index(self.getTransformer().getTokenMascara())
+            #print("mascara_atencao_indice:", mascara_atencao_indice)
+
+            # Mapeia os tokens em seus índices do vocabulário
+            tokens_indexados = self.getTokenizer().convert_tokens_to_ids(texto_tokenizado)
+            #print("tokens_indexados:", tokens_indexados)
+
+            # Define índices das sentenças A e B associados à 1ª e 2ª sentença 
+            segmentos_ids = [0]*len(texto_tokenizado)
+            
+            # Converte as entradas de lista para tensores do torch
+            tokens_tensores = torch.tensor([tokens_indexados])
+            segmentos_tensores = torch.tensor([segmentos_ids])
+            
+            # Se existe GPU disponível.
+            if torch.cuda.is_available():  
+                # Se você tem uma GPU
+                tokens_tensores = tokens_tensores.to('cuda')
+                segmentos_tensores = segmentos_tensores.to('cuda')  
+
+            # Realiza a predição dos tokens
+            with torch.no_grad():
+                ## Retorno de model quando ´output_hidden_states=True´ é setado:  
+                ##outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
+                outputs = self.getModel()(tokens_tensores, token_type_ids=segmentos_tensores)
+
+                ## A predição é recuperada dos embeddings da última camada oculta do modelo        
+                predicao = outputs[0]
+                
+            #print("shape:", predicao.shape)
+            #print("mascara_atencao_indice:", mascara_atencao_indice)
+
+            # Normaliza os pesos dos embeddings das predições e calcula sua probabilidade usando softmax.
+            probabilidades = torch.nn.functional.softmax(predicao[0, mascara_atencao_indice], dim=-1)    
+            # Probabilidade de cada uma das 29.794 palavras do vocabulário do BERT ser a palavra mascarada.
+            #print("Tamanho vocabulário:", len(tokenizer.get_vocab())) #29.794
+            
+            # Retorna os k maiores elementos com as maiores probabilidades e sua posição(ordenada descrescentemente).
+            top_k_predicao_pesos, top_k_predicao_indices = torch.topk(probabilidades, top_k_predicao, sorted=True)
+            
+            # Converte os ids para os tokens do vocabulário
+            tokens_predicao = self.getTokenizer().convert_ids_to_tokens([ind.item() for ind in top_k_predicao_indices])
+
+            # Retorna a predição e a probabilidade      
+            return list(zip(tokens_predicao, top_k_predicao_pesos))[:top_k_predicao]            
+        
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None
+    
+    # ============================
+    def getPerturbacaoPalavraTextoAleatoria(self, 
+                                            texto, 
+                                            texto_token, 
+                                            texto_pos, 
+                                            qtde=1, 
+                                            top_k_predicao = 100):
+        ''' 
+        Gera as palavras da perturbação da máscara do texto.
+        Considera determinadas classes morfossintática das palavras.
+            
+        Parâmetros:
+           `texto` - Texto a ser mascarada.
+           `texto_token` - Lista com os tokens do texto.
+           `texto_pos` - Lista com as POS dos tokens do texto.
+           `qtde` - Quantidade de mascarada a serem realizadas nas palavras do texto.
+                    Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                    for menor que quantidade de palavras das classes no texto.          
+           `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
+
+        Retorno:    
+           `texto_mascarado` - Texto mascarado.
+           `palavra_mascarada` - Palavra substituídas pela máscara.
+           `token_predito` - Palavra prevista para a máscara.
+           `token_peso` - Peso da palavra prevista.
+           `posicao_sorteio` - Posição da palavra prevista na lista de previsões.
+           `token_predito_marcado` - Token previsto marcado(##) para a máscara.
+           `lista_previsoes` - Lista dos 'top_k_predicao' tokens preditos para a máscara.
+        '''
+        
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+
+            #print("texto:", texto)
+            texto_mascarado, palavra_mascarada = self.getTextoMascarado(texto, texto_token, texto_pos, classe=["VERB","NOUN","AUX"], qtde=1)
+                    
+            # Divide as palavras em tokens
+            texto_tokenizado = self.getTransformer().getTextoTokenizado(texto)
+            #print("texto_tokenizado:", texto_tokenizado)
+
+            # Retorna o índice da mascara de atenção
+            mascara_atencao_indice = texto_tokenizado.index(self.getTransformer().getTokenMascara())
+            #print("mascara_atencao_indice:", mascara_atencao_indice)
+
+            # Mapeia os tokens em seus índices do vocabulário
+            tokens_indexados = self.getTokenizer().convert_tokens_to_ids(texto_tokenizado)
+            #print("tokens_indexados:", tokens_indexados)
+            
+            # Converte as entradas de lista para tensores do torch
+            tokens_tensores = torch.tensor([tokens_indexados])
+            
+            # Realiza a predição dos tokens
+            with torch.no_grad():
+                # Retorno de model quando ´output_hidden_states=True´ é setado:  
+                #outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
+                outputs = self.getModel()(tokens_tensores)
+
+            # Recupera a predição com os embeddings da última camada oculta    
+            predicao = outputs[0]
+            
+            # Normaliza os pesos das predições nos embeddings e calcula sua probabilidade
+            probabilidades = torch.nn.functional.softmax(predicao[0, mascara_atencao_indice], dim=-1)    
+            # Retorna os k maiores elementos de determinado tensor de entrada ao longo de uma determinada dimensão de forma ordenada descrescentemente.
+            
+            # Se existe mais de uma top_k_predição    
+            if top_k_predicao != 1:
+
+                # Recupera as top_k_predicao predições em ordem de orobabilidades
+                top_k_predicao_pesos, top_k_predicao_indices = torch.topk(probabilidades, top_k_predicao, sorted=True)
+                #print("top_k_predicao_pesos:",top_k_predicao_pesos)
+                #print("top_k_predicao_indices:",top_k_predicao_indices)
+                #print("len(top_k_predicao_indices):",len(top_k_predicao_indices))
+
+                # Sorteia uma predição do intervalo
+                posicao_sorteio = randint(0, top_k_predicao-1)    
+                #print("posicao_sorteio:",posicao_sorteio)
+
+                # Recupera as predições    
+                # Mapeia os índices do vocabulário para os seus tokens
+                token_predito = self.getTokenizer().convert_ids_to_tokens([top_k_predicao_indices[posicao_sorteio]])[0]
+                # Recupera os pesos da predição
+                token_peso = top_k_predicao_pesos[posicao_sorteio]
+                #print((posicao_sorteio+1), "[MASK]: ", token_predito, " | peso:", float(token_peso))
+                    
+                # Se o token predito for igual a palavra que foi substituída pela máscara ou desconhecida ([UNK]) sorteia outra palavra
+                while (palavra_mascarada.lower() == token_predito.lower()) or (token_predito == self.getTransformer().getTokenDesconhecido()):
+                    # Sorteia uma predição do intervalo
+                    posicao_sorteio = randint(0, top_k_predicao-1)    
+                    #print("posicao_sorteio:",posicao_sorteio)
+
+                    # Recupera as predições    
+                    # Mapeia os índices do vocabulário para os seus tokens
+                    token_predito = self.getTokenizer().convert_ids_to_tokens([top_k_predicao_indices[posicao_sorteio]])[0]
+                    # Recupera os pesos da predição
+                    token_peso = top_k_predicao_pesos[posicao_sorteio]
+                    #print((posicao_sorteio+1), "[MASK]: ", token_predito, " | peso:", float(token_peso))
+            
+            else:
+                # Se existe somente uma predição, esta não pode ser igual a palavra mascarada,
+                # portanto é necessário aumentar a quantidade de top_k predições para gerar uma predição diferente 
+                # da palavra mascarada.
+                        
+                # Recupera as top_k_predicao predições em ordem de orobabilidades
+                top_k_predicao_pesos, top_k_predicao_indices = torch.topk(probabilidades, top_k_predicao, sorted=True)
+                #print("top_k_predicao_pesos:",top_k_predicao_pesos)
+                #print("top_k_predicao_indices:",top_k_predicao_indices)
+                #print("len(top_k_predicao_indices):",len(top_k_predicao_indices))
+
+                # Sorteia uma predição do intervalo
+                posicao_sorteio = randint(0, top_k_predicao-1)    
+                #print("posicao_sorteio:",posicao_sorteio)
+
+                # Recupera as predições    
+                # Mapeia os índices do vocabulário para os seus tokens
+                token_predito = self.getTokenizer().convert_ids_to_tokens([top_k_predicao_indices[posicao_sorteio]])[0]
+                # Recupera os pesos da predição
+                token_peso = top_k_predicao_pesos[posicao_sorteio]
+                #print((posicao_sorteio+1), "[MASK]: ", token_predito, " | peso:", float(token_peso))
+
+                # Se o token predito for igual a palavra que foi substituída pela máscara ou desconhecida ([UNK]) sorteia outra palavra
+                while (palavra_mascarada.lower() == token_predito.lower()) or (token_predito == self.getTransformer().getTokenDesconhecido()):
+                    
+                    # Incrementa a quantidade de predições para pegar uma palavra diferente
+                    top_k_predicao = top_k_predicao + 1
+
+                    # Recupera as top_k_predicao + 1 predições em ordem de orobabilidades
+                    top_k_predicao_pesos, top_k_predicao_indices = torch.topk(probabilidades, top_k_predicao, sorted=True)
+                    #print("top_k_predicao_pesos:",top_k_predicao_pesos)
+                    #print("top_k_predicao_indices:",top_k_predicao_indices)
+                    #print("len(top_k_predicao_indices):",len(top_k_predicao_indices))
+
+                    # Sorteia uma predição do intervalo
+                    posicao_sorteio = randint(0, top_k_predicao-1)    
+                    #print("posicao_sorteio:",posicao_sorteio)
+
+                    # Recupera as predições    
+                    # Mapeia os índices do vocabulário para os seus tokens
+                    token_predito = self.getTokenizer().convert_ids_to_tokens([top_k_predicao_indices[posicao_sorteio]])[0]
+                    # Recupera os pesos da predição
+                    token_peso = top_k_predicao_pesos[posicao_sorteio]
+                    #print((posicao_sorteio+1), "[MASK]: ", token_predito, " | peso:", float(token_peso))
+
+            token_predito_marcado = token_predito
+
+            # Se o token tiver token separador
+            if (self.getTransformer().getSeparadorSubToken() != None) and (sself.getTransformer().getSeparadorSubToken() in token_predito):
+                # Remove os caracteres SEPARADOR_SUBTOKEN do token
+                token_predito = token_predito.replace(self.getTransformer().getSeparadorSubToken(), "")                                        
+
+            # Lista das predições
+            lista_predicoes = []
+            for i, indice_predicao in enumerate(top_k_predicao_indices):
+                # Mapeia os índices do vocabulário para os seus tokens
+                token_predito1 = self.getTokenizer().convert_ids_to_tokens([indice_predicao])[0]
+                token_peso1 = top_k_predicao_pesos[i]
+                lista_predicoes.append([(i+1), token_predito1, float(token_peso1)])        
+            
+            return texto_mascarado, palavra_mascarada, token_predito, token_peso, posicao_sorteio, token_predito_marcado, lista_predicoes
+        
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None        
+
+    # ============================
+    def getPerturbacaoTextoAleatorio(self, texto, 
+                                     texto_token, 
+                                     texto_pos, 
+                                     classe=["VERB","NOUN","AUX"], 
+                                     qtde=1, 
+                                     top_k_predicao = 500):
+
+        ''' 
+        Gera um texto com a perturbação com seleção aleatória da palavra perturbada.
+        Considera determinadas classes morfossintática das palavras.
+            
+        Parâmetros:
+           `texto` - Texto a ser mascarado.
+           `texto_token` - Lista com os tokens do texto.
+           `texto_pos` - Lista com as POS dos tokens do texto.
+           `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
+           `qtde` - Quantidade de mascarada a serem realizadas nas palavras das sentenças.
+                    Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                    for menor que quantidade de palavras das classes na sentença.
+           `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.                
+
+        Retorno:    
+           `texto_perturbado` - Texto com a perturbação.
+           `texto_mascarado` - Texto mascarado.
+           `palavra_mascarada` - Palavra substituídas pela máscara.
+           `token_predito` - Palavra prevista para a máscara.
+           `lista_predicoes` - Lista dos tokens preditos para a máscara.                
+        '''
+        
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+
+            # Recupera o texto mascarado e o token pervisto
+            texto_mascarado, palavra_mascarada, token_predito, peso_predito, posicao_sorteio, lista_predicoes = self.getPerturbacaoPalavraTextoAleatorio(texto, texto_token, texto_pos, classe, qtde, top_k_predicao)
+            
+            # Se existir o token especial [MASK]
+            if self.getTransformer().getTokenMascara() in texto_mascarado:
+                
+                # Substituir a mascará pelo token predito
+                texto_perturbado = texto_mascarado.replace(self.getTransformer().getTokenMascara(), token_predito)
+            
+            return texto_perturbado, texto_mascarado, palavra_mascarada, token_predito, lista_predicoes
+    
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None
+        
+    # ============================  
+    def getPerturbacaoPalavraTextoSequencial(self, texto, 
+                                             texto_token, 
+                                             texto_pos, 
+                                             classe=["VERB","NOUN","AUX"], 
+                                             qtde=1, 
+                                             top_k_predicao = 500):
+        ''' 
+        Gera a palavras da perturbação do texto com seleção das top_k predições(em sequencia).        
+        Considera determinadas classes morfossintática das palavras.
+            
+        Parâmetros:
+           `texto` - Texto a ser mascarada.
+           `texto_token` - Lista com os tokens do texto.
+           `texto_pos` - Lista com as POS dos tokens do texto.
+           `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
+           `qtde` - Quantidade de mascarada a serem realizadas nas palavras do texto.
+                Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                for menor que quantidade de palavras das classes na sentença.          
+           `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
+
+        Retorno:    
+           `texto_mascarado` - Texto mascarada.
+           `palavra_mascarada` - Palavra substituídas pela máscara.
+           `token_predito` - Palavra prevista para a máscara.
+           `peso_predito` - Peso da palavra prevista.
+           `lista_previsoes` - Lista dos 'top_k_predicao' tokens preditos para a máscara.
+        '''
+    
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+            
+            #print("Texto:", texto)
+            texto_mascarado, palavra_mascarada = self.getTextoMascarado(texto,
+                                                                        texto_token,
+                                                                        texto_pos, 
+                                                                        classe=classe, 
+                                                                        qtde=qtde)
+
+            # Divide as palavras em tokens
+            texto_tokenizado = self.getTransformer().getTextoTokenizado(texto)
+            #print("texto_tokenizado:", texto_tokenizado)
+
+            # Retorna o índice da mascara de atenção
+            mascara_atencao_indice = texto_tokenizado.index(self.getTransformer().getTokenMascara())
+            #print("mascara_atencao_indice:", mascara_atencao_indice)
+
+            # Mapeia os tokens em seus índices do vocabulário
+            tokens_indexados =  self.getTokenizer().convert_tokens_to_ids(texto_tokenizado)
+            #print("tokens_indexados:", tokens_indexados)
+            
+            # Converte as entradas de lista para tensores do torch
+            tokens_tensores = torch.tensor([tokens_indexados])
+            
+            # Realiza a predição dos tokens
+            with torch.no_grad():
+                # Retorno de model quando ´output_hidden_states=True´ é setado:  
+                #outputs[0] = last_hidden_state, outputs[1] = pooler_output, outputs[2] = hidden_states
+                outputs =  self.getModel()(tokens_tensores)
+
+            # Recupera a predição com os embeddings da última camada oculta    
+            predicao = outputs[0]
+            
+            # Normaliza os pesos das predições nos embeddings e calcula sua probabilidade
+            probabilidades = torch.nn.functional.softmax(predicao[0, mascara_atencao_indice], dim=-1)    
+            
+            # Retorna os k maiores elementos de determinado tensor de entrada ao longo de uma determinada 
+            # dimensão de forma ordenada descrescentemente.    
+            # Adiciona 20 elementos em topkpredicao para pular os tokens desconhecidos([UNK])
+            MARGEM_UNK = 20
+            top_k_predicao_pesos, top_k_predicao_indices = torch.topk(probabilidades, top_k_predicao + MARGEM_UNK, sorted=True)
+            #print("top_k_predicao_pesos:",top_k_predicao_pesos)
+            #print("top_k_predicao_indices:",top_k_predicao_indices)
+            #print("len(top_k_predicao_indices):",len(top_k_predicao_indices))
+
+            # Lista das predições
+            lista_predicoes = []
+            indice_token = 0
+            for i, indice_predicao in enumerate(top_k_predicao_indices):
+
+                # Mapeia os índices do vocabulário para os seus tokens
+                token_predito =  self.getTokenizer().convert_ids_to_tokens([indice_predicao])[0]
+                token_peso = top_k_predicao_pesos[i]
+
+                # Pula o token se for desconhecido e existir tokens disponíveis
+                if token_predito != self.getTransformer().getTokenDesconhecido() and indice_token < (top_k_predicao):
+                
+                    # Guarda o token original        
+                    token_predito_marcado = token_predito
+                
+                    # Se o token tiver token separador
+                    if (self.getTransformer().getSeparadorSubToken() != None) and (sself.getTransformer().getSeparadorSubToken() in token_predito):
+                        # Remove os caracteres SEPARADOR_SUBTOKEN do token
+                        token_predito = token_predito.replace(self.getTransformer().getSeparadorSubToken(), "")
+
+                    # Guarda o token
+                    lista_predicoes.append([indice_token, texto_mascarado, palavra_mascarada, token_predito, float(token_peso), token_predito_marcado])
+
+                    # Incrementa para o próximo token
+                    indice_token = indice_token + 1
+            
+            return lista_predicoes
+
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None
+        
+    # ============================
+    def getPerturbacaoTextoSequencial(self, texto,
+                                      texto_token, 
+                                      texto_pos, 
+                                      classe=["VERB","NOUN","AUX"], 
+                                      qtde=1, 
+                                      top_k_predicao = 500):
+
+        ''' 
+        Gera o texto com a perturbação com seleção sequencial da palavra perturbada.
+        Considera determinadas classes morfossintática das palavras.
+            
+        Parâmetros:
+           `texto` - Texto a ser mascarada.
+           `texto_token` - Lista com os tokens do texto.
+           `texto_pos` - Lista com as POS dos tokens do texto.
+           `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
+           `qtde` - Quantidade de mascarada a serem realizadas nas palavras do texto.
+                    Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                    for menor que quantidade de palavras das classes no texto.
+           `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.                
+
+        Retorno:    
+            `texto_perturbada` - Texto com a perturbação.
+            `texto_mascarada` - Texto mascarado.
+            `palavra_mascarada` - Palavra substituídas pela máscara.
+            `token_predito` - Palavra prevista para a máscara.
+            `lista_predicoes` - Lista dos tokens preditos para a máscara.
+                
+        '''
+        
+        # Somente modelos que possuem token de mascara.
+        if self.getTransformer().getTokenMascara() != None:
+
+            # Recupera o texto mascarado e o token pervisto
+            texto_mascarado, palavra_mascarada, token_predito, peso_predito, lista_predicoes = self.getPerturbacaoPalavraTextoSequencial(texto, texto_token, texto_pos, classe, qtde, top_k_predicao)
+            
+            # Se existir o token de mascará no texto
+            if self.getTransformer().getTokenMascara() in texto_mascarado:
+                
+                # Substituir a mascará pelo token predito
+                texto_perturbado = texto_mascarado.replace(self.getTransformer().getTokenMascara(), token_predito)
+            
+            return texto_perturbado, texto_mascarado, palavra_mascarada, token_predito, lista_predicoes
+        
+        else:
+            logger.error("O modelo \"{}\" não possui um token de máscara.".format(self.getModel().__class__.__name__))
+            
+            return None
     
     # ============================
     def getInfoModel(self):

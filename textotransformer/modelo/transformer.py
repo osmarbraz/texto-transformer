@@ -103,6 +103,30 @@ class Transformer(nn.Module):
         self.PRIMEIRO_TOKEN_SEM_SEPARADOR = False # Define se o primeiro token não terá separador de substoken. Ex. True - ['token1','Ġtoken2', 'Ġtoken3'] False - ['Ġtoken1','Ġtoken2', 'Ġtoken3'].
         self.DO_LOWER_CASE = False # Define se o tokenizador irá converter os tokens para minúsculo.
     
+      
+    # ============================ 
+    def getTokenInicio(self) -> str:
+        '''
+        Recupera o token de início.
+
+        Retorna:
+           O token de início.
+        '''
+        
+        return self.TOKEN_INICIO
+    
+    # ============================ 
+    def getTokenFim(self) -> str:
+        '''
+        Recupera o token de fim.
+
+        Retorna:
+           O token de fim.
+        '''
+        
+        return self.TOKEN_FIM
+    
+    
     # ============================ 
     def getPosicaoTokenInicio(self) -> int:
         '''
@@ -149,6 +173,39 @@ class Transformer(nn.Module):
 
         return self.PRIMEIRO_TOKEN_SEM_SEPARADOR
     
+    # ============================   
+    def getTokenMascara(self) -> int:
+        '''
+        Recupera o token de máscara.
+        
+        Retorna:
+          O token de máscara.
+        '''
+
+        return self.TOKEN_MASCARA    
+    
+    # ============================   
+    def getTokenDesconhecido(self) -> int:
+        '''
+        Recupera o token desconhecido.
+        
+        Retorna:
+          O token desconhecido.
+        '''
+
+        return self.TOKEN_DESCONHECIDO
+    
+    # ============================   
+    def getSeparadorSubToken(self) -> int:
+        '''
+        Recupera o separador de subtoken.
+        
+        Retorna:
+          O separador de subtoken.
+        '''
+
+        return self.SEPARADOR_SUBTOKEN
+        
     # ============================      
     def getTextoTokenizado(self, texto : str,
                            addicionar_tokens_especiais: bool = True) -> List[str]:
@@ -1161,7 +1218,7 @@ class Transformer(nn.Module):
                     # Remove os caracteres SEPARADOR_SUBTOKEN do token
                     if (self.SEPARADOR_SUBTOKEN != None) and (self.SEPARADOR_SUBTOKEN in wj_mcl):
                         # Remove os caracteres SEPARADOR_SUBTOKEN do token
-                        palavra_completa_wj_mcl = wj_mcl.replace(self.SEPARADOR_SUBTOKEN, "")                        
+                        palavra_completa_wj_mcl = wj_mcl.replace(self.SEPARADOR_SUBTOKEN, "")
                     else:                
                         palavra_completa_wj_mcl = wj_mcl
                     
