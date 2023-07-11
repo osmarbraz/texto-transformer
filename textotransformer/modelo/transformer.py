@@ -1676,7 +1676,7 @@ class Transformer(nn.Module):
         return self.auto_model
 
     # ============================
-    def getAutoTokenizer(self) -> AutoTokenizer:
+    def getTokenizer(self) -> AutoTokenizer:
         '''
         Recupera o tokenizador.
         '''

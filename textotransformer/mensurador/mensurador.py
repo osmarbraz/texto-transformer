@@ -46,7 +46,7 @@ class Mensurador:
         self.auto_model = transformer.getAutoModel()
     
         # Recupera o tokenizador.     
-        self.auto_tokenizer = transformer.getAutoTokenizer()
+        self.auto_tokenizer = transformer.getTokenizer()
         
         # Recupera a classe PLN
         self.pln = pln
@@ -628,20 +628,23 @@ class Mensurador:
         '''
         Recupera o transformer.
         '''
+        
         return self.transformer
     
     # ============================
-    def getAutoModel(self):
+    def getModel(self):
         '''
         Recupera o modelo.
         '''
+        
         return self.auto_model
 
     # ============================
-    def getAutoTokenizer(self):
+    def getTokenizer(self):
         '''
         Recupera o tokenizador.
         '''
+        
         return self.auto_tokenizer
 
     # ============================        
@@ -649,4 +652,5 @@ class Mensurador:
         '''
         Recupera o pln.
         '''
+        
         return self.pln

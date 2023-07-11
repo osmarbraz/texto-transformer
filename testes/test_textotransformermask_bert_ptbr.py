@@ -59,21 +59,21 @@ class TestTextTransformerMask_bert_ptbr(unittest.TestCase):
         self.assertEqual(predicao[1][0], token_esperado2) 
         self.assertAlmostEqual(predicao[1][1].item(), probabilidade_esperada2, places=casas_decimais)
         
-    # Testes getPerturbacaoTextoSequencial
-    def test_getPerturbacaoTextoSequencial(self):
-        logger.info("Testando o getPerturbacaoTextoSequencial")
+    # Testes getModificacaoTextoSequencial
+    def test_getModificacaoTextoSequencial(self):
+        logger.info("Testando o getModificacaoTextoSequencial")
         
         # Valores de entrada                
         texto = "Como enfileirar elementos em uma fila?"
         
         # Valores de saída
-        saida = self.modelo.getPerturbacaoTextoSequencial(texto, top_k_predicao=2)
+        saida = self.modelo.getModificacaoTextoSequencial(texto, top_k_predicao=2)
         
         # Testa o tamanho do dicionário
         self.assertEqual(len(saida), 6) 
         
         # Testa as saídas         
-        self.assertEqual(saida['texto_perturbado'][0], 'Como encontrar elementos em uma fila ?') 
+        self.assertEqual(saida['texto_modificado'][0], 'Como encontrar elementos em uma fila ?') 
         self.assertEqual(saida['texto_mascarado'][0], 'Como [MASK] elementos em uma fila ?')
         self.assertEqual(saida['palavra_mascarada'][0], 'enfileirar') 
         self.assertEqual(saida['token_predito'][0], 'encontrar')

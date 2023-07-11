@@ -212,6 +212,7 @@ def getIndexTokenTexto(lista_tokens: List[str],
     Retorno:
        `lista_index` - Uma lista as posições do token na lista.
     '''
+    
     # Lista com os índices do token na lista
     lista_index = []
 
@@ -236,6 +237,7 @@ def contaElemento(lista, elemento):
     Retorno:    
     `cont` - Quantidade de ocorrências de elmento na lista.
     '''
+    # Inicializa contador de ocorrências
     cont = 0
     # Percorre a lista
     for i, linha in enumerate(lista):      
@@ -243,4 +245,5 @@ def contaElemento(lista, elemento):
       if linha in elemento:
         # conta o elemento
         cont = cont + 1
+        
     return cont
