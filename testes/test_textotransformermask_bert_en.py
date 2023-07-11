@@ -58,6 +58,27 @@ class TestTextTransformerMask_bert_en(unittest.TestCase):
         self.assertAlmostEqual(predicao[0][1].item(), probabilidade_esperada1, places=casas_decimais)
         self.assertEqual(predicao[1][0], token_esperado2) 
         self.assertAlmostEqual(predicao[1][1].item(), probabilidade_esperada2, places=casas_decimais)
+
+    # Testes getPerturbacaoTextoSequencial
+    def test_getPerturbacaoTextoSequencial(self):
+        logger.info("Testando o getPerturbacaoTextoSequencial")
+        
+        # Valores de entrada                
+        texto = "How to enqueue elements in a queue?"
+        
+        # Valores de saída
+        saida = self.modelo.getPerturbacaoTextoSequencial(texto, top_k_predicao=2)
+        
+        # Testa o tamanho do dicionário
+        self.assertEqual(len(saida), 6) 
+        
+        # Testa as saídas         
+        self.assertEqual(saida['texto_perturbado'][0], 'How to put elements in a queue ?') 
+        self.assertEqual(saida['texto_mascarado'][0], 'How to [MASK] elements in a queue ?')
+        self.assertEqual(saida['palavra_mascarada'][0], 'enqueue') 
+        self.assertEqual(saida['token_predito'][0], 'put')
+        self.assertEqual(saida['token_peso'][0], 0.09357264637947083) 
+        self.assertEqual(saida['token_predito_marcado'][0], 'put')
                    
 if "__main__" == __name__:
     logger = logging.getLogger()
