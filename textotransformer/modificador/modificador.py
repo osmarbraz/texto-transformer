@@ -419,8 +419,8 @@ class Modificador:
             `texto_modificado` - Texto com a modificação.
             `texto_mascarado` - Texto mascarado.
             `palavra_mascarada` - Palavra substituídas pela máscara.
-            `token_predito` - Palavra prevista para a máscara.
-            `peso_predito` - Peso da palavra prevista.
+            `token_predito` - Palavra predita para a máscara.
+            `token_peso` - Peso da palavra predita.
             `token_predito_marcado` - Token predito que foi marcado.
                 
         '''
