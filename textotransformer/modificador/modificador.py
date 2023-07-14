@@ -402,8 +402,8 @@ class Modificador:
 
         ''' 
         Gera 'top_k_predicao' versões modificadas do texto, substituindo uma palavra por uma outra gerada pelo MLM do modelo.
-        A quantidade de palavras no texto a serem modificado é especificada por 'qtde'.
-        A classe da palavra a ser modificada definida por classe, que determina as classes morfossintática das palavras a serem selecionadas em ordem crescente. 
+        A quantidade de palavras no texto a serem modificadas é especificada por 'qtde'.
+        A classe da palavra a ser modificada definida pelo parâmetro classe, que determina as classes morfossintática das palavras a serem selecionadas em ordem crescente. 
         Por exemplo: ["VERB","NOUN","AUX"], primeiro procura uma verbo, depois um substantivo e por último um auxiliar.
                            
         Parâmetros:
