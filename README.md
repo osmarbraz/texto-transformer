@@ -101,7 +101,7 @@ print("Cada token de tamanho    :",len(embeddings_token[0]))
 
 ## Classe principal
 
-A classe **TextoTransformer** carrega e cria um objeto para manipular um modelo de linguagem baseado e transformer. Permite recuperar e manipular embeddings recuperados de tokens, palavras, sentenças e textos.
+A classe principal **TextoTransformer** carrega e cria um objeto para manipular um modelo de linguagem baseado e transformer. Permite recuperar e manipular embeddings recuperados de tokens, palavras, sentenças e textos.
      
 ### Parâmetros inicialização
 
@@ -141,9 +141,11 @@ Aqui os métodos principais para recuperar embeddings de textos, sentenças, pal
 
 ## Modelos Pré-treinados
 
-A lista completa dos modelos de linguagem pré-treiandos podem ser consultados no site da [Huggingface](https://huggingface.co/models).
+Testamos o framework com os modelos Albert, BERT, DistilBERT, GTPT2, OpenAIGPT, Roberta, XLMRoberta e XLMNet.
 
-A lista completa dos modelos da ferramenta de PLN podem ser consultados no site do [spaCy](hhttps://spacy.io/models).
+A lista completa dos modelos de linguagem pré-treinados podem ser consultados no site da [Huggingface](https://huggingface.co/models).
+
+A lista completa dos modelos da ferramenta de PLN spaCy podem ser consultados no [site](https://spacy.io/models).
 
 ## Dependências
 
