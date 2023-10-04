@@ -108,7 +108,7 @@ def distanciaManhattan(a: torch.Tensor, b: torch.Tensor):
     
    Parâmetros:
       `a` - Um tensor na forma de vetor.         
-      `a` - Um tensor na forma de vetor.
+      `b` - Um tensor na forma de vetor.
 
    Retorno:
       A distância Manhattan entre os vetores.
@@ -123,3 +123,41 @@ def distanciaManhattan(a: torch.Tensor, b: torch.Tensor):
    distancia = cityblock(a, b)
 
    return distancia
+
+# ============================  
+def produtoEscalar(a: torch.Tensor, b: torch.Tensor):
+   '''   
+   Calcula o produto escalar entre duas matrizes com produtoEscalar(a[i], b[j]) para todo i e j.
+    
+   Parâmetros:
+      `a` - Um tensor na forma de vetor.         
+      `b` - Um tensor na forma de vetor.
+
+   Retorno:
+      Matriz com sim = produtoEscalar(a[i], b[j]).
+   '''
+   
+   if not isinstance(a, torch.Tensor):
+      a = torch.tensor(a)
+
+   if not isinstance(b, torch.Tensor):
+      b = torch.tensor(b)
+
+   # Se for uma matriz de 1 dimensão
+   if len(a.shape) == 1:
+      # Adiciona uma dimensão
+      a = a.unsqueeze(0)
+
+   # Se for uma matriz de 1 dimensão
+   if len(b.shape) == 1:
+      # Adiciona uma dimensão
+      b = b.unsqueeze(0)
+
+   # Realiza o produto escalar entre os vetores
+   sim = torch.mm(a, b.transpose(0, 1))
+
+   # Se for uma matriz de 1 dimensão
+   if sim.shape[0] == 1 and sim.shape[1] == 1:
+      return sim.item()
+   else: 
+      return sim.numpy()
