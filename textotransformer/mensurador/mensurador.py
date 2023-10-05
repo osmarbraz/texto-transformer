@@ -10,7 +10,7 @@ import torch
 from textotransformer.modelo.transformer import Transformer
 from textotransformer.modelo.modeloargumentos import ModeloArgumentos 
 from textotransformer.pln.pln import PLN
-from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
+from textotransformer.mensurador.medidas import similaridadeCosseno, produtoEscalar, distanciaEuclidiana, distanciaManhattan
 from textotransformer.mensurador.mensuradorenum import PalavraRelevante
 from textotransformer.modelo.modeloenum import EstrategiasPooling
 from textotransformer.util.utiltexto import encontrarIndiceSubLista  
@@ -79,8 +79,9 @@ class Mensurador:
         
         Retorno:
            `Scos` - Similaridade do cosseno - usando a média dos embeddings Si e Sj das camadas especificadas.
+           `Spro` - Produto escaar - usando a média dos embeddings Si e Sj das camadas especificadas.
            `Seuc` - Distância euclidiana - usando a média dos embeddings Si e Sj das camadas especificadas.
-           `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.
+           `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.           
         '''
 
         #print('embedding_si=', embedding_si.shape) 
@@ -105,6 +106,11 @@ class Mensurador:
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
         Scos = similaridadeCosseno(media_embedding_si, media_embedding_sj)
         # Retorno: Número real
+        
+        # Produto escalar entre os embeddings Si e Sj
+        # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
+        Spro = produtoEscalar(media_embedding_si, media_embedding_sj)
+        # Retorno: Número real
 
         # Distância euclidiana entre os embeddings Si e Sj
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
@@ -115,9 +121,9 @@ class Mensurador:
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
         Sman = distanciaManhattan(media_embedding_si, media_embedding_sj)
         # Retorno: Número real
-
+        
         # Retorno das medidas das sentenças  
-        return media_embedding_si, media_embedding_sj, Scos, Seuc, Sman
+        return media_embedding_si, media_embedding_sj, Scos, Spro, Seuc, Sman
 
     # ============================
     def getMedidasSentencasEmbeddingMAX(self, embedding_si, 
@@ -131,6 +137,7 @@ class Mensurador:
            
         Retorno:
            `Scos` - Similaridade do cosseno - usando o maior dos embeddings Si e Sj das camadas especificadas.
+           `Spro` - Produto escaar - usando o maior dos embeddings Si e Sj das camadas especificadas.
            `Seuc` - Distância euclidiana - usando o maior dos embeddings Si e Sj das camadas especificadas.
            `Sman` - Distância de manhattan - usando o maior dos embeddings Si e Sj das camadas especificadas.
         '''
@@ -157,6 +164,11 @@ class Mensurador:
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
         Scos = similaridadeCosseno(maior_embedding_si, maior_embedding_sj)
         # Retorno: Número real
+        
+        # Produto escalar entre os embeddings Si e Sj
+        # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
+        Spro = produtoEscalar(maior_embedding_si, maior_embedding_sj)
+        # Retorno: Número real
 
         # Distância euclidiana entre os embeddings Si e Sj
         # Entrada: (<768 ou 1024>) x (<768 ou 1024>)
@@ -169,7 +181,7 @@ class Mensurador:
         # Retorno: Número real
 
         # Retorno das medidas das sentenças
-        return maior_embedding_si, maior_embedding_sj, Scos, Seuc, Sman
+        return maior_embedding_si, maior_embedding_sj, Scos, Spro, Seuc, Sman
 
     # ============================
     def getMedidasSentencasEmbedding(self, embedding_si, 
@@ -215,15 +227,15 @@ class Mensurador:
                    
         # Tokeniza o texto
         texto_tokenizado =  self.transformer.getTextoTokenizado(texto=texto)
-        print(texto_tokenizado)
+        #print(texto_tokenizado)
         
         # Tokeniza a sentença
         sentenca_tokenizada =  self.transformer.getTextoTokenizado(texto=sentenca)
-        print(sentenca_tokenizada)
+        #print(sentenca_tokenizada)
         
         # Remove os tokens de início e fim da sentença
         sentenca_tokenizada = self.transformer.removeTokensEspeciais(lista_tokens=sentenca_tokenizada)
-        print(len(sentenca_tokenizada))
+        #print(len(sentenca_tokenizada))
         
         # Se for do tipo Roberta, GTP2 Model, adiciona o token de separação no início da sentença
         if posicao_sentenca != 0:
@@ -232,7 +244,7 @@ class Mensurador:
         
         # Localiza os índices dos tokens da sentença no texto
         inicio, fim = encontrarIndiceSubLista(lista=texto_tokenizado, sublista=sentenca_tokenizada)        
-        print("inicio:", inicio, "   fim:", fim)
+        #print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:            
             logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
@@ -525,9 +537,10 @@ class Mensurador:
            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
                  
         Retorno um dicionário com:
-           `cos` - Medida de cos do do texto.
-           `euc` - Medida de euc do do texto.
-           `man` - Medida de man do do texto.
+           `cos` - Medida de cos do texto.
+           `pro` - Medida de pro do texto.
+           `euc` - Medida de euc do texto.
+           `man` - Medida de man do texto.
         '''
 
         # Quantidade de sentenças no texto
@@ -548,10 +561,11 @@ class Mensurador:
         embedding_texto = self.getEmbeddingTextoCamada(texto=string_texto,
                                                        abordagem_extracao_embeddings_camadas=abordagem_extracao_embeddings_camadas,
                                                        converte_para_numpy=converte_para_numpy)
-        print('embedding_texto=', embedding_texto.shape)
+        #print('embedding_texto=', embedding_texto.shape)
 
         # Acumuladores das medidas entre as sentenças  
         soma_Scos = 0
+        soma_Spro = 0
         soma_Seuc = 0
         soma_Sman = 0
 
@@ -580,11 +594,12 @@ class Mensurador:
             if embedding_si != None and embedding_sj != None:
 
                 # Recupera as medidas entre Si e Sj     
-                ajustado_embedding_si, ajustado_embedding_sj, Scos, Seuc, Sman = self.getMedidasSentencasEmbedding(embedding_si=embedding_si, 
+                ajustado_embedding_si, ajustado_embedding_sj, Scos, Spro, Seuc, Sman = self.getMedidasSentencasEmbedding(embedding_si=embedding_si, 
                                                                                                                    embedding_sj=embedding_sj)
 
                 # Acumula as medidas
                 soma_Scos = soma_Scos + Scos
+                soma_Spro = soma_Spro + Spro
                 soma_Seuc = soma_Seuc + Seuc
                 soma_Sman = soma_Sman + Sman
 
@@ -607,17 +622,20 @@ class Mensurador:
 
         # Calcula a medida 
         Ccos = 0
+        Cpro = 0
         Ceuc = 0
         Cman = 0
 
         if divisor != 0:
             Ccos = float(soma_Scos) / float(divisor)
+            Cpro = float(soma_Spro) / float(divisor)
             Ceuc = float(soma_Seuc) / float(divisor)
             Cman = float(soma_Sman) / float(divisor)
 
         # Retorna as medidas em um dicionário
         saida = {}
         saida.update({'cos' : Ccos,
+                      'pro' : Cpro,
                       'euc' : Ceuc,
                       'man' : Cman})
 

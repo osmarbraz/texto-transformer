@@ -14,6 +14,7 @@ class MedidasComparacao(Enum):
     COSSENO = 0 # Similaridade do Cosseno
     EUCLIDIANA = 1 # Distância Euclidiana
     MANHATTAN = 2 # Distância de Manhattan
+    PRODUTO = 3 # Produto Escalar
 
     # ============================
     @classmethod
@@ -39,8 +40,11 @@ class MedidasComparacao(Enum):
                     if medidas_comparacao == 2:
                         medidas_comparacao = self.MANHATTAN
                     else:
-                        medidas_comparacao = None
-                        logger.error("Não foi especificado um valor inteiro válido para a medida de comparação.") 
+                        if medidas_comparacao == 3:
+                            medidas_comparacao = self.PRODUTO
+                        else:
+                            medidas_comparacao = None
+                            logger.error("Não foi especificado um valor inteiro válido para a medida de comparação.") 
         else:
             logger.error("Não foi especificado um valor inteiro para a a medida de comparação.") 
             return None                        

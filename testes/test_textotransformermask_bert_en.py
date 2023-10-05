@@ -10,8 +10,6 @@ import torch
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
 from textotransformer.modelo.transformerbert import TransformerBert
-from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
-from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
 logger = logging.getLogger(__name__)

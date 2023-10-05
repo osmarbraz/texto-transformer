@@ -10,7 +10,7 @@ import torch
 # Biblioteca texto-transformer
 from textotransformer.textotransformer import TextoTransformer
 from textotransformer.modelo.transformergpt2 import TransformerGPT2
-from textotransformer.mensurador.medidas import distanciaEuclidiana, distanciaManhattan, similaridadeCosseno
+from textotransformer.mensurador.medidas import similaridadeCosseno, produtoEscalar, distanciaEuclidiana, distanciaManhattan
 from textotransformer.util.utiltexto import getIndexTokenTexto
 
 # Objeto de logger
@@ -577,17 +577,20 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         
         # Valores esperados
         CcosEsperado = 0.9990493059158325
+        CproEsperado = 57594.8046875
         CeucEsperado = 51.09952163696289
         CmanEsperado = 274.08123779296875
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
+        self.assertTrue("pro" in saida)
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
         casas_decimais = 5
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
@@ -602,18 +605,21 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 0.9990493059158325                
+        CcosEsperado = 0.9990493059158325
+        CproEsperado = 57594.8046875
         CeucEsperado = 51.09952163696289
         CmanEsperado = 274.08123779296875
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
+        self.assertTrue("pro" in saida)
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
         casas_decimais = 5
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
@@ -629,17 +635,20 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         
         # Valores esperados
         CcosEsperado = 0.9967917203903198
+        CproEsperado = 54375.8203125
         CeucEsperado = 71.80702209472656
         CmanEsperado = 344.1712341308594
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
+        self.assertTrue("pro" in saida)
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
         casas_decimais = 5        
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
 
@@ -654,18 +663,21 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=2)
         
         # Valores esperados
-        CcosEsperado = 0.0                
+        CcosEsperado = 0.0 
+        CproEsperado = 0.0
         CeucEsperado = 0.0
         CmanEsperado = 0.0
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
+        self.assertTrue("pro" in saida)
         self.assertTrue("euc" in saida)
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
         casas_decimais = 5
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
@@ -699,7 +711,6 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
-        
        
     # Testes getCodificacaoToken e similaridadeCosseno
     def test_getCodificacaoToken_similaridadeCosseno(self):
@@ -734,6 +745,71 @@ class TestTextTransformer_GPT2_en(unittest.TestCase):
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
+                
+    # Testes getEmbeddingTexto e produtoEscalar
+    def test_getEmbeddingTexto_produtoEscalar(self):
+        logger.info("Rodando .getEmbeddingTexto(texto) e produtoEscalar(embedding1, embedding2))")
+        
+        # Valores de entrada        
+        texto1 = "Fresh sea bass is a great delicacy." 
+        texto2 = "I fished for a bass in the river yesterday." 
+        texto3 = "I play bass in a jazz band."
+
+        # Valores de saída
+        # Recupera os embeddings dos textos
+        embeddingTexto1 = self.modelo.getEmbeddingTexto(texto1)
+        embeddingTexto2 = self.modelo.getEmbeddingTexto(texto2)
+        embeddingTexto3 = self.modelo.getEmbeddingTexto(texto3)
+
+        # Avalia a similaridade entre os embeddings dos textos
+        pro12 = produtoEscalar(embeddingTexto1, embeddingTexto2)
+        pro13 = produtoEscalar(embeddingTexto1, embeddingTexto3)
+        pro23 = produtoEscalar(embeddingTexto2, embeddingTexto3)
+        
+        # Valores esperados
+        pro12Esperado = 47525.125
+        pro13Esperado = 44957.171875
+        pro23Esperado = 45723.359375
+        
+        #Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 
+               
+    # Testes getCodificacaoToken e produtoEscalar
+    def test_getCodificacaoToken_produtoEscalar(self):
+        logger.info("Rodando .getCodificacaoToken(texto) e produtoEscalar(embedding1, embedding2))")
+        
+        # Valores de entrada
+        texto = "After stealing money from the bank vault, the bank robber was seen fishing on the Amazonas river bank."
+
+        # Valores de saída
+        saida = self.modelo.getCodificacaoToken(texto)
+        
+        # Recupera os indices do token "▁bank" no texto (7,13,18)
+        idx_tokens = getIndexTokenTexto(saida['tokens_texto_mcl'], "Ġbank")
+                
+        # Recupera os embeddings da saída do método de acordo com os índices
+        embedToken1 = saida['token_embeddings'][idx_tokens[0]]
+        embedToken2 = saida['token_embeddings'][idx_tokens[1]]
+        embedToken3 = saida['token_embeddings'][idx_tokens[2]]
+        
+        # Mensura o produto escalar
+        pro12 = produtoEscalar(embedToken1,embedToken2)
+        pro13 = produtoEscalar(embedToken1,embedToken3)
+        pro23 = produtoEscalar(embedToken2,embedToken3)
+                        
+        # Valores esperados
+        pro12Esperado = 53343.015625
+        pro13Esperado = 52030.32421875
+        pro23Esperado = 62313.74609375
+        
+        # Compara somente n casas decimais
+        casas_decimais = 5
+        self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
+        self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
+        self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 
         
     # Testes getCodificacaoToken e distanciaEuclidiana
     def test_getCodificacaoToken_distanciaEuclidiana(self):

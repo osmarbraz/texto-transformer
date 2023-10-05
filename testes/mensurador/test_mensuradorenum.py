@@ -21,6 +21,7 @@ class TestMensuradorEnum(unittest.TestCase):
         self.assertEqual(MedidasComparacao.converteInt(0), MedidasComparacao.COSSENO)
         self.assertEqual(MedidasComparacao.converteInt(1), MedidasComparacao.EUCLIDIANA)
         self.assertEqual(MedidasComparacao.converteInt(2), MedidasComparacao.MANHATTAN)
+        self.assertEqual(MedidasComparacao.converteInt(3), MedidasComparacao.PRODUTO)
         
     # Testes PalavraRelevante_converteInt
     def test_PalavraRelevante_converteInt(self):
@@ -30,7 +31,6 @@ class TestMensuradorEnum(unittest.TestCase):
         self.assertEqual(PalavraRelevante.converteInt(0), PalavraRelevante.ALL)
         self.assertEqual(PalavraRelevante.converteInt(1), PalavraRelevante.CLEAN)
         self.assertEqual(PalavraRelevante.converteInt(2), PalavraRelevante.NOUN)
-
     
 if "__main__" == __name__:
     logger = logging.getLogger()

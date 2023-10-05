@@ -109,9 +109,9 @@ class TestMedida(unittest.TestCase):
         # Testa a saída e a saída esperada
         self.assertEqual(saidaEsperada, saida)
         
-    # Testes produtoEscalar
-    def test_produtoEscalar(self):
-        logger.info("Testando o produtoEscalar")
+    # Testes produtoEscalarMatriz_1D
+    def test_produtoEscalarMatriz_1D(self):
+        logger.info("Testando o produtoEscalarMatriz_1D")
         
         # Valores de entrada
         a = [1, 2, 3, 4]

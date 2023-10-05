@@ -5,7 +5,6 @@ import logging
 # Biblioteca de testes unitários
 import unittest
 # Biblioteca de aprendizado de máquina
-import torch 
 import numpy
 
 # Biblioteca texto-transformer
