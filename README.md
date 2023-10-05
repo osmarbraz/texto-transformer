@@ -139,6 +139,10 @@ Aqui os métodos principais para recuperar embeddings de textos, sentenças, pal
     - Parâmetros:
         - `texto`: Um texto ou uma lista de textos para obter os embeddings.        
 
+### Mensuração
+
+Permite realizar a mensuração entre embeddings de diversas granularidades usando similaridade do cosseno, produto cartesiano, distância Euclediana e distância de Manhattan. O mensurador é acessível através do método `getMensurador`.
+
 ## Modelos Pré-treinados
 
 Testamos o framework com os modelos Albert, BERT, DistilBERT, GTPT2, OpenAIGPT, Roberta, XLMRoberta e XLMNet.
