@@ -141,7 +141,7 @@ Aqui os métodos principais para recuperar embeddings de textos, sentenças, pal
 
 ### Mensuração
 
-Permite realizar a mensuração entre embeddings de diversas granularidades utilizando funções de similaridade e distância. As funções de similaridade do cosseno, produto cartesiano, distância Euclediana e distância de Manhattan estão no pacote `mensurador.medidas`.
+Permite realizar a mensuração entre embeddings de diversas granularidades utilizando funções de similaridade e distância. As funções de similaridade do cosseno, produto cartesiano, distância Euclidiana e distância de Manhattan estão no pacote `mensurador.medidas`.
 
 ## Modelos Pré-treinados
 
