@@ -125,8 +125,7 @@ class Transformer(nn.Module):
         '''
         
         return self.TOKEN_FIM
-    
-    
+        
     # ============================ 
     def getPosicaoTokenInicio(self) -> int:
         '''

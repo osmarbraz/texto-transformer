@@ -145,7 +145,7 @@ Permite realizar a mensuração entre embeddings de diversas granularidades util
 
 ## Modelos Pré-treinados
 
-Testamos o framework com os modelos Albert, BERT, DistilBERT, GTPT2, OpenAIGPT, Roberta, XLMRoberta e XLMNet.
+Testamos o framework com os modelos Albert, BERT, DistilBERT, GTPT2, OpenAIGPT, Roberta, XLMRoberta, XLMNet e T5.
 
 A lista completa dos modelos de linguagem pré-treinados podem ser consultados no site da [Huggingface](https://huggingface.co/models).
 
@@ -159,6 +159,8 @@ A lista completa dos modelos da ferramenta de PLN spaCy podem ser consultados no
 - torch==2.0.1
 - scipy==1.10.1
 - numpy==1.22.4
+- sentencepiece==0.1.99
+- protobuf==3.20.3
 
 ## Licença
 

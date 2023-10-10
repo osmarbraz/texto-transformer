@@ -454,10 +454,7 @@ class TextoTransformer:
             entrada_eh_string = True
 
         # Padding é o preenchimento do texto para que fiquem do mesmo tamanho nos lotes.
-        # A maioria do modelo preenche a direita(0), mas alguns preenchem a esquerda(1)
-        #padding_side = 1
-        #if isinstance(self.auto_model, XLNetModel):
-        #     padding_side = 0
+        # A maioria do modelo preenche a direita(0), mas alguns preenchem a esquerda(1)        
         padding_side = self.getTransformer().getLadoPreenchimento()
 
         # Se não foi especificado um dispositivo, use-o defaul

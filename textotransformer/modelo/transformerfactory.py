@@ -17,6 +17,7 @@ from transformers import OpenAIGPTModel, OpenAIGPTConfig, OpenAIGPTLMHeadModel
 from transformers import RobertaModel, RobertaForMaskedLM
 from transformers import XLMRobertaModel, XLMRobertaForMaskedLM
 from transformers import XLNetModel, XLNetConfig, XLNetLMHeadModel
+from transformers import T5EncoderModel, T5Config, T5ForConditionalGeneration
 
 # Bibliotecas próprias
 from textotransformer.modelo.modeloargumentos import ModeloArgumentos
@@ -28,6 +29,7 @@ from textotransformer.modelo.transformeropenaigpt import TransformerOpenAIGPT
 from textotransformer.modelo.transformerroberta import TransformerRoberta
 from textotransformer.modelo.transformerxlmroberta import TransformerXLMRoberta
 from textotransformer.modelo.transformerxlnet import TransformerXLNet
+from textotransformer.modelo.transformert5 import TransformerT5
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
@@ -50,7 +52,7 @@ class TransformerFactory():
         Para o BERT que utiliza BertModel, retorna um TransformerBert.
         Para o RoBERTa que utiliza RobertaModel, retorna um TransformerRoberta.
         Para o Distilbert que utiliza DistilbertModel, retorna um TransformerDistilbert.
-        Para o Distilbert que utiliza DistilbertModel, retorna um TransformerGPT2.
+        Para o GTP2 que utiliza GPT2Model, retorna um TransformerGPT2.
             
         Parâmetros:
            `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
@@ -170,7 +172,14 @@ class TransformerFactory():
                                     auto_config=auto_config, 
                                     auto_tokenizer=auto_tokenizer, 
                                     modelo_args=modelo_args)
-          
+        elif isinstance(auto_model, (T5EncoderModel, T5ForConditionalGeneration)):
+            # T5Model
+            # https://huggingface.co/docs/transformers/model_doc/t5
+            return TransformerT5(auto_model=auto_model, 
+                                    auto_config=auto_config, 
+                                    auto_tokenizer=auto_tokenizer, 
+                                    modelo_args=modelo_args)
+                      
         # Outros modelos vão aqui!
         
         else:
@@ -198,9 +207,14 @@ class TransformerFactory():
             # Carrega modelo pré-treinado simples usando AutoModel
             # https://huggingface.co/docs/transformers/model_doc/auto#transformers.AutoModel
             
-            return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
-                                             config=config, 
-                                             cache_dir=cache_dir)
+            if isinstance(config, T5Config):
+                return T5EncoderModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                      config=config, 
+                                                      cache_dir=cache_dir) 
+            else:
+                return AutoModel.from_pretrained(pretrained_model_name_or_path=model_name_or_path,
+                                                 config=config, 
+                                                 cache_dir=cache_dir)
             
         elif tipo_modelo_pretreinado == "mascara":
             # Carrega modelos pré-treinados para processamento de linguagem mascarada usando AutoModelForMaskedLM
@@ -230,4 +244,3 @@ class TransformerFactory():
             logger.error("Tipo de modelo pré-treinaddo não suportado: \"{}\".".format(tipo_modelo_pretreinado))
             
             return None
-        

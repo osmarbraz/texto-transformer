@@ -307,7 +307,7 @@ class Mensurador:
         inicio, fim = encontrarIndiceSubLista(lista=texto_tokenizado, sublista=sentenca_tokenizada)
         #print("inicio:", inicio, "   fim:", fim)
         if inicio == -1 or fim == -1:
-           logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
+            logger.error("Não encontrei a sentença: {} dentro de {}.".format(sentenca_tokenizada, texto_tokenizado))
 
         # Recupera os embeddings dos tokens da sentença a partir dos embeddings do texto
         embedding_sentenca = embedding_texto[inicio:fim + 1]
