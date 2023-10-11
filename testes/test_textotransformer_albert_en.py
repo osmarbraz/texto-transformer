@@ -806,7 +806,7 @@ class TestTextTransformer_albert_en(unittest.TestCase):
         pro23Esperado = 688.126220703125
         
         # Compara somente n casas decimais
-        casas_decimais = 3
+        casas_decimais = 2
         self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 

@@ -3,7 +3,7 @@ name = "texto-transformer"
 version = "0.0.12"
 description = "Texto Transformer: Framework para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer"
 readme = "README.md"
-requires-python = ">=3.7.0"
+requires-python = ">=3.9.0"
 license = { file = "LICENSE" }
 
 authors = [
@@ -14,7 +14,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
 keywords = ["Framework", "Transformer","embedding","texto", "sentença", "palavra", "token"]
