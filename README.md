@@ -1,3 +1,13 @@
+<!--- BADGES: START --->
+[![Github Actions Status for osmarbraz/texto-transformer](https://github.com/osmarbraz/texto-transformer/workflows/Integra%C3%A7%C3%A3o%20continua%20de%20Python/badge.svg)](https://github.com/osmarbraz/texto-transformer/actions) 
+[![GitHub - License](https://img.shields.io/github/license/osmarbraz/texto-transformer?logo=github&style=flat&color=green)][#github-license]
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/texto-transformer?logo=pypi&style=flat&color=blue)][#pypi-package]
+[![PyPI - Package Version](https://img.shields.io/pypi/v/texto-transformer?logo=pypi&style=flat&color=orange)][#pypi-package]
+
+[#github-license]: https://github.com/osmarbraz/texto-transformer/blob/master/LICENSE
+[#pypi-package]: https://pypi.org/project/texto-transformer/
+<!--- BADGES: END --->
+
 # Texto-Transformer: Framework para processamento de textos utilizando modelos de linguagem baseados em Transformer
 
 Este framework realiza o processamento de textos utilizando modelos de linguagem baseados em transformer. Permite gerar embeddings de textos, sentenças, palavras e tokens utilizando modelos contextualizados de linguagem baseados em Transformer. Os embeddings de textos, sentenças e palavras podem ser consolidados utilizando as estratégias de pooling média e máximo dos tokens.
