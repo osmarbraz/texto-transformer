@@ -34,15 +34,17 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64    
-        # Instala as dependências
-    - uses: actions/cache@v2
+    # Instala o cache  
+    - name: Instala o cache
+      uses: actions/cache@v2
       with:
           path: ~/.cache/pip
           key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
-    - name: Install dependencies
+    # Instala as dependências
+    - name: Instala as dependências
       run: |
         pip install --upgrade --upgrade-strategy eager -r requirements.txt -e .
         pip install --upgrade numpy
     # Executa os testes no runner   
-    - name : Rodar testes 
+    - name : Executa os testes 
       run :  python -m unittest discover -s "./testes" -p "test_*.py"

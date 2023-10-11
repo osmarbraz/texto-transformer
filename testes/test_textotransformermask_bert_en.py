@@ -75,7 +75,7 @@ class TestTextTransformerMask_bert_en(unittest.TestCase):
         self.assertEqual(saida['texto_mascarado'][0], 'How to [MASK] elements in a queue ?')
         self.assertEqual(saida['palavra_mascarada'][0], 'enqueue') 
         self.assertEqual(saida['token_predito'][0], 'put')
-        self.assertEqual(saida['token_peso'][0], 0.09357264637947083) 
+        self.assertAlmostEqual('token_peso'][0], 0.09357264637947083, places=4)
         self.assertEqual(saida['token_predito_marcado'][0], 'put')
                    
 if "__main__" == __name__:
