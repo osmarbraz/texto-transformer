@@ -21,8 +21,9 @@ class TestTextTransformerMask_bert_ptbr(unittest.TestCase):
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased",
-                                       tipo_modelo_pretreinado="mascara") # BERTimbau base
+        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased", # BERTimbau base
+                                       modelo_spacy="pt_core_news_sm",
+                                       tipo_modelo_pretreinado="mascara") 
     
     # Testes TextoTransformer_bert   
     def test_TextoTransformer_bert(self):

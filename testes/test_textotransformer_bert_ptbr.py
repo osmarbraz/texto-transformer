@@ -24,8 +24,9 @@ class TestTextTransformer_bert_ptbr(unittest.TestCase):
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
-    
+        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased", # BERTimbau base
+                                        modelo_spacy="pt_core_news_sm")
+            
     # Testes TextoTransformer_bert   
     def test_TextoTransformer_bert(self):
         logger.info("Testando o construtor de TextoTransformer_bert")
@@ -610,7 +611,7 @@ class TestTextTransformer_bert_ptbr(unittest.TestCase):
         self.assertEqual(len(saida['tokens_texto_pln']), 13)        
         self.assertListEqual(saida['tokens_texto_pln'], ['Eu', 'sou', 'o', '1', '°', 'lugar', 'na', 'corrida', 'de', '100', 'metros', 'rasos', '.'])
         self.assertEqual(len(saida['pos_texto_pln']), 13)
-        self.assertListEqual(saida['pos_texto_pln'], ['PRON', 'AUX', 'DET', 'NUM', 'SYM', 'NOUN', 'ADP', 'NOUN', 'ADP', 'NUM', 'NOUN', 'ADJ', 'PUNCT'])
+        self.assertListEqual(saida['pos_texto_pln'], ['PRON', 'AUX', 'DET', 'NUM', 'PROPN', 'NOUN', 'ADP', 'NOUN', 'ADP', 'NUM', 'NOUN', 'ADJ', 'PUNCT'])
         # Testa a quantidade de embeddings
         self.assertEqual(len(saida['palavra_embeddings_MEAN']), 12)
         self.assertEqual(len(saida['palavra_embeddings_MAX']), 12)

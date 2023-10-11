@@ -21,7 +21,8 @@ class TestTextTransformer_bert_ptbr_Numpy(unittest.TestCase):
     def setUpClass(self):
         logger.info("Inicializando o modelo para os métodos de teste")
         # Instancia um objeto da classe TextoTransformer e recupera o MCL especificado
-        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased") # BERTimbau base
+        self.modelo = TextoTransformer("neuralmind/bert-base-portuguese-cased", # Bertimbau base
+                                        modelo_spacy="pt_core_news_sm") 
 
     # Testes TextoTransformer_bert   
     def test_textotransformer(self):
