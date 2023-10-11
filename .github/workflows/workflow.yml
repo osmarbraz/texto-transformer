@@ -37,8 +37,7 @@ jobs:
       # Instala as dependências
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip        
-        python -m pip install -r requirements_testes.txt
+        python -m pip install -r requirements.txt
 
     # Executa os testes no runner   
     - name : Rodar testes 
