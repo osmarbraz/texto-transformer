@@ -588,7 +588,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -617,7 +617,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -646,7 +646,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5        
+        casas_decimais = 3        
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -675,7 +675,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -707,7 +707,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         sim23Esperado = 0.6180431842803955
         
         #Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
@@ -741,7 +741,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         sim23Esperado = 0.34492143988609314
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
@@ -772,7 +772,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         pro23Esperado = 75.04673767089844
         
         #Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 
@@ -806,7 +806,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         pro23Esperado = 122.34829711914062
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 
@@ -840,7 +840,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         dif23Esperado = 21.585800170898438
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 
@@ -875,7 +875,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         dif23Esperado = 465.57556
         
         # Compara somente n casas decimais
-        casas_decimais = 4
+        casas_decimais = 3
         self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 

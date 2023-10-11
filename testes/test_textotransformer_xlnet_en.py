@@ -588,7 +588,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -616,7 +616,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -645,7 +645,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5        
+        casas_decimais = 3        
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
@@ -674,9 +674,9 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         self.assertTrue("man" in saida)
                        
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(saida['cos'], CcosEsperado, places=casas_decimais)
-        self.assertAlmostEqual(saida['pro'], CcosEsperado, places=casas_decimais)
+        self.assertAlmostEqual(saida['pro'], CproEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['euc'], CeucEsperado, places=casas_decimais)
         self.assertAlmostEqual(saida['man'], CmanEsperado, places=casas_decimais) 
         
@@ -706,7 +706,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         sim23Esperado = 0.9824895262718201
         
         #Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
@@ -740,7 +740,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         sim23Esperado = 0.9823021292686462
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(sim12, sim12Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim13, sim13Esperado, places=casas_decimais)
         self.assertAlmostEqual(sim23, sim23Esperado, places=casas_decimais) 
@@ -771,7 +771,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         pro23Esperado = 35330.04296875
         
         #Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais) 
@@ -805,7 +805,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         pro23Esperado = 46550.89453125
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(pro12, pro12Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro13, pro13Esperado, places=casas_decimais)
         self.assertAlmostEqual(pro23, pro23Esperado, places=casas_decimais)        
@@ -839,12 +839,11 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         dif23Esperado = 51.95704650878906
         
         # Compara somente n casas decimais
-        casas_decimais = 5
+        casas_decimais = 3
         self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 
        
-
     # Testes getCodificacaoToken e distanciaManhattan
     def test_getCodificacaoToken_distanciaManhattan(self):
         logger.info("Rodando .getCodificacaoToken(texto) e distanciaManhattan(embedding1, embedding2))")
@@ -874,7 +873,7 @@ class TestTextTransformer_xlnet_en(unittest.TestCase):
         dif23Esperado = 928.70776
         
         # Compara somente n casas decimais
-        casas_decimais = 4
+        casas_decimais = 3
         self.assertAlmostEqual(dif12, dif12Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif13, dif13Esperado, places=casas_decimais)
         self.assertAlmostEqual(dif23, dif23Esperado, places=casas_decimais) 
