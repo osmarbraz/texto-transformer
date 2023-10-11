@@ -39,12 +39,10 @@ jobs:
       with:
           path: ~/.cache/pip
           key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
-
     - name: Install dependencies
       run: |
         pip install --upgrade --upgrade-strategy eager -r requirements.txt -e .
         pip install --upgrade numpy
-
     # Executa os testes no runner   
     - name : Rodar testes 
       run :  python -m unittest discover -s "./testes" -p "test_*.py"
