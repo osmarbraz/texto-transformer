@@ -75,7 +75,7 @@ class TestTextTransformerMask_bert_ptbr(unittest.TestCase):
         self.assertEqual(saida['texto_mascarado'][0], 'Como [MASK] elementos em uma fila ?')
         self.assertEqual(saida['palavra_mascarada'][0], 'enfileirar') 
         self.assertEqual(saida['token_predito'][0], 'encontrar')        
-        self.assertAlmostEqual('token_peso'][0], 0.13462261855602264, places=4)
+        self.assertAlmostEqual(saida['token_peso'][0], 0.13462261855602264, places=4)
         self.assertEqual(saida['token_predito_marcado'][0], 'encontrar')
                        
 if "__main__" == __name__:
