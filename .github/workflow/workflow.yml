@@ -1,0 +1,45 @@
+# Nome do workflow no repositório
+name: Integração continua de Python 
+
+# Eventos de execução do workflow
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+jobs:
+  # Jobs do ambientes de desenvolvimento
+  build-dev:  
+    # Runner com uma instância da matriz
+    runs-on: ${{ matrix.os }}    
+    # Nome do Job no workflow
+    name: build-dev - SO ${{ matrix.os }} e python ${{matrix.python-version}}... 
+    environment: 
+      name: dev
+    # Prepara diversas versões do SO e do Python
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]  
+        python-version:  ['3.9', '3.10', '3.11']
+    # Passos do job
+    steps:
+    # Utiliza a action checkout para fazer o git clone no runner    
+    - name : Realiza o checkout do repositório
+      uses : actions/checkout@v4
+    # Utiliza a action setup-java para configurar a versão necessária do JDK  
+    - name: Configura o Python ${{matrix.python-version}}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+      # Instala as dependências
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip        
+        python -m pip install -r requirements.txt
+
+    # Executa os testes no runner   
+    - name : Rodar testes 
+      run :  python -m unittest discover -s "./testes" -p "test_*.py"

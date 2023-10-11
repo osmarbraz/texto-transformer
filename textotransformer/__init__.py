@@ -1,4 +1,4 @@
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 __author__ = "Osmar de Oliveira Braz Junior"
 __license__ = "MIT"
 __MODELO_LINGUAGEM__ = 'modelo-linguagem'
