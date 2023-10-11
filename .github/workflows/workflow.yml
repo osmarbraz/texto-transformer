@@ -38,6 +38,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -r requirements.txt
+        pip install --upgrade numpy
 
     # Executa os testes no runner   
     - name : Rodar testes 
