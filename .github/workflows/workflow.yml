@@ -1,5 +1,5 @@
 # Nome do workflow no repositório
-name: Integração continua de Python 
+name: Integração continua em Python 
 
 # Eventos de execução do workflow
 on:
