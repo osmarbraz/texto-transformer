@@ -268,18 +268,17 @@ def contaItensLista(lista):
   return qtde_itens
 
 # ============================
-def truncaJanela(lista, lista_janela, tamanho_janela, lista_indice_janela, indice_passo, maximo_itens, folha_janela):
+def truncaJanela(lista_janela,                  
+                 maximo_itens, 
+                 lista_centro_janela):
     """
      Trunca as palavras da janela até o máximo da janela.
 
      Parâmetros:
        Parâmetros:
-       `lista` - Uma lista com todos os itens.
        `lista_janela` - Um dataframe com os itens.
-       `tamanho_janela` - Tamanho da janela a ser montada.
-       `lista_indice_janela` - Lista com os índices das sentenças que forma a janela.
-       `indice_passo` - Índice do passo que se deseja da janela.
-       `maximo_itens` - Máximo de palavras na janela. Trunca das extremidades preservando a palavra central.
+       `maximo_itens` - Máximo de itens na janela. Trunca das extremidades preservando a palavra central.
+       `lista_centro_janela` - Lista com os índices dos centros da janela.
 
      Retorno:
        `lista_janela` - Janela truncada pelo máximo de itens.
@@ -290,75 +289,65 @@ def truncaJanela(lista, lista_janela, tamanho_janela, lista_indice_janela, indic
 
     # Controle se não alcançado o máximo de palavras
     minimo_alcancado = False
+   
+    # Indices para os elementos a serem excluídos
+    indice_esquerda = 0
+    indice_direita = len(lista_janela) -1
 
     # Remove as palavras das extremidade que ultrapassam o tamanho máximo
     while qtde_itens1 > maximo_itens and minimo_alcancado == False:
+      
+      # Recupera os intervalo das folhas da direita e esquerda e centro
+      # Intervalo da folha da esquerda do centro
+      # Sempre inicia em 0
+      inicio_folha_esquerda = 0
+      fim_folha_esquerda = lista_centro_janela[0]
 
-      # Verifica se é uma janela de início
-      if indice_passo < folha_janela and len(lista_janela) != tamanho_janela:
-        # print("Janelas do inicio")
-        # Verifica se a última sentença tem elementos
-        if len(lista_janela[-1]) >0:
-          # Meio - Remove do fim da janela da última sentença
-          del lista_janela[-1][-1]
-        else:
-          # Verifica se a penúltima sentença tem elementos
-          if len(lista_janela[-2]) >0:
-            # Meio - Remove do fim da janela da penúltima sentença
-            del lista_janela[-2][-1]
-          else:
-            # Verifica se a antepenúltima sentença tem elementos
-            if len(lista_janela[-3]) >0:
-              # Meio - Remove do fim da janela da antepenúltima sentença
-              del lista_janela[-3][-1]
+      # Intervalo do centro
+      inicio_centro_esquerda = lista_centro_janela[0]
+      fim_centro_direita = lista_centro_janela[-1]+1
+
+      # Intervalo da folha da direita do centro
+      inicio_folha_direita = lista_centro_janela[-1]+1
+      # Vai até o final da lista
+      fim_folha_direita = len(lista_janela)
+
+      # Conta os elementos dos intervalos
+      conta_itens_esquerda = contaItensLista(lista_janela[inicio_folha_esquerda:fim_folha_esquerda])
+      conta_itens_centro = contaItensLista(lista_janela[inicio_centro_esquerda:fim_centro_direita])
+      conta_itens_direita = contaItensLista(lista_janela[inicio_folha_direita:fim_folha_direita])
+
+      # print("")
+      # print("inicio_folha_esquerda :", inicio_folha_esquerda, "/fim_folha_esquerda:", fim_folha_esquerda, " conta:", conta_itens_esquerda)
+      # print("inicio_centro_esquerda:",inicio_centro_esquerda,"/fim_centro_direita:", fim_centro_direita, " conta:", conta_itens_centro)
+      # print("inicio_folha_direita  :",inicio_folha_direita,"/fim_folha_direita:", fim_folha_direita, " conta:", conta_itens_direita)
+
+      # Se a quantidade de itens a direita for maior apaga deste lado
+      if conta_itens_direita > conta_itens_esquerda:
+        # Remove da direita
+        if len(lista_janela[indice_direita]) > 0:
+          # Remove do fim da janela          
+          lista_janela[indice_direita].pop()
+          if len(lista_janela[indice_direita]) == 0:          
+            # Não pode ser menor que o centro
+            if indice_direita > lista_centro_janela[-1]:
+              indice_direita = indice_direita - 1
       else:
-        # Verifica se é uma janela do meio
-        if indice_passo < len(lista)-folha_janela and len(lista_janela) == tamanho_janela:
-          # print("Janelas do meio")
-          # Verifica se a primeira sentença tem elementos
-          if len(lista_janela[0]) >0:
-            # Meio - Remove do inicio da janela da 1a sentença
-            del lista_janela[0][0]
-          else:
-            # Verifica se a segunda sentença tem elementos
-            if len(lista_janela[1]) >0:
-              # Meio - Remove do inicio da janela da 2a sentença
-              del lista_janela[1][0]
-
-          # Verifica se a última sentença tem elementos
-          if len(lista_janela[-1]) >0:
-            # Meio - Remove do fim da janela da 1a sentença
-            del lista_janela[-1][-1]
-          else:
-            # Verifica se a penúltima sentença tem elementos
-            if len(lista_janela[-2]) >0:
-              # Meio - Remove do fim da janela da 2a sentença
-              del lista_janela[-2][-1]
-        else:
-            # Verifica se é uma janela de fim
-            if indice_passo >= len(lista)-folha_janela and len(lista_janela) != tamanho_janela:
-              # Verifica se a primeira sentença tem elementos
-              if len(lista_janela[0]) >0:
-                # Fim - Remove do início da janela da 1a sentença
-                del lista_janela[0][0]
-              else:
-                # Verifica se a segunda sentença tem elementos
-                if len(lista_janela[1]) >0:
-                  # Fim - Remove do início da janela da 2a sentença
-                  del lista_janela[1][0]
-                else:
-                  # Verifica se a terceira sentença tem elementos
-                  if len(lista_janela[2]) >0:
-                    # Fim - Remove do início da janela da 3a sentença
-                    del lista_janela[2][0]
-
+          # Remove da esquerda
+          if len(lista_janela[indice_esquerda]) > 0:
+            # Remove do inicio da janela
+            lista_janela[indice_esquerda].pop(0)
+            if len(lista_janela[indice_esquerda]) == 0:          
+              # Não pode ser menor que o centro
+              if indice_esquerda < lista_centro_janela[0]:
+                indice_esquerda = indice_esquerda + 1
+              
       # Calcula a nova quantidade de itens
       qtde_itens2 = contaItensLista(lista_janela)
-      # print("quantidade de itens janela durante:", qtde_itens2)
 
       # Verifica se conseguiu reduzir a quantidade de itens
       if (qtde_itens1 == qtde_itens2):
-        print("Atenção: Truncamento de janela não conseguiu reduzir além de ", qtde_itens2, " para o máximo ", maximo_itens)
+        print("Atenção!: Truncamento de janela não conseguiu reduzir além de ", qtde_itens2, " para o máximo ", maximo_itens)
         minimo_alcancado = True
 
       # Atribui uma nova quantidade
@@ -367,7 +356,7 @@ def truncaJanela(lista, lista_janela, tamanho_janela, lista_indice_janela, indic
     return lista_janela
 
 # ============================
-def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
+def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
   """
      Cria janelas de itens de uma lista
 
@@ -380,11 +369,11 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
      Retorno:
        `lista_janela` - Lista com os itens em janelas.
        `string_janela` - String com os itens em janelas.
-       `lista_indice_janela` - Lista com os índices das sentenças que forma a janela.
+       `lista_indice_janela` - Lista com os índices dos itens que forma a janela.
        `lista_centro_janela` - Lista com os índices dos centros da janela.
   """
 
-  # Se a lista é menor que o tamanho da janela  
+  # Se a lista é menor que o tamanho da janela
   if len(lista) <= tamanho_janela:
 
     # Recupera a sentenças da janela
@@ -405,38 +394,36 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
     centro_janela = int((len(lista)/2))
     lista_centro_janela.append(centro_janela)
 
-    # Concatena em uma string as palavras das sentenças da janela
-    lista_janela_sentenca = []
-    for sentenca in lista_janela:
-      lista_janela_sentenca.append(" ".join(sentenca))
-          
-    return lista_janela, " ".join(lista_janela_sentenca), lista_indice_janela, lista_centro_janela
+    # Concatena em uma string as palavras das itens da janela
+    lista_janela_itens = []
+    for item in lista_janela:
+      lista_janela_itens.append(" ".join(item))
+
+    return lista_janela, " ".join(lista_janela_itens), lista_indice_janela, lista_centro_janela
 
   else:
     # print(">>>> Lista maior que as janelas")
     # Lista maior que o tamanho da janela
-    # Calcula o tamanho da folha da janela(quantidade de valores a esquerda e direitado centro da janela).
+    # Calcula o tamanho da folha da janela(quantidade de itens a esquerda e direita do centro da janela).
     folha_janela = int((tamanho_janela-1) /2)
-    # print("folha_janela:", folha_janela)
-    # print("indice_passo:", indice_passo)
     # Define o centro da janela
     centro_janela = -1
     # Percorre a lista
     # Dentro do intervalo da lista de itens
     if indice_passo >= 0 and indice_passo < len(lista):
-
-      # Seleciona o passo que se deseja a janela de
+      
       # Guarda os itens da janela
       lista_janela = []
       # Guarda os índices dos itens das janelas
       lista_indice_janela = []
       # Guarda os índices dos centros das janelas
+      # Por enquanto somente centro com um elemento
       lista_centro_janela = []
 
-      # Inicio da lista sem janelas completas antes do passo
+      # Inicio da lista sem janelas completas depois do meio da janela, folha da direita do centro
       if indice_passo < folha_janela:
         # print("Inicio da lista")
-        # Sentenças anteriores
+        # itens anteriores
         #Evita estourar o início da lista
         inicio = 0
         fim = indice_passo
@@ -448,7 +435,7 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
           # Adiciona o indice do documento na lista
           lista_indice_janela.append(j)
 
-        # Sentença central
+        # item central
         # Recupera o documento da lista
         documento = lista[indice_passo]
         lista_janela.append(documento[0])
@@ -458,7 +445,7 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
         centro_janela = len(lista_janela)-1
         lista_centro_janela.append(centro_janela)
 
-        # Sentenças posteriores
+        # itens posteriores
         inicio = indice_passo + 1
         fim = indice_passo + folha_janela + 1
         # print("Posterior: inicio:", inicio, " fim:", fim)
@@ -470,11 +457,11 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
           lista_indice_janela.append(j)
 
       else:
-        # Meio da lista com janelas completas antes e depois
+        # Meio da lista com janelas completas antes e depois, folhas de tamanhos iguais a esquerda e a direita
         if indice_passo < len(lista)-folha_janela:
           # print(" Meio da lista")
 
-          # Sentenças anteriores
+          # itens anteriores
           inicio = indice_passo - folha_janela
           fim = indice_passo
           # print("inicio:", inicio, " fim:", fim)
@@ -486,18 +473,18 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
             # Adiciona o indice do documento na lista
             lista_indice_janela.append(j)
 
-          # Sentença central
+          # item central
           # Recupera o documento da lista
           documento = lista[indice_passo]
           # Adiciona o documento a janela
-          lista_janela.append(documento[0])          
+          lista_janela.append(documento[0])
           # Adiciona o indice do documento na lista
           lista_indice_janela.append(indice_passo)
           # Guarda o centro da janela
           centro_janela = len(lista_janela)-1
           lista_centro_janela.append(centro_janela)
 
-          # Sentenças posteriores
+          # itens posteriores
           inicio = indice_passo + 1
           fim = indice_passo + 1 + folha_janela
           for j in range(inicio,fim):
@@ -508,12 +495,12 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
             # Adiciona o indice do documento na lista
             lista_indice_janela.append(j)
 
-        else:
-          # Fim da lista sem janelas completas depois
+        else:          
+          # Fim da lista sem janelas completas antes do meio da janela, folha da esquerda do centro
           if indice_passo >= len(lista)-folha_janela:
             # print("Fim da lista")
 
-            # Sentenças anteriores
+            # itens anteriores
             inicio = indice_passo - folha_janela
             fim = indice_passo
             #print("inicio:", inicio, " fim:", fim)
@@ -525,7 +512,7 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
               # Adiciona o indice do documento na lista
               lista_indice_janela.append(j)
 
-            # Sentença central
+            # item central
             # Recupera o documento da lista
             documento = lista[indice_passo]
             # Adiciona o documento a janela
@@ -536,10 +523,10 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
             centro_janela = len(lista_janela)-1
             lista_centro_janela.append(centro_janela)
 
-            # Sentenças posteriores
+            # itens posteriores
             inicio = indice_passo + 1
             fim = indice_passo + 1 + folha_janela
-            # Evita o extrapolar o limite da lista de sentenças
+            # Evita o extrapolar o limite da lista de itens
             if fim > len(lista):
               fim = len(lista)
             for j in range(inicio,fim):
@@ -560,11 +547,11 @@ def getJanelaSentenca(lista, tamanho_janela, indice_passo, maximo_itens=None):
           lista_apagar.append(item.copy())
 
       # Trunca a quantidade de itens da janela até o máximo de itens.
-      lista_janela = truncaJanela(lista, lista_apagar, tamanho_janela, lista_indice_janela, indice_passo, maximo_itens, folha_janela)
-      
-    # Junta em uma string as palavras das sentenças da janela
-    lista_janela_sentenca = []
-    for sentenca in lista_janela:
-      lista_janela_sentenca.append(" ".join(sentenca))
+      lista_janela = truncaJanela(lista_apagar, maximo_itens, lista_centro_janela)
 
-    return lista_janela, " ".join(lista_janela_sentenca), lista_indice_janela, lista_centro_janela
+    # Junta em uma string os itens das listas  da janela
+    lista_janela_itens = []
+    for item in lista_janela:
+      lista_janela_itens.append(" ".join(item))
+
+    return lista_janela, " ".join(lista_janela_itens), lista_indice_janela, lista_centro_janela
