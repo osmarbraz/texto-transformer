@@ -178,7 +178,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -217,7 +217,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -257,7 +257,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -303,7 +303,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -342,7 +342,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -382,7 +382,7 @@ class TestUtilTexto(unittest.TestCase):
         lista = []
         for i, sentenca in enumerate(lista_sentenca):
             # Divide a sentença pelos espaços em branco.
-            lista.append([sentenca.split(' ')])
+            lista.append(sentenca.split(' '))
         
         # Lista das janelas para comparar os elementos.
         lista_saida_janela = []
@@ -406,8 +406,7 @@ class TestUtilTexto(unittest.TestCase):
         self.assertListEqual(lista_saida_conta_itens, lista_esperada_conta_itens)
         self.assertListEqual(lista_saida_centro, lista_esperada_centro)
         self.assertListEqual(lista_saida_indice, lista_esperada_indice)        
-        
-        
+                
 if "__main__" == __name__:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)

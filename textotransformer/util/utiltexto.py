@@ -361,8 +361,8 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
      Cria janelas de itens de uma lista
 
      Parâmetros:
-       `lista` - Uma lista com todos os itens.
-       `tamanho_janela` - Tamanho da janela a ser montada.
+       `lista` - Uma lista de lista com os itens a se serem colocados em uma janela.
+       `tamanho_janela` - Tamanho da janela a ser construída.
        `indice_passo` - Índice do passo que se deseja da janela.
        `maximo_itens` - Máximo de itens na janela. Trunca das extremidades preservando a palavra central.
 
@@ -376,10 +376,10 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
   # Se a lista é menor que o tamanho da janela
   if len(lista) <= tamanho_janela:
 
-    # Recupera a sentenças da janela
+    # Recupera os itens da janela
     lista_janela = []
-    for i, sentenca in enumerate(lista):
-        lista_janela.append(sentenca[0])
+    for i, item in enumerate(lista):
+        lista_janela.append(item)
 
     # Guarda os índices dos itens das janelas
     lista_indice_janela = []
@@ -431,14 +431,14 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
         for j in range(inicio, fim):
           # Recupera o documento da lista
           documento = lista[j]
-          lista_janela.append(documento[0])
+          lista_janela.append(documento)
           # Adiciona o indice do documento na lista
           lista_indice_janela.append(j)
 
         # item central
         # Recupera o documento da lista
         documento = lista[indice_passo]
-        lista_janela.append(documento[0])
+        lista_janela.append(documento)
         # Adiciona o indice do documento na lista
         lista_indice_janela.append(indice_passo)
         # Guarda o centro da janela
@@ -452,7 +452,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
         for j in range(inicio,fim):
           # Recupera o documento da lista
           documento = lista[j]
-          lista_janela.append(documento[0])
+          lista_janela.append(documento)
           # Adiciona o indice do documento na lista
           lista_indice_janela.append(j)
 
@@ -469,7 +469,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
             # Recupera o documento da lista
             documento = lista[j]
             # Adiciona o documento a janela
-            lista_janela.append(documento[0])
+            lista_janela.append(documento)
             # Adiciona o indice do documento na lista
             lista_indice_janela.append(j)
 
@@ -477,7 +477,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
           # Recupera o documento da lista
           documento = lista[indice_passo]
           # Adiciona o documento a janela
-          lista_janela.append(documento[0])
+          lista_janela.append(documento)
           # Adiciona o indice do documento na lista
           lista_indice_janela.append(indice_passo)
           # Guarda o centro da janela
@@ -491,7 +491,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
             # Recupera o documento da lista
             documento = lista[j]
             # Adiciona o documento a janela
-            lista_janela.append(documento[0])
+            lista_janela.append(documento)
             # Adiciona o indice do documento na lista
             lista_indice_janela.append(j)
 
@@ -508,7 +508,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
               # Recupera o documento da lista
               documento = lista[j]
               # Adiciona o documento a janela
-              lista_janela.append(documento[0])
+              lista_janela.append(documento)
               # Adiciona o indice do documento na lista
               lista_indice_janela.append(j)
 
@@ -516,7 +516,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
             # Recupera o documento da lista
             documento = lista[indice_passo]
             # Adiciona o documento a janela
-            lista_janela.append(documento[0])
+            lista_janela.append(documento)
             # Adiciona o indice do documento na lista
             lista_indice_janela.append(indice_passo)
             # Guarda o centro da janela
@@ -533,7 +533,7 @@ def getJanelaLista(lista, tamanho_janela, indice_passo, maximo_itens=None):
               # Recupera o documento da lista
               documento = lista[j]
               # Adiciona o documento a janela
-              lista_janela.append(documento[0])
+              lista_janela.append(documento)
               # Adiciona o indice do documento na lista
               lista_indice_janela.append(j)
     else:
