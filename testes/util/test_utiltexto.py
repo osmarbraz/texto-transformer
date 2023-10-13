@@ -6,7 +6,7 @@ import logging
 import unittest
 
 # Bibliotecas próprias
-from textotransformer.util.utiltexto import getIndexTokenTexto, getTextoLista, limpezaTexto, removeTags, tamanhoTexto, contaItensLista, truncaJanela, getJanelaLista
+from textotransformer.util.utiltexto import getIndexTokenTexto, getTextoLista, limpezaTexto, removeTags, encontrarIndiceSubLista, tamanhoTexto, contaItensLista, truncaJanela, getJanelaLista
 
 # Objeto de logger
 logger = logging.getLogger(__name__)
@@ -57,7 +57,33 @@ class TestUtilTexto(unittest.TestCase):
         saidaEsperada = "texto"
                 
         self.assertEqual(saida, saidaEsperada)
+    
+    # Testes encontrarIndiceSubLista
+    def test_encontrarIndiceSubLista(self):
+        logger.info("Testando o encontrarIndiceSubLista")
         
+        # Valores de entrada
+        lista_entrada = [1,2,3,4,5,6,7,8,9,10]
+
+        lista_sub_inicio = [1,2,3,4]
+        lista_sub_meio = [3,4]
+        lista_sub_fim = [8,9,10]
+
+        # Valores esperados
+        indice_inicio_esperado = (0, 3)
+        indice_meio_esperado = (2, 3)
+        indice_fim_esperado = (7, 9)
+
+        # Executa o método
+        indice_inicio = encontrarIndiceSubLista(lista_entrada, lista_sub_inicio)
+        indice_meio = encontrarIndiceSubLista(lista_entrada, lista_sub_meio)
+        indice_fim = encontrarIndiceSubLista(lista_entrada, lista_sub_fim)
+
+        # Avalia a saida do método
+        self.assertEqual(indice_inicio, indice_inicio_esperado)
+        self.assertEqual(indice_meio, indice_meio_esperado)
+        self.assertEqual(indice_fim, indice_fim_esperado)
+               
     # Testes tamanhoTexto
     def test_tamanhoTexto(self):
         logger.info("Testando o tamanhoTexto")

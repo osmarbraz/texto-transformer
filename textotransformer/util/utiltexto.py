@@ -97,7 +97,7 @@ def encontrarIndiceSubLista(lista: List, sublista: List):
             
         return indice_inicio, indice_fim
   
-  # Não encontrou a sublista na lista   
+  # Não encontrou a sublista na lista
   return -1, -1
     
 # ============================
