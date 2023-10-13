@@ -23,10 +23,10 @@ class MedidasComparacao(Enum):
         Converte um inteiro para um objeto da classe MedidasComparacao.
         
         Parâmetros:        
-           `medidas_comparacao` - Um valor inteiro a ser convertido.
+            `medidas_comparacao` - Um valor inteiro a ser convertido.
 
         Retorno:
-           Um objeto da classe MedidasComparacao.
+            Um objeto da classe MedidasComparacao.
         '''
             
          # Verifica o tipo de dado do parâmetro 'medidas_comparacao'
@@ -64,10 +64,10 @@ class PalavraRelevante(Enum):
         Converte um inteiro para um objeto da classe PalavraRelevante.
         
         Parâmetros:        
-           `palavra_relevante` - Um valor inteiro a ser convertido.
+            `palavra_relevante` - Um valor inteiro a ser convertido.
 
         Retorno:
-           Um objeto da classe PalavraRelevante.
+            Um objeto da classe PalavraRelevante.
         '''
             
          # Verifica o tipo de dado do parâmetro 'palavra_relevante'

@@ -299,12 +299,12 @@ class Modificador:
            `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
 
         Retorno um lista de dicionários com as top_k previsões para cada palavra mascarada no texto:
-           `indice_token` - Índice do token.
-           `texto_mascarado` - Texto mascarada.
-           `palavra_mascarada` - Palavra substituídas pela máscara.
-           `token_predito` - Palavra prevista para a máscara.
-           `peso_predito` - Peso da palavra prevista.
-           `token_predito_marcado` - Token predito que foi marcado.
+            `indice_token` - Índice do token.
+            `texto_mascarado` - Texto mascarada.
+            `palavra_mascarada` - Palavra substituídas pela máscara.
+            `token_predito` - Palavra prevista para a máscara.
+            `peso_predito` - Peso da palavra prevista.
+            `token_predito_marcado` - Token predito que foi marcado.
         '''
     
         # Somente modelos que possuem token de mascara.

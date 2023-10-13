@@ -110,7 +110,7 @@ class Transformer(nn.Module):
         Recupera o token de início.
 
         Retorna:
-           O token de início.
+            O token de início.
         '''
         
         return self.TOKEN_INICIO
@@ -121,7 +121,7 @@ class Transformer(nn.Module):
         Recupera o token de fim.
 
         Retorna:
-           O token de fim.
+            O token de fim.
         '''
         
         return self.TOKEN_FIM
@@ -132,7 +132,7 @@ class Transformer(nn.Module):
         Recupera a posição do token de início válido da lista de tokens.
 
         Retorna:
-           Um inteiro com a posição do token de início válido da lista de tokens.
+            Um inteiro com a posição do token de início válido da lista de tokens.
         '''
         
         return self.POSICAO_TOKEN_INICIO
@@ -143,7 +143,7 @@ class Transformer(nn.Module):
         Recupera a posição do token de fim válido da lista de tokens.
 
         Retorna:
-           Um inteiro com a posição do token de fim válido da lista de tokens.
+            Um inteiro com a posição do token de fim válido da lista de tokens.
         '''
         
         return self.POSICAO_TOKEN_FINAL
@@ -154,8 +154,8 @@ class Transformer(nn.Module):
         Recupera o lado de preenchimento da tag PAD.
         
         Retorna:
-           0 - o preenchimento do token de pad a esquerda. 
-           1 - o preenchimento do token de pad a direita. 
+            0 - o preenchimento do token de pad a esquerda. 
+            1 - o preenchimento do token de pad a direita. 
         '''
 
         return self.PADDING_SIDE
@@ -166,8 +166,8 @@ class Transformer(nn.Module):
         Recupera se o primeiro token do texto não possuo o token de separação.
         
         Retorna:
-           True - O primeiro token não possui o token de separação.
-           False - O primeiro token possui o token de separação.        
+            True - O primeiro token não possui o token de separação.
+            False - O primeiro token possui o token de separação.        
         '''
 
         return self.PRIMEIRO_TOKEN_SEM_SEPARADOR
@@ -178,7 +178,7 @@ class Transformer(nn.Module):
         Recupera o token de máscara.
         
         Retorna:
-          O token de máscara.
+            O token de máscara.
         '''
 
         return self.TOKEN_MASCARA    
@@ -200,7 +200,7 @@ class Transformer(nn.Module):
         Recupera o separador de subtoken.
         
         Retorna:
-          O separador de subtoken.
+            O separador de subtoken.
         '''
 
         return self.SEPARADOR_SUBTOKEN
@@ -212,10 +212,10 @@ class Transformer(nn.Module):
         Retorna um texto tokenizado e concatenado com tokens especiais '[CLS]' no início e o token '[SEP]' no fim para ser submetido ao modelo de linguagem.
         
         Parâmetros:
-           `texto` - Um texto a ser tokenizado.
+            `texto` - Um texto a ser tokenizado.
         
         Retorno:
-           `texto_tokenizado` - Texto tokenizado.
+            `texto_tokenizado` - Texto tokenizado.
         '''
 
         # Tokeniza o texto
@@ -232,7 +232,7 @@ class Transformer(nn.Module):
         Remove os tokens especiais de início, fim, separador e classificação  da lista de tokens.
         
         Parâmetros:
-           `lista_tokens` - Uma lista de tokens.
+            `lista_tokens` - Uma lista de tokens.
         
         Retorno:
             Uma lista de tokens sem os tokens especiais.
@@ -266,14 +266,14 @@ class Transformer(nn.Module):
         Ou use attention_mask diferente de 1 para saber que posições devem ser utilizadas na lista.
 
         Parâmetros:
-           `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
-           `addicionar_tokens_especiais` - Adiciona os tokens especiais de início e separação no texto.
+            `texto` - Texto é uma string ou uma lista de strings a serem tokenizados para o modelo de linguagem.
+            `addicionar_tokens_especiais` - Adiciona os tokens especiais de início e separação no texto.
                           
         Retorna um dicionário com as seguintes chaves:
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
-           `input_ids` - Uma lsta com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
-           `token_type_ids` - Uma lista com os tipos dos tokens.
-           `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+            `input_ids` - Uma lsta com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
+            `token_type_ids` - Uma lista com os tipos dos tokens.
+            `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         
         # Dicionário com a saída do tokenizador
@@ -332,16 +332,16 @@ class Transformer(nn.Module):
         Retorna os embeddings de todas as camadas de um texto.
     
         Parâmetros:
-           `texto` - Um texto tokenizado a ser recuperado os embeddings do modelo de linguagem
+            `texto` - Um texto tokenizado a ser recuperado os embeddings do modelo de linguagem
     
         Retorna um dicionário com as seguintes chaves:
-           `token_embeddings` - Uma lista com os embeddings da última camada.
-           `input_ids` - Uma lista com os textos indexados.            
-           `attention_mask` - Uma lista com os as máscaras de atenção
-           `token_type_ids` - Uma lista com os tipos dos tokens.            
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
-           `texto_origina`l - Uma lista com os textos originais.
-           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+            `token_embeddings` - Uma lista com os embeddings da última camada.
+            `input_ids` - Uma lista com os textos indexados.            
+            `attention_mask` - Uma lista com os as máscaras de atenção
+            `token_type_ids` - Uma lista com os tipos dos tokens.            
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+            `texto_origina`l - Uma lista com os textos originais.
+            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
     
         # Recupera o texto preparado pelo tokenizador para envio ao modelo
@@ -404,10 +404,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da primeira camada do transformer.
 
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
         
         # Retorna toda a primeira(0) camada da saida da rede.
@@ -424,10 +424,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da penúltima camada do transformer.
         
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
         # Retorna todas a penúltima(-2) camada
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
@@ -443,10 +443,10 @@ class Transformer(nn.Module):
         Retorna os embeddings extraído da última camada do transformer.
         
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
         # Retorna todas a última(-1) camada
         # Entrada: List das camadas(13 ou 25) (<1(lote)> x <qtde_tokens> x <768 ou 1024>)  
@@ -462,10 +462,10 @@ class Transformer(nn.Module):
         Retorna a soma dos embeddings extraído das 4 últimas camada do transformer.
      
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
         
         # Retorna todas as 4 últimas camadas
@@ -494,10 +494,10 @@ class Transformer(nn.Module):
         Retorna a concatenação dos embeddings das 4 últimas camadas do transformer.
              
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
         
         # Cria uma lista com os tensores a serem concatenados
@@ -527,10 +527,10 @@ class Transformer(nn.Module):
         Retorna a soma dos embeddings extraído de todas as camadas do transformer.
                    
         Parâmtros:
-           `saida_rede` - Um dicionário com a saída da rede.
+            `saida_rede` - Um dicionário com a saída da rede.
 
         Retorno:
-           Uma lista com os embeddings.
+            Uma lista com os embeddings.
         '''
       
         # Retorna todas as camadas descontando a primeira(0)
@@ -560,11 +560,11 @@ class Transformer(nn.Module):
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-           `texto` - Texto a ser recuperado os embeddings.
-           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+            `texto` - Texto a ser recuperado os embeddings.
+            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
 
         Retorno:
-           Os embeddings da camada para o texto.
+            Os embeddings da camada para o texto.
         '''
                 
         # Verifica o tipo de dado do parâmetro 'abordagem_extracao_embeddings_camadas'
@@ -630,7 +630,7 @@ class Transformer(nn.Module):
         Inicializa o dicionário utilizado pela tokenização de palavras.
 
         Parâmetros:           
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. 
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. 
         '''
         
         self._dic_excecao = dic_excecao
@@ -641,10 +641,10 @@ class Transformer(nn.Module):
         Retorna o deslocamento do token no texto para considerar mais ou menos tokens do MCL em relação a tokenização de PLN.
 
         Parâmetros:
-           `token` - Um token a ser verificado se é uma exceção.
+            `token` - Um token a ser verificado se é uma exceção.
 
         Retorno:
-           O deslocamento do token no texto para considerar menos tokens do MCL em relação a tokenização da ferramenta de PLN.
+            O deslocamento do token no texto para considerar menos tokens do MCL em relação a tokenização da ferramenta de PLN.
         '''
         
         valor = self._dic_excecao.get(token)
@@ -661,14 +661,14 @@ class Transformer(nn.Module):
         Retorna a posição do token de exceção no dicionário.
 
         Parâmetros:
-           `wi_pln` - Um token a ser verificado no dicionário.
-           `lista_tokens_texto_pln` - Lista dos tokens que podem fazer parte da exceção.
-           `pos_wi_pln` - Posição do token a ser verificado na lista de tokens.
+            `wi_pln` - Um token a ser verificado no dicionário.
+            `lista_tokens_texto_pln` - Lista dos tokens que podem fazer parte da exceção.
+            `pos_wi_pln` - Posição do token a ser verificado na lista de tokens.
 
         Retorno:
-           `wi_pln_pos_excecao' - O token concatenado encotrado no dicionário.
-           `pos_pln_excecao' - O deslocamento da exceção no dicionário.
-           `pos_excecao` - A posição do último token encontrado no dicionário.
+            `wi_pln_pos_excecao' - O token concatenado encotrado no dicionário.
+            `pos_pln_excecao' - O deslocamento da exceção no dicionário.
+            `pos_excecao` - A posição do último token encontrado no dicionário.
         '''
         
         wi_pln_pos_excecao = ""
@@ -707,15 +707,15 @@ class Transformer(nn.Module):
         Verifica se as listas geradas pelo método de gerar embedding de palavras estão com o mesmo tamanho e conteúdo.
         
         Parâmetros:
-           `mensagem` - Mensagem de erro a ser exibida.
-           `tokens_texto_concatenado_pln` - Texto concatenado e tokenizado pelo PLN.
-           `lista_tokens` - Lista dos tokens de palavras.
-           `lista_tokens_texto_pln` - Lista dos tokens de palavras do texto tokenizado pelo PLN.
-           `lista_pos_texto_pln` - Lista das POS das palavras do texto tokenizado pelo PLN.
-           `lista_tokens_texto_mcl` - Lista dos tokens de palavras do texto tokenizado pelo MCL.
-           `lista_tokens_oov_mcl` - Lista das palavras OOV do texto tokenizado pelo MCL.
-           `lista_palavra_embeddings_MEAN` - Lista dos embeddings das palavras calculados pela média dos embeddings dos tokens.
-           `lista_palavra_embeddings_MAX` - Lista dos embeddings das palavras calculados pelo máximo dos embeddings dos tokens.
+            `mensagem` - Mensagem de erro a ser exibida.
+            `tokens_texto_concatenado_pln` - Texto concatenado e tokenizado pelo PLN.
+            `lista_tokens` - Lista dos tokens de palavras.
+            `lista_tokens_texto_pln` - Lista dos tokens de palavras do texto tokenizado pelo PLN.
+            `lista_pos_texto_pln` - Lista das POS das palavras do texto tokenizado pelo PLN.
+            `lista_tokens_texto_mcl` - Lista dos tokens de palavras do texto tokenizado pelo MCL.
+            `lista_tokens_oov_mcl` - Lista das palavras OOV do texto tokenizado pelo MCL.
+            `lista_palavra_embeddings_MEAN` - Lista dos embeddings das palavras calculados pela média dos embeddings dos tokens.
+            `lista_palavra_embeddings_MAX` - Lista dos embeddings das palavras calculados pelo máximo dos embeddings dos tokens.
         '''
         
         if (lista_tokens[0] != lista_tokens_texto_pln[0]) or (lista_tokens[-1] != lista_tokens_texto_pln[-1]):
@@ -761,19 +761,19 @@ class Transformer(nn.Module):
                 Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
                           
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
-           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
-           `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
-           `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
-           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
+            `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
+            `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
+            `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
                
         Retorna um dicionário com as seguintes chaves: 
-           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
-           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
-           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
-           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
+            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
+            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
+            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
+            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
+            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
         
         # Inicializa os dicionários de exceção
@@ -1058,19 +1058,19 @@ class Transformer(nn.Module):
                 Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
                           
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
-           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
-           `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
-           `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
-           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
+            `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
+            `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
+            `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
                
         Retorna um dicionário com as seguintes chaves: 
-           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
-           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
-           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
-           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
+            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
+            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
+            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
+            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
+            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
 
         # Inicializa os dicionários de exceção
@@ -1368,19 +1368,19 @@ class Transformer(nn.Module):
                 Especificar exceção maior ou menor para tratar tokens de palavra não tokenizado em palavra.
                           
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
-           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
-           `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
-           `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
-           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem.
+            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto.
+            `lista_tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto.
+            `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
+            `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
                
         Retorna um dicionário com as seguintes chaves: 
-           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
-           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
-           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
-           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
+            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
+            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
+            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do MCL.
+            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
+            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         '''
  
         # Inicializa os dicionários de exceção
@@ -1657,7 +1657,7 @@ class Transformer(nn.Module):
         Salva o modelo.
 
         Parâmetros:
-           `output_path` - caminho para salvar o modelo
+            `output_path` - caminho para salvar o modelo
         '''
 
         self.auto_model.save_pretrained(output_path)
@@ -1689,11 +1689,11 @@ class Transformer(nn.Module):
         Envia lote pytorch batch para um dispositivo (CPU/GPU)
 
         Parâmetros:
-           `lote` - lote pytorch
-           `target_device` - dispositivo de destino (CPU/GPU)
+            `lote` - lote pytorch
+            `target_device` - dispositivo de destino (CPU/GPU)
         
         Retorno:
-           lote enviado para o dispositivo        
+            lote enviado para o dispositivo        
         '''
 
         for key in lote:
@@ -1708,10 +1708,10 @@ class Transformer(nn.Module):
         Trata a lista de tokens tokenizador do MCL.
 
         Parâmetros:
-           `tokens_texto_mcl` - Lista dos tokens gerados pelo tokenizador.
+            `tokens_texto_mcl` - Lista dos tokens gerados pelo tokenizador.
            
         Retorno:
-           Lista de tokens tratada.        
+            Lista de tokens tratada.        
         '''  
         
         # Se o primeiro token não for o TOKEN_INICIO e o token não tem caracter inicial igual ao separador, adiciona

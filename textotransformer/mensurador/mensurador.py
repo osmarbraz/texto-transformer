@@ -24,10 +24,10 @@ class Mensurador:
     Realiza mensurações de embeddings em textos.
      
     Parâmetros:
-       `modelo_args` - Parâmetros do modelo de linguagem.
-       `transformer` - Modelo de linguagem carregado.
-       `pln` - Processador de linguagem natural.
-       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
+        `modelo_args` - Parâmetros do modelo de linguagem.
+        `transformer` - Modelo de linguagem carregado.
+        `pln` - Processador de linguagem natural.
+        `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para computação. Se none, verifica se uma GPU pode ser usada.
     ''' 
 
     # Construtor da classe
@@ -74,14 +74,14 @@ class Mensurador:
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MEAN.
         
         Parâmetros:
-           `embedding_si` - Embeddings da primeira sentença.
-           `embedding_sj` - Embeddings da segunda sentença.
-        
+            `embedding_si` - Embeddings da primeira sentença.
+            `embedding_sj` - Embeddings da segunda sentença.
+            
         Retorno:
-           `Scos` - Similaridade do cosseno - usando a média dos embeddings Si e Sj das camadas especificadas.
-           `Spro` - Produto escaar - usando a média dos embeddings Si e Sj das camadas especificadas.
-           `Seuc` - Distância euclidiana - usando a média dos embeddings Si e Sj das camadas especificadas.
-           `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.           
+            `Scos` - Similaridade do cosseno - usando a média dos embeddings Si e Sj das camadas especificadas.
+            `Spro` - Produto escaar - usando a média dos embeddings Si e Sj das camadas especificadas.
+            `Seuc` - Distância euclidiana - usando a média dos embeddings Si e Sj das camadas especificadas.
+            `Sman` - Distância de manhattan - usando a média dos embeddings Si e Sj das camadas especificadas.           
         '''
 
         #print('embedding_si=', embedding_si.shape) 
@@ -132,14 +132,14 @@ class Mensurador:
         Retorna as medidas de duas sentenças Si e Sj utilizando a estratégia MAX.
         
         Parâmetros:
-           `embedding_si` - Embeddings da primeira sentença.
-           `embedding_sj` - Embeddings da segunda sentença.
+            `embedding_si` - Embeddings da primeira sentença.
+            `embedding_sj` - Embeddings da segunda sentença.
            
         Retorno:
-           `Scos` - Similaridade do cosseno - usando o maior dos embeddings Si e Sj das camadas especificadas.
-           `Spro` - Produto escaar - usando o maior dos embeddings Si e Sj das camadas especificadas.
-           `Seuc` - Distância euclidiana - usando o maior dos embeddings Si e Sj das camadas especificadas.
-           `Sman` - Distância de manhattan - usando o maior dos embeddings Si e Sj das camadas especificadas.
+            `Scos` - Similaridade do cosseno - usando o maior dos embeddings Si e Sj das camadas especificadas.
+            `Spro` - Produto escaar - usando o maior dos embeddings Si e Sj das camadas especificadas.
+            `Seuc` - Distância euclidiana - usando o maior dos embeddings Si e Sj das camadas especificadas.
+            `Sman` - Distância de manhattan - usando o maior dos embeddings Si e Sj das camadas especificadas.
         '''
 
         #print('embedding_si=', embedding_si.shape) 
@@ -190,12 +190,12 @@ class Mensurador:
         Realiza o cálculo da medida do texto de acordo com a estratégia de pooling(MAX ou MEAN).
         
         Parâmetros:
-           `embedding_si` - Embeddings da primeira sentença.
-           `embedding_sj` - Embeddings da segunda sentença.
-           `estrategia_pooling` - Estratégia de pooling a ser utilizada.     
+            `embedding_si` - Embeddings da primeira sentença.
+            `embedding_sj` - Embeddings da segunda sentença.
+            `estrategia_pooling` - Estratégia de pooling a ser utilizada.     
         
         Retorno:
-           As medidas de duas sentenças Si e Sj utilizando a estratégia especificada.  
+            As medidas de duas sentenças Si e Sj utilizando a estratégia especificada.  
         '''
 
         if self.model_args.estrategia_pooling == EstrategiasPooling.MEAN.value:
@@ -216,13 +216,13 @@ class Mensurador:
         Retorna os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         
         Parâmetros:
-           `embedding_texto` - Embeddings do texto.
-           `texto` - Texto.
-           `sentenca` - Sentença.
-           `posicao_sentenca` - Posição da sentença no texto.
+            `embedding_texto` - Embeddings do texto.
+            `texto` - Texto.
+            `sentenca` - Sentença.
+            `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
-           Uma lista com os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
+            Uma lista com os embeddings de uma sentença com todas as palavras(ALL) a partir dos embeddings do texto.
         '''
                    
         # Tokeniza o texto
@@ -264,13 +264,13 @@ class Mensurador:
         Retorna os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         
         Parâmetros:
-          `embedding_texto` - Embeddings do texto.
-          `texto` - Texto.
-          `sentenca` - Sentença.
-          `posicao_sentenca` - Posição da sentença no texto.
+            `embedding_texto` - Embeddings do texto.
+            `texto` - Texto.
+            `sentenca` - Sentença.
+            `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
-           Uma lista com os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
+            Uma lista com os embeddings de uma sentença sem stopwords(CLEAN) a partir dos embeddings do texto.
         
         '''
           
@@ -342,13 +342,13 @@ class Mensurador:
         Retorna os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         
         Parâmetros:
-           `embedding_texto` - Embeddings do texto.
-           `texto` - Texto.
-           `sentenca` - Sentença.
-           `posicao_sentenca` - Posição da sentença no texto.
+            `embedding_texto` - Embeddings do texto.
+            `texto` - Texto.
+            `sentenca` - Sentença.
+            `posicao_sentenca` - Posição da sentença no texto.
         
         Retorno:
-           Uma lista com os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
+            Uma lista com os embeddings de uma sentença somente com as palavras relevantes(NOUN) de um tipo a partir dos embeddings do texto.
         
         '''
 
@@ -419,13 +419,13 @@ class Mensurador:
         Retorna os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.    
         
         Parâmetros:
-           `embedding_texto` - Embeddings do texto.
-           `texto` - Texto.
-           `sentenca` - Sentença.
-           `posicao_sentenca' - Posição da sentença no texto.
+            `embedding_texto` - Embeddings do texto.
+            `texto` - Texto.
+            `sentenca` - Sentença.
+            `posicao_sentenca' - Posição da sentença no texto.
         
         Retorno:
-           Uma lista com os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.
+            Uma lista com os embeddings de uma sentença considerando a relevância das palavras (ALL, CLEAN ou NOUN) a partir dos embeddings do texto.
         '''
 
         if self.model_args.palavra_relevante == PalavraRelevante.ALL.value:
@@ -457,12 +457,12 @@ class Mensurador:
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-           `texto` - Texto a ser recuperado os embeddings.
-           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
-           `device` - Qual torch.device usar para a computação.
+            `texto` - Texto a ser recuperado os embeddings.
+            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+            `device` - Qual torch.device usar para a computação.
 
         Retorno:
-           Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
+            Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
         '''
         
         # Coloca o modelo em modo avaliação
@@ -500,12 +500,12 @@ class Mensurador:
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-           `texto` - Texto a ser recuperado os embeddings.
-           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `texto` - Texto a ser recuperado os embeddings.
+            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
 
         Retorno:
-           Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
+            Uma lista com os embeddings do texto de acordo com a abordagem de extração especificada.
         '''
         
         # Roda o texto através do modelo de linguagem, e coleta todos os estados ocultos produzidos.
@@ -532,15 +532,15 @@ class Mensurador:
         Palavra relavante padrão é ALL(0).
         
         Parâmetros:
-           `texto` - Texto a ser realizado as comparações.
-           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `texto` - Texto a ser realizado as comparações.
+            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
                  
         Retorno um dicionário com:
-           `cos` - Medida de cos do texto.
-           `pro` - Medida de pro do texto.
-           `euc` - Medida de euc do texto.
-           `man` - Medida de man do texto.
+            `cos` - Medida de cos do texto.
+            `pro` - Medida de pro do texto.
+            `euc` - Medida de euc do texto.
+            `man` - Medida de man do texto.
         '''
 
         # Quantidade de sentenças no texto

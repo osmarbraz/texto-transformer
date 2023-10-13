@@ -26,10 +26,10 @@ class GranularidadeTexto(Enum):
         Converte um inteiro para um objeto da classe GranularidadeTexto.
         
         Parâmetros:        
-           `granularidade_texto` - Um valor inteiro a ser convertido.
+            `granularidade_texto` - Um valor inteiro a ser convertido.
 
         Retorno:
-           Um objeto da classe GranularidadeTexto.
+            Um objeto da classe GranularidadeTexto.
         '''
 
         # Verifica o tipo de dado do parâmetro 'granularidade_texto'
@@ -66,10 +66,10 @@ class EstrategiasPooling(Enum):
         Converte um inteiro para um objeto da classe EstrategiasPooling.
         
         Parâmetros:        
-           `estrategia_pooling` - Um valor inteiro a ser convertido.
+            `estrategia_pooling` - Um valor inteiro a ser convertido.
 
         Retorno:
-           Um objeto da classe EstrategiasPooling.
+            Um objeto da classe EstrategiasPooling.
         '''
 
         # Verifica o tipo de dado do parâmetro 'abordagem_extracao_embeddings_camadas'
@@ -120,10 +120,10 @@ class AbordagemExtracaoEmbeddingsCamadas(Enum):
         Converte um inteiro para um objeto da classe AbordagemExtracaoEmbeddingsCamadas.
         
         Parâmetros:        
-           `abordagem_extracao_embeddings_camadas` - Um valor inteiro de onde deve ser recupera os embeddings.
+            `abordagem_extracao_embeddings_camadas` - Um valor inteiro de onde deve ser recupera os embeddings.
 
         Retorno:
-           Um objeto da classe AbordagemExtracaoEmbeddingsCamadas.
+            Um objeto da classe AbordagemExtracaoEmbeddingsCamadas.
         '''
 
         # Verifica o tipo de dado do parâmetro 'abordagem_extracao_embeddings_camadas'
@@ -161,7 +161,7 @@ class AbordagemExtracaoEmbeddingsCamadas(Enum):
         Retorna uma string com o nome da abordagem de extração de embeddings das camadas.
         
         Retorno:
-           Uma string com o nome da abordagem.
+            Uma string com o nome da abordagem.
         '''
         
         return self.value[LISTATIPOCAMADA_NOME]

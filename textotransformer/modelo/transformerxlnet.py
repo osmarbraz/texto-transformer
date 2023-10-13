@@ -106,19 +106,19 @@ class TransformerXLNet(Transformer):
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
-           `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
-           `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
-           `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
-           `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado os embeddings das palavras do modelo de linguagem
+            `embeddings_texto` - Os embeddings do texto gerados pelo método getEmbeddingsTexto
+            `tokens_texto_mcl` - Os tokens do texto gerados pelo método getEmbeddingsTexto
+            `tokens_texto_concatenado_pln` - Os tokens do texto concatenado gerados pela ferramenta de PLN.
+            `pln` - Uma instância da classe PLN para realizar a tokenização e POS-Tagging do texto.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
                
         Retorna um dicionário com as seguintes chaves: 
-           `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
-           `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
-           `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
-           `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
+            `tokens_texto` - Uma lista com os tokens do texto gerados pelo método.
+            `pos_texto_pln` - Uma lista com as postagging dos tokens gerados pela ferramenta de PLN.
+            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV do mcl.
+            `palavra_embeddings_MEAN` - Uma lista dos embeddings de palavras com a média dos embeddings(Estratégia MEAN) dos tokens que formam a palavra.
+            `palavra_embeddings_MAX` - Uma lista dos embeddings de palavras com o máximo dos embeddings(Estratégia MAX) dos tokens que formam a palavra.
         ''' 
         
         # Tokenização SentencePiece (Separador, _) XLNet

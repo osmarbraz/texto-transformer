@@ -15,7 +15,7 @@ class InstaladorModelo:
     Realiza a instalação do modelo spaCy.
      
     Parâmetros:
-       `model_args` - Um objeto com os parâmetros do modelo.
+        `model_args` - Um objeto com os parâmetros do modelo.
     ''' 
     
     def __init__(self, model_args: ModeloArgumentos):

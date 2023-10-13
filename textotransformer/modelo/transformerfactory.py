@@ -55,11 +55,11 @@ class TransformerFactory():
         Para o GTP2 que utiliza GPT2Model, retorna um TransformerGPT2.
             
         Parâmetros:
-           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
-           `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
-           `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
-           `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
-           `tokenizer_name_or_path` - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado.
+            `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
+            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
+            `cache_dir` - Cache dir para Huggingface Transformers para armazenar/carregar modelos.
+            `tokenizer_args` - Argumentos (chave, pares de valor) passados para o modelo Huggingface Tokenizer
+            `tokenizer_name_or_path` - Nome ou caminho do tokenizer. Quando None, model_name_or_path é usado.
         '''    
         
         # Recupera parâmetros do transformador dos argumentos e cria um dicionário para o AutoConfig
@@ -109,10 +109,10 @@ class TransformerFactory():
         Retorna uma classe Transformer com um modelo de linguagem carregado de acordo com os parâmetros auto_model.
 
         Parâmetros:
-           `auto_model` - Auto model modelo carregado.
-           `auto_config` - Auto config carregado.
-           `auto_tokenizer` - Auto tokenizer carregado.
-           `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
+            `auto_model` - Auto model modelo carregado.
+            `auto_config` - Auto config carregado.
+            `auto_tokenizer` - Auto tokenizer carregado.
+            `modelo_args' - Argumentos passados para o modelo Huggingface Transformers.
         '''
         
         # Verifica qual o Transformer deve ser retornado pelo parâmetro auto_model.
@@ -197,10 +197,10 @@ class TransformerFactory():
         Carrega o modelo transformer de acordo com o tipo.
 
         Parâmetros:
-           `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" (default) ou "mascara".
-           `model_name_or_path` - Nome ou caminho do modelo.
-           `config` - Configuração do modelo.
-           `cache_dir` - Diretório de cache.
+            `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" (default) ou "mascara".
+            `model_name_or_path` - Nome ou caminho do modelo.
+            `config` - Configuração do modelo.
+            `cache_dir` - Diretório de cache.
         '''
 
         if tipo_modelo_pretreinado == "simples":

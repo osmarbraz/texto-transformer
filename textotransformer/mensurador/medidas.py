@@ -126,7 +126,7 @@ def distanciaEuclidiana(a: torch.Tensor, b: torch.Tensor):
       `b` - Um tensor na forma de vetor.
 
    Retorno:
-       A distância euclidiana entre os vetores.
+      A distância euclidiana entre os vetores.
    '''
    
    if not isinstance(a, torch.Tensor):      

@@ -45,12 +45,12 @@ class TextoTransformer:
     Permite recuperar e manipular embeddings recuperados de tokens, palavras, sentenças e textos.
      
     Parâmetros:
-       `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
-       `modelo_spacy` - Nome do modelo spaCy a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.
-       `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
-       `do_lower_case` - Se True, converte todas as letras para minúsculas antes da tokenização. Valor default 'False'.
-       `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
-       `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
+        `pretrained_model_name_or_path` - Se for um caminho de arquivo no disco, carrega o modelo a partir desse caminho. Se não for um caminho, ele primeiro faz o download do repositório de modelos do Huggingface com esse nome. Valor default: 'neuralmind/bert-base-portuguese-cased'.                  
+        `modelo_spacy` - Nome do modelo spaCy a ser instalado e carregado pela ferramenta de pln spaCy. Valor default 'pt_core_news_lg'.
+        `abordagem_extracao_embeddings_camadas` - Especifica a abordagem padrão para a extração dos embeddings das camadas do transformer. Valor default '2'. Valores possíveis: 0-Primeira/1-Penúltima/2-Ùltima/3-Soma 4 últimas/4-Concat 4 últimas/5-Todas.
+        `do_lower_case` - Se True, converte todas as letras para minúsculas antes da tokenização. Valor default 'False'.
+        `device` - Dispositivo (como 'cuda' / 'cpu') que deve ser usado para o processamento. Se `None`, verifica se uma GPU pode ser usada. Se a GPU estiver disponível será usada no processamento. Valor default 'None'.
+        `tipo_modelo_pretreinado` - Tipo de modelo pré-treinado. Pode ser "simples" para criar AutoModel (default) ou "mascara" para criar AutoModelForMaskedLM.
     ''' 
     
     # Construtor da classe
@@ -143,7 +143,7 @@ class TextoTransformer:
         Define a estratégia de pooling para os parâmetros do modelo.
 
         Parâmetros:
-           `estrategia_pooling` - Um número de 0 a 1 com a estratégia de pooling das camadas do modelo contextualizado. Valor defaul '0'. Valores possíveis: 0 - MEAN estratégia média / 1 - MAX  estratégia maior.
+            `estrategia_pooling` - Um número de 0 a 1 com a estratégia de pooling das camadas do modelo contextualizado. Valor defaul '0'. Valores possíveis: 0 - MEAN estratégia média / 1 - MAX  estratégia maior.
         ''' 
 
         # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
@@ -167,7 +167,7 @@ class TextoTransformer:
         Define a estratégia de palavra relavante para os parâmetros do modelo.
         
         Parâmetros:        
-           `palavra_relevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
+            `palavra_relevante` - Um número de 0 a 2 que indica a estratégia de relevância das palavras do texto. Valor defaul '0'. Valores possíveis: 0 - Considera todas as palavras das sentenças / 1 - Desconsidera as stopwords / 2 - Considera somente as palavras substantivas.
         ''' 
         
         # Verifica o tipo de dado do parâmetro 'palavra_relevante'
@@ -195,15 +195,15 @@ class TextoTransformer:
         Retorna as medidas de (in)coerência Ccos, Ceuc, Cman do texto.
         
         Parâmetros:
-           `texto` - Um texto a ser medido.           
-           `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
-           `palavra_relevante` - Estratégia de relevância das palavras do texto.
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `texto` - Um texto a ser medido.           
+            `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
+            `palavra_relevante` - Estratégia de relevância das palavras do texto.
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno um dicionário com:
-           `cos` - Medida de cos do do texto.
-           `euc` - Medida de euc do do texto.
-           `man` - Medida de man do do texto.
+            `cos` - Medida de cos do do texto.
+            `euc` - Medida de euc do do texto.
+            `man` - Medida de man do do texto.
         ''' 
 
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -224,13 +224,13 @@ class TextoTransformer:
         Retorna a medida do texto utilizando a medida de similaridade de cosseno.
         
         Parâmetros:
-           `texto` - Um texto a ser medido a coerência.           
-           `estrategia_pooling` - Estratégia de pooling das camadas do transformer. 
-           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `texto` - Um texto a ser medido a coerência.           
+            `estrategia_pooling` - Estratégia de pooling das camadas do transformer. 
+            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno:
-           `cos` - Medida de cos do do texto.            
+            `cos` - Medida de cos do do texto.            
         '''         
 
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -251,13 +251,13 @@ class TextoTransformer:
         Retorna a medida do texto utilizando a medida de distância de Euclidiana.
                  
         Parâmetros:
-           `texto` - Um texto a ser mensurado.           
-           `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
-           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
-        
+            `texto` - Um texto a ser mensurado.           
+            `estrategia_pooling` - Estratégia de pooling das camadas do transformer.
+            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            
         Retorno:
-           `ceu` - Medida euc do texto.            
+            `ceu` - Medida euc do texto.            
         ''' 
         
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -278,13 +278,13 @@ class TextoTransformer:
         Retorna a medida do texto utilizando a medida de distância de Manhattan.
                  
         Parâmetros:
-           `texto` - Um texto a ser mensurado.           
-           `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
-           `palavra_relevante` - Estratégia de relevância das palavras do texto.            
-           `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `texto` - Um texto a ser mensurado.           
+            `estrategia_pooling` - Estratégia de pooling das camadas do BERT.
+            `palavra_relevante` - Estratégia de relevância das palavras do texto.            
+            `converte_para_numpy` - Se verdadeiro, a saída em vetores numpy. Caso contrário, é uma lista de tensores pytorch.
         
         Retorno:
-           `man` - Medida  Cman do do texto.            
+            `man` - Medida  Cman do do texto.            
         ''' 
         
         self._defineEstrategiaPooling(estrategia_pooling)
@@ -330,22 +330,21 @@ class TextoTransformer:
         Por exemplo: ["VERB","NOUN","AUX"], primeiro procura uma verbo, depois um substantivo e por último um auxiliar.
                            
         Parâmetros:
-           `texto` - Texto a ser mascarado.
-           `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
-                      Valor default ["VERB","NOUN","AUX"], primeiro procura uma verbo, depois um substantivo e por último um auxiliar.
-           `qtde` - Quantidade de palavras a serem substituidas pela máscara de acordo com a ordem das classes.
-                    Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
-                    for menor que quantidade de palavras das classes no texto.
-           `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
+            `texto` - Texto a ser mascarado.
+            `classe` - Lista com as classes morfossintática das palavras a serem mascarada com [MASK].
+                        Valor default ["VERB","NOUN","AUX"], primeiro procura uma verbo, depois um substantivo e por último um auxiliar.
+            `qtde` - Quantidade de palavras a serem substituidas pela máscara de acordo com a ordem das classes.
+                        Seleciona aleatoriamente a(s) palavra(s) a ser(em) mascarada(s) se a qtde 
+                        for menor que quantidade de palavras das classes no texto.
+            `top_k_predicao` - Quantidade de palavras a serem recuperadas mais próximas da máscara.
 
         Retorno um lista de dicionários com as top_k previsões para cada palavra mascarada no texto:
-            `texto_modificado` - Texto com a modificação.
-            `texto_mascarado` - Texto mascarado.
-            `palavra_mascarada` - Palavra substituídas pela máscara.
-            `token_predito` - Palavra predita para a máscara.
-            `token_peso` - Peso da palavra predita.
-            `token_predito_marcado` - Token predito que foi marcado.
-                
+                `texto_modificado` - Texto com a modificação.
+                `texto_mascarado` - Texto mascarado.
+                `palavra_mascarada` - Palavra substituídas pela máscara.
+                `token_predito` - Palavra predita para a máscara.
+                `token_peso` - Peso da palavra predita.
+                `token_predito_marcado` - Token predito que foi marcado.
         '''
         
         # Facilita acesso ao método "getModificacaoTextoSequencial" da classe Modificador.
@@ -366,13 +365,13 @@ class TextoTransformer:
         Facilita acesso ao método "tokenize" da classe Transformer.
 
         Parâmetros:
-           `texto` - Texto a ser tokenizado para o modelo de linguagem.
+            `texto` - Texto a ser tokenizado para o modelo de linguagem.
          
         Retorna um dicionário com as seguintes chaves:
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
-           `input_ids` - Uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
-           `token_type_ids` - Uma lista com os tipos dos tokens.
-           `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+            `input_ids` - Uma lista com os ids dos tokens de entrada mapeados em seus índices do vocabuário.
+            `token_type_ids` - Uma lista com os tipos dos tokens.
+            `attention_mask` - Uma lista com os as máscaras de atenção indicando com '1' os tokens  pertencentes à sentença.
         '''
         return self.getTransformer().tokenize(texto)
         
@@ -385,16 +384,16 @@ class TextoTransformer:
         Facilita acesso ao método "getSaidaRede" da classe Transformer.
     
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
+            `texto` - Um texto a ser recuperado os embeddings do modelo de linguagem
     
         Retorna um dicionário com as seguintes chaves:
-           `token_embeddings` - Uma lista com os embeddings da última camada.
-           `input_ids` - Uma lista com os textos indexados.            
-           `attention_mask` - Uma lista com os as máscaras de atenção
-           `token_type_ids` - Uma lista com os tipos dos tokens.            
-           `tokens_texto` - Uma lista com os textos tokenizados com os tokens especiais.
-           `texto_original` - Uma lista com os textos originais.
-           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+            `token_embeddings` - Uma lista com os embeddings da última camada.
+            `input_ids` - Uma lista com os textos indexados.            
+            `attention_mask` - Uma lista com os as máscaras de atenção
+            `token_type_ids` - Uma lista com os tipos dos tokens.            
+            `tokens_texto` - Uma lista com os textos tokenizados com os tokens especiais.
+            `texto_original` - Uma lista com os textos originais.
+            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
         
         return self.getTransformer().getSaidaRede(texto)
@@ -406,11 +405,11 @@ class TextoTransformer:
         Retorna os embeddings do texto de acordo com a abordagem de extração especificada.
         
         Parâmetros:
-           `texto` - Texto a ser recuperado os embeddings.
-           `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
+            `texto` - Texto a ser recuperado os embeddings.
+            `abordagem_extracao_embeddings_camadas` - Camada de onde deve ser recupera os embeddings.
 
         Retorno:
-           Os embeddings da camada para o texto.
+            Os embeddings da camada para o texto.
         '''    
 
         return self.getTransformer().getSaidaRedeCamada(texto, 
@@ -427,20 +426,20 @@ class TextoTransformer:
         Retorna a codificação completa do texto utilizando o modelo de linguagem.
     
         Parâmetros:
-           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
-           `device` - Qual torch.device usar para a computação.
+            `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `device` - Qual torch.device usar para a computação.
     
         Retorna um dicionário com as seguintes chaves:
-           `token_embeddings` - Uma lista com os embeddings da última camada.
-           `input_ids` - Uma lista com os textos indexados.
-           `attention_mask` - Uma lista com os as máscaras de atenção
-           `token_type_ids` - Uma lista com os tipos dos tokens.
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
-           `texto_original` - Uma lista com os textos originais.
-           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+            `token_embeddings` - Uma lista com os embeddings da última camada.
+            `input_ids` - Uma lista com os textos indexados.
+            `attention_mask` - Uma lista com os as máscaras de atenção
+            `token_type_ids` - Uma lista com os tipos dos tokens.
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+            `texto_original` - Uma lista com os textos originais.
+            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
         
         # Coloca o modelo em modo avaliação
@@ -595,22 +594,22 @@ class TextoTransformer:
         Retorna a codificação do texto utilizando o modelo de linguagem de acordo com o tipo codificação do texto.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem.
-           `tipo_codificação_texto` - O tipo de codificação do texto. Pode ser: texto, sentenca, palavra e token.         
-           `tamanho_lote` - o tamanho do lote usado para o computação.
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
-           `device` - Qual torch.device usar para a computação.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado a codificação em embeddings do modelo de linguagem.
+            `tipo_codificação_texto` - O tipo de codificação do texto. Pode ser: texto, sentenca, palavra e token.         
+            `tamanho_lote` - o tamanho do lote usado para o computação.
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `device` - Qual torch.device usar para a computação.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
     
         Retorna um dicionário com as seguintes chaves:
-           `token_embeddings` - Uma lista com os embeddings da última camada.
-           `input_ids` - Uma lista com os textos indexados.            
-           `attention_mask` - Uma lista com os as máscaras de atenção
-           `token_type_ids` - Uma lista com os tipos dos tokens.            
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
-           `texto_original` - Uma lista com os textos originais.
-           `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
+            `token_embeddings` - Uma lista com os embeddings da última camada.
+            `input_ids` - Uma lista com os textos indexados.            
+            `attention_mask` - Uma lista com os as máscaras de atenção
+            `token_type_ids` - Uma lista com os tipos dos tokens.            
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.
+            `texto_original` - Uma lista com os textos originais.
+            `all_layer_embeddings` - Uma lista com os embeddings de todas as camadas.
         '''
         
         # Verifica o tipo de dado do parâmetro 'granularidade_texto'
@@ -669,15 +668,15 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para a computação.
-           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
-    
+            `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para a computação.
+            `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+        
         Retorno: 
-           Os embeddings consolidados do texto se o parâmetro texto é uma string, caso contrário uma lista com os embeddings consolidados se o parâmetro é lista de string.
+            Os embeddings consolidados do texto se o parâmetro texto é uma string, caso contrário uma lista com os embeddings consolidados se o parâmetro é lista de string.
         '''
 
         # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
@@ -718,17 +717,17 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
     
         Parâmetros:         
-           `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para a computação.
+            `texto` - Um texto a ser recuperado os embeddings dos textos consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para a computação.
     
         Retorna um dicionário com as seguintes chaves:
-           `texto_original` - Uma lista com os textos originais.
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.        
-           `texto_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens do texto.
-           `texto_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens do texto.
+            `texto_original` - Uma lista com os textos originais.
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.        
+            `texto_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens do texto.
+            `texto_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens do texto.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -803,15 +802,15 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:           
-           `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para a computação.
-           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+            `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para a computação.
+            `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
     
         Retorno: 
-           Uma lista com os embeddings consolidados das sentenças se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das sentenças se o parâmetro é lista de string.        
+            Uma lista com os embeddings consolidados das sentenças se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das sentenças se o parâmetro é lista de string.        
         '''
 
         # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
@@ -853,18 +852,18 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
     
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para a computação.
+            `texto` - Um texto a ser recuperado os embeddings das sentenças consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para a computação.
     
         Retorna um dicionário com as seguintes chaves:
-           `texto_original` - Uma lista com os textos originais.        
-           `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.                
-           `sentencas_texto` - Uma lista com as sentenças do texto.
-           `sentenca_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens da sentença.
-           `sentenca_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens da sentença.        
+            `texto_original` - Uma lista com os textos originais.        
+            `tokens_texto_mcl` - Uma lista com os textos tokenizados com os tokens especiais.                
+            `sentencas_texto` - Uma lista com as sentenças do texto.
+            `sentenca_embeddings_MEAN` - Uma lista da média dos embeddings dos tokens da sentença.
+            `sentenca_embeddings_MAX` - Uma lista do máximo dos embeddings dos tokens da sentença.        
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -979,15 +978,15 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para o computação.
-           `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
+            `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para o computação.
+            `estrategia_pooling` - Valor default MEAN. Uma estratégia de pooling,(EstrategiasPooling.MEAN, EstrategiasPooling.MAX). Pode ser utilizado os valores inteiros 0 para MEAN e 1 para MAX.
     
         Retorno: 
-           Uma lista com os embeddings consolidados das palavras se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das palavras se o parâmetro é lista de string.
+            Uma lista com os embeddings consolidados das palavras se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings consolidados das palavras se o parâmetro é lista de string.
         '''
 
         # Verifica o tipo de dado do parâmetro 'estrategia_pooling'
@@ -1030,22 +1029,22 @@ class TextoTransformer:
             - Estratégia MAX para calcular o valor máximo dos embeddings dos tokens que formam uma palavra.
             
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem.
-           `tamanho_lote` - o tamanho do lote usado para o computação.
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
-           `device` - Qual torch.device usar para o computação.
-           `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
+            `texto` - Um texto a ser recuperado os embeddings das palavras consolidados dos tokens com a estratégia MEAN e MAX utilizando o modelo de linguagem.
+            `tamanho_lote` - o tamanho do lote usado para o computação.
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.
+            `device` - Qual torch.device usar para o computação.
+            `dic_excecao` - Um dicionário de tokens de exceções e seus deslocamentos para considerar mais ou menos tokens do modelo de linguagem em relação ao spaCy. Valor positivo para considerar mais tokens e negativo para considerar menos tokens. Exemplo exceção negativo: {"1°": -1}, a ferramenta de PLN separa o token "1°" em "1" e "°", portanto é necessário reduzir 1 token pois o MCL gera somente um. Exemplo exceção positiva: {"1°": 1}, a ferramenta de PLN não separa o token "1°", mas o MCL separa em dois "1" e "°" portanto é necessário agrupar em 1 token.
     
         Retorna um dicionário com as seguintes chaves:
-           `texto_original` - Uma lista com os textos originais.  
-           `tokens_texto` - Uma lista com os tokens(palavras) realizados pelo método.
-           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo MCL.
-           `tokens_oov_texto_mcl` - Uma lista com os tokens OOV(com ##) do MCL.
-           `tokens_texto_pln` - Uma lista com os tokens realizados pela ferramenta de PLN(spaCy).
-           `pos_texto_pln` - Uma lista com as postagging dos tokens realizados pela ferramenta de PLN(spaCy).            
-           `palavra_embeddings_MEAN` - Uma lista com os embeddings das palavras com a estratégia MEAN.
-           `palavra_embeddings_MAX` - Uma lista com os embeddings das palavras com a estratégia MAX.
+            `texto_original` - Uma lista com os textos originais.  
+            `tokens_texto` - Uma lista com os tokens(palavras) realizados pelo método.
+            `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo MCL.
+            `tokens_oov_texto_mcl` - Uma lista com os tokens OOV(com ##) do MCL.
+            `tokens_texto_pln` - Uma lista com os tokens realizados pela ferramenta de PLN(spaCy).
+            `pos_texto_pln` - Uma lista com as postagging dos tokens realizados pela ferramenta de PLN(spaCy).            
+            `palavra_embeddings_MEAN` - Uma lista com os embeddings das palavras com a estratégia MEAN.
+            `palavra_embeddings_MAX` - Uma lista com os embeddings das palavras com a estratégia MAX.
         '''
                 
         # Se o texto é uma string, coloca em uma lista de comprimento 1
@@ -1132,14 +1131,14 @@ class TextoTransformer:
         Recebe um texto (string ou uma lista de strings) e retorna os embeddings dos tokens gerados pelo tokenizador modelo de linguagem.                  
                     
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings dos tokens utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.           
-           `device` - Qual torch.device usar para o computação.
+            `texto` - Um texto a ser recuperado os embeddings dos tokens utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.           
+            `device` - Qual torch.device usar para o computação.
     
         Retorno: 
-           Uma lista com os embeddings dos tokens se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings dos tokens se o parâmetro é lista de string.
+            Uma lista com os embeddings dos tokens se o parâmetro texto é uma string, caso contrário uma lista com a lista dos embeddings dos tokens se o parâmetro é lista de string.
         '''
 
         return self.getCodificacaoToken(texto=texto,
@@ -1158,17 +1157,17 @@ class TextoTransformer:
         De um texto (string ou uma lista de strings) retorna a codificação dos tokens do texto utilizando o modelo de linguagem.
                 
         Parâmetros:
-           `texto` - Um texto a ser recuperado os embeddings dos tokens utilizando o modelo de linguagem
-           `tamanho_lote` - o tamanho do lote usado para o computação
-           `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
-           `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
-           `device` - Qual torch.device usar para o computação.
+            `texto` - Um texto a ser recuperado os embeddings dos tokens utilizando o modelo de linguagem
+            `tamanho_lote` - o tamanho do lote usado para o computação
+            `mostra_barra_progresso` - Mostra uma barra de progresso ao codificar o texto.
+            `converte_para_numpy` - Se verdadeiro, a saída é uma lista de vetores numpy. Caso contrário, é uma lista de tensores pytorch.        
+            `device` - Qual torch.device usar para o computação.
     
         Retorna um dicionário com as seguintes chaves:
-           `texto_original` - Uma lista com os textos originais.  
-           `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
-           `input_ids` - Uma lista com os textos indexados.
-           `token_embeddings` - Uma lista com os embeddings dos tokens.
+            `texto_original` - Uma lista com os textos originais.  
+            `tokens_texto_mcl` - Uma lista com os tokens e tokens especiais realizados pelo mcl.
+            `input_ids` - Uma lista com os textos indexados.
+            `token_embeddings` - Uma lista com os embeddings dos tokens.
         '''
 
         # Se o texto é uma string, coloca em uma lista de comprimento 1

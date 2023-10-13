@@ -1,6 +1,6 @@
 [project]
 name = "texto-transformer"
-version = "0.0.12"
+version = "0.0.13"
 description = "Texto Transformer: Framework para processamento de textos utilizando modelos de linguagem baseados baseados em Transformer"
 readme = "README.md"
 requires-python = ">=3.9.0"

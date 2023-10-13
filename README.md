@@ -14,7 +14,7 @@ Este framework realiza o processamento de textos utilizando modelos de linguagem
 
 ## Instalação
 
-Recomendamos **Python 3.6**, **[Transformers 4.26.1](https://huggingface.co/transformers)**, **[PyTorch 2.0.1](https://pytorch.org)**, **[spaCy 3.5.2](https://spacy.io)**, **[SciPy 1.10.1](https://scipy.org)**, **[NumPy 1.22.4](https://numpy.org)**, **[Sentence Piece 0.1.99](https://github.com/google/sentencepiece)** e **[Protocol Buffers 3.20.3](https://protobuf.dev/)**. 
+Recomendamos **Python 3.9** ou superior, **[Transformers 4.26.1](https://huggingface.co/transformers)**, **[PyTorch 2.0.1](https://pytorch.org)**, **[spaCy 3.5.2](https://spacy.io)**, **[SciPy 1.10.1](https://scipy.org)**, **[NumPy 1.22.4](https://numpy.org)**, **[Sentence Piece 0.1.99](https://github.com/google/sentencepiece)** e **[Protocol Buffers 3.20.3](https://protobuf.dev/)**. 
 
 **Instalação com pip**
 

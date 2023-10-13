@@ -837,10 +837,10 @@ class TestTextTransformer_bert_ptbr(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto)
         
         # Valores esperados
-        CcosEsperado = 0.7125453352928162
-        CproEsperado = 42.80824661254883
-        CeucEsperado = 5.883016586303711
-        CmanEsperado = 125.89885711669922
+        CcosEsperado = 0.9904935956001282
+        CproEsperado = 54.04314041137695
+        CeucEsperado = 1.1169241666793823
+        CmanEsperado = 20.826366424560547
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -866,10 +866,10 @@ class TestTextTransformer_bert_ptbr(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 0.7125453352928162
-        CproEsperado = 42.80824661254883
-        CeucEsperado = 5.883016586303711
-        CmanEsperado = 125.89885711669922
+        CcosEsperado = 0.9904935956001282
+        CproEsperado = 54.04314041137695
+        CeucEsperado = 1.1169241666793823
+        CmanEsperado = 20.826366424560547
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -895,10 +895,10 @@ class TestTextTransformer_bert_ptbr(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         # Valores esperados
-        CcosEsperado = 0.726082324981689
-        CproEsperado = 40.02226638793945
-        CeucEsperado = 5.497143745422363
-        CmanEsperado = 117.38613891601562
+        CcosEsperado = 0.9085850715637207
+        CproEsperado = 49.04791259765625
+        CeucEsperado = 3.1557257175445557
+        CmanEsperado = 66.32167053222656
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
