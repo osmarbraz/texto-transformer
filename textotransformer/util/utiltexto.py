@@ -72,6 +72,8 @@ def removeTags(texto: str):
 def encontrarIndiceSubLista(lista: List, sublista: List):
   '''
   Localiza os índices de início e fim de uma sublista em uma lista.
+  Baseado no algoritmo de https://codereview.stackexchange.com/questions/19627/finding-sub-list
+  de  https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore%E2%80%93Horspool_algorithm
     
   Parâmetros:
     `lista` - Uma lista.
@@ -79,23 +81,31 @@ def encontrarIndiceSubLista(lista: List, sublista: List):
     
   Retorno:
     Os índices de início e fim da sublista na lista.
-  '''
-    
-  # https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore%E2%80%93Horspool_algorithm
+  '''    
+  # Tamanho da lista
   h = len(lista)
-  n = len(sublista)
+  # Tamanho da sblista
+  n = len(sublista)  
+  # Cria um dicionário com os saltos descrescentes dos elementos n-1 da sublista
   skip = {sublista[i]: n - i - 1 for i in range(n - 1)}
   i = n - 1
+  # Percorre a lista
   while i < h:
+    # Percorre a sublista
     for j in range(n):
+      # Se elemento da lista diferente da sublista pula a interação
       if lista[i - j] != sublista[-j - 1]:
-         i += skip.get(lista[i], n)
-         break
-      else:
-        indice_inicio = i - n + 1
-        indice_fim = indice_inicio + len(sublista)-1
-            
-        return indice_inicio, indice_fim
+        # Passa para o próximo elemento da lista saltando a sublista
+        i += skip.get(lista[i], n)
+        # Interrompe o for.
+        break
+    else:
+      #Finalizando a pesquisa depois de executar todo o for(sem break)
+      indice_inicio = i - n + 1
+      indice_fim = indice_inicio + len(sublista)-1
+      
+      # Retorna o início e fim da sublista na lista
+      return indice_inicio, indice_fim
   
   # Não encontrou a sublista na lista
   return -1, -1

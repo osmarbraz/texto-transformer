@@ -596,7 +596,7 @@ class TestTextTransformer_albert_en(unittest.TestCase):
         
     # Testes getMedidasTextoPalavraRelevante_0
     def test_getMedidasTexto_PalavraRelevante_0(self):
-        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0)")
+        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0(Todas as palavras))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
@@ -625,7 +625,7 @@ class TestTextTransformer_albert_en(unittest.TestCase):
         
     # Testes getMedidasTextoPalavraRelevante_1
     def test_getMedidasTexto_PalavraRelevante_1(self):
-        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1)")
+        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1(Sem as stopords))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
@@ -654,7 +654,7 @@ class TestTextTransformer_albert_en(unittest.TestCase):
 
     # Testes getMedidasTextoPalavraRelevante_2
     def test_getMedidasTexto_PalavraRelevante_2(self):
-        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2)")
+        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2(Somente substantivo))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]

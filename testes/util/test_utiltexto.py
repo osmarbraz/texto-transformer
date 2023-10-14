@@ -67,21 +67,25 @@ class TestUtilTexto(unittest.TestCase):
 
         lista_sub_inicio = [1,2,3,4]
         lista_sub_meio = [3,4]
+        lista_sub_meio_nao = [3,5]
         lista_sub_fim = [8,9,10]
 
         # Valores esperados
         indice_inicio_esperado = (0, 3)
         indice_meio_esperado = (2, 3)
+        indice_meio_esperado_nao = (-1, -1)
         indice_fim_esperado = (7, 9)
 
         # Executa o método
         indice_inicio = encontrarIndiceSubLista(lista_entrada, lista_sub_inicio)
         indice_meio = encontrarIndiceSubLista(lista_entrada, lista_sub_meio)
+        indice_meio_nao = encontrarIndiceSubLista(indice_meio_esperado_nao, lista_sub_meio_nao)
         indice_fim = encontrarIndiceSubLista(lista_entrada, lista_sub_fim)
 
         # Avalia a saida do método
         self.assertEqual(indice_inicio, indice_inicio_esperado)
         self.assertEqual(indice_meio, indice_meio_esperado)
+        self.assertEqual(indice_meio_nao, indice_meio_esperado_nao)
         self.assertEqual(indice_fim, indice_fim_esperado)
                
     # Testes tamanhoTexto

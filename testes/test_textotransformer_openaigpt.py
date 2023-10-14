@@ -576,10 +576,10 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto)
         
         # Valores esperados
-        CcosEsperado = 1.0
-        CproEsperado = 100.87603759765625
-        CeucEsperado = 0.0
-        CmanEsperado = 0.0
+        CcosEsperado = 0.5852859616279602
+        CproEsperado = 72.78114318847656
+        CeucEsperado = 10.421307563781738
+        CmanEsperado = 226.65457153320312
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -596,7 +596,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         
     # Testes getMedidasTextoPalavraRelevante_0
     def test_getMedidasTexto_PalavraRelevante_0(self):
-        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0)")
+        logger.info("Testando o getMedidasTexto(texto, palavra_relevante=0(Todas as palavras))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
@@ -605,10 +605,10 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=0)
         
         # Valores esperados
-        CcosEsperado = 1.0              
-        CproEsperado = 100.87603759765625
-        CeucEsperado = 0.0
-        CmanEsperado = 0.0
+        CcosEsperado = 0.5852859616279602              
+        CproEsperado = 72.78114318847656
+        CeucEsperado = 10.421307563781738
+        CmanEsperado = 226.65457153320312
                        
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -625,7 +625,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         
     # Testes getMedidasTextoPalavraRelevante_1
     def test_getMedidasTexto_PalavraRelevante_1(self):
-        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1)")
+        logger.info("Rodando getMedidasTexto(texto, palavra_relevante=1(Sem as stopords))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
@@ -634,10 +634,10 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
         saida = self.modelo.getMedidasTexto(texto, palavra_relevante=1)
         
         # Valores esperados
-        CcosEsperado = 0.9898597002029419
-        CproEsperado = 128.6832733154297
-        CeucEsperado = 1.9566301107406616
-        CmanEsperado = 43.01838684082031
+        CcosEsperado = 0.573768675327301
+        CproEsperado = 88.2017822265625
+        CeucEsperado = 11.906492233276367
+        CmanEsperado = 255.5538330078125
                                               
         # Testa o nome das chaves
         self.assertTrue("cos" in saida)
@@ -654,7 +654,7 @@ class TestTextTransformer_openaigpt_en(unittest.TestCase):
 
     # Testes getMedidasTextoPalavraRelevante_2
     def test_getMedidasTexto_PalavraRelevante_2(self):
-        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2)")
+        logger.info("Rodando .getMedidasTexto(texto, palavra_relevante=2(Somente substantivo))")
         
         # Valores de entrada
         texto = ["Fresh sea bass is a great delicacy.","I play bass in a jazz band."]
